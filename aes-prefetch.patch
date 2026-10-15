@@ -1,0 +1,46 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4b36a8d..1c98ebd 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,20 @@
+ cmake_minimum_required(VERSION 3.10)
+ project(xmrig)
+ 
++# Experimental hardware-AES scratchpad prefetch tuning; upstream default.
++set(RX_AES_PREFETCH_DISTANCE "7168" CACHE STRING "RandomX hardware AES prefetch distance in bytes (256..8192, multiple of 256)")
++if (NOT RX_AES_PREFETCH_DISTANCE MATCHES "^[0-9]+$")
++    message(FATAL_ERROR "RX_AES_PREFETCH_DISTANCE must be an integer")
++endif()
++if (RX_AES_PREFETCH_DISTANCE LESS 256 OR RX_AES_PREFETCH_DISTANCE GREATER 8192)
++    message(FATAL_ERROR "RX_AES_PREFETCH_DISTANCE must be between 256 and 8192")
++endif()
++math(EXPR RX_AES_PREFETCH_REMAINDER "${RX_AES_PREFETCH_DISTANCE} % 256")
++if (NOT RX_AES_PREFETCH_REMAINDER EQUAL 0)
++    message(FATAL_ERROR "RX_AES_PREFETCH_DISTANCE must be a multiple of 256")
++endif()
++add_definitions(-DXMRIG_RX_AES_PREFETCH_DISTANCE=${RX_AES_PREFETCH_DISTANCE})
++
+ option(WITH_HWLOC           "Enable hwloc support" ON)
+ option(WITH_CN_LITE         "Enable CryptoNight-Lite algorithms family" ON)
+ option(WITH_CN_HEAVY        "Enable CryptoNight-Heavy algorithms family" ON)
+diff --git a/src/crypto/randomx/aes_hash.cpp b/src/crypto/randomx/aes_hash.cpp
+index 6cb081c..4fd7d6a 100644
+--- a/src/crypto/randomx/aes_hash.cpp
++++ b/src/crypto/randomx/aes_hash.cpp
+@@ -328,7 +328,15 @@ void hashAndFillAes1Rx4(void *scratchpad, size_t scratchpadSize, void *hash, voi
+ 	rx_vec_i128 fill_state2 = rx_load_vec_i128((rx_vec_i128*)fill_state + 2);
+ 	rx_vec_i128 fill_state3 = rx_load_vec_i128((rx_vec_i128*)fill_state + 3);
+ 
+-	constexpr int PREFETCH_DISTANCE = 7168;
++#ifndef XMRIG_RX_AES_PREFETCH_DISTANCE
++#define XMRIG_RX_AES_PREFETCH_DISTANCE 7168
++#endif
++	static_assert(XMRIG_RX_AES_PREFETCH_DISTANCE >= 256 &&
++		XMRIG_RX_AES_PREFETCH_DISTANCE <= 8192 &&
++		XMRIG_RX_AES_PREFETCH_DISTANCE % 256 == 0,
++		"AES prefetch distance must be 256..8192 bytes and a multiple of 256");
++	// Keep software AES's small startup self-benchmark unchanged.
++	constexpr int PREFETCH_DISTANCE = softAes == 0 ? XMRIG_RX_AES_PREFETCH_DISTANCE : 7168;
+ 	const char* prefetchPtr = ((const char*)scratchpad) + PREFETCH_DISTANCE;
+ 	scratchpadEnd -= PREFETCH_DISTANCE;
+ 
