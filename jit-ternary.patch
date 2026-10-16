@@ -1,0 +1,62 @@
+diff --git a/src/crypto/randomx/jit_compiler_x86.cpp b/src/crypto/randomx/jit_compiler_x86.cpp
+index 45cd4fa..b8b023e 100644
+--- a/src/crypto/randomx/jit_compiler_x86.cpp
++++ b/src/crypto/randomx/jit_compiler_x86.cpp
+@@ -32,6 +32,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <cstring>
+ #include <climits>
+ #include <atomic>
++#ifndef _MSC_VER
++#   include <cpuid.h>
++#endif
+ 
+ #include "crypto/randomx/jit_compiler_x86.hpp"
+ #include "backend/cpu/Cpu.h"
+@@ -235,6 +238,20 @@ namespace randomx {
+ 		hasAVX = xmrig::Cpu::info()->hasAVX();
+ 		hasAVX2 = xmrig::Cpu::info()->hasAVX2();
+ 
++		// This experiment targets Zen 4 only. The existing AVX512F test also
++		// verifies OSXSAVE/XCR0; separately check VL for the 128-bit encoding.
++		if (xmrig::Cpu::info()->arch() == xmrig::ICpuInfo::ARCH_ZEN4 &&
++			xmrig::Cpu::info()->has(xmrig::ICpuInfo::FLAG_AVX512F)) {
++#ifdef _MSC_VER
++			int regs[4];
++			__cpuidex(regs, 7, 0);
++			hasTernaryLogic = (static_cast<uint32_t>(regs[1]) & (1u << 31)) != 0;
++#else
++			unsigned int a, b, c, d;
++			hasTernaryLogic = __get_cpuid_count(7, 0, &a, &b, &c, &d) && (b & (1u << 31));
++#endif
++		}
++
+ 		// Disable by default
+ 		initDatasetAVX2 = false;
+ 
+@@ -1312,7 +1329,13 @@ namespace randomx {
+ 
+ 		*(uint64_t*)(p + pos) = 0x0624e60f44f3ull;
+ 		pos += 6;
+-		if (hasXOP) {
++		if (hasTernaryLogic) {
++			// vpternlogq xmm12, xmm13, xmm14, 0xea:
++			// xmm12 = (xmm12 & xmm13) | xmm14, bit for bit.
++			static const uint8_t ternaryMask[] = { 0x62, 0x53, 0x95, 0x08, 0x25, 0xe6, 0xea };
++			emit(ternaryMask, p, pos);
++		}
++		else if (hasXOP) {
+ 			*(uint64_t*)(p + pos) = 0xd0e6a218488full;
+ 			pos += 6;
+ 		}
+diff --git a/src/crypto/randomx/jit_compiler_x86.hpp b/src/crypto/randomx/jit_compiler_x86.hpp
+index 3195187..0b6ed0a 100644
+--- a/src/crypto/randomx/jit_compiler_x86.hpp
++++ b/src/crypto/randomx/jit_compiler_x86.hpp
+@@ -102,6 +102,7 @@ namespace randomx {
+ 		bool hasAVX2;
+ 		bool initDatasetAVX2;
+ 		bool hasXOP;
++		bool hasTernaryLogic = false;
+ 
+ 		uint8_t* allocatedCode = nullptr;
+ 		size_t allocatedSize = 0;

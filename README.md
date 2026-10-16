@@ -131,3 +131,7 @@ This workaround still needs full linking verification on the user's Alpine
 GCC 15.2 toolchain. A local mixed LTO/non-LTO formatting link check validates
 that the formatting object is conventional native code and links with LTO code,
 but does not reproduce Alpine's fortified headers.
+
+## Source-level JIT experiment
+
+The separate [JIT division-mask rewrite](JIT-TERNARY.md) combines an AND/OR instruction pair using AVX-512 on Zen 4. Component correctness tests pass; mining performance is unproven. Build with `sh build-jit-ternary.sh`. The generic baseline remains available.
