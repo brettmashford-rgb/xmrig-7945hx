@@ -47,6 +47,10 @@ set -- -S "$SOURCE" -B "$OUT" -DCMAKE_BUILD_TYPE=Release -DWITH_OPENCL=OFF -DWIT
 if [ "$PROFILE" != generic ]; then
     set -- "$@" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ "-DCMAKE_C_FLAGS=-march=znver4 -mtune=znver4" "-DCMAKE_CXX_FLAGS=-march=znver4 -mtune=znver4"
 fi
+if [ "$PROFILE" = zen4-lto ]; then
+    [ -f "$BASE/cmake/alpine-lto.cmake" ] || { echo 'Missing cmake/alpine-lto.cmake; update the repository.' >&2; exit 1; }
+    set -- "$@" "-DCMAKE_PROJECT_xmrig_INCLUDE=$BASE/cmake/alpine-lto.cmake"
+fi
 printf 'Building profile %s, prefetch %s, LTO %s\n' "$PROFILE" "$DISTANCE" "$IPO"
 cmake "$@"
 cmake --build "$OUT" -j "$JOBS"

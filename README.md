@@ -113,3 +113,21 @@ in all 48 AES cases at each of seven prefetch distances. These checks used GCC
 and four invalid profile/argument cases also passed. This is component
 verification, not a full Alpine miner build or a target performance benchmark.
 Reproduce with `python3 verify.py /path/to/patched/upstream zen4` or `zen4-lto`.
+
+## Alpine LTO link compatibility
+
+The first user build of zen4-lto failed in Alpine fortify's always-inline
+snprintf wrapper, instantiated by bundled fmt formatting code. The LTO profile
+now uses cmake/alpine-lto.cmake to compile only src/3rdparty/fmt/format.cc with
+-fno-lto. The rest of the miner retains IPO/LTO, and fortify remains enabled.
+The generic and zen4 profiles are unchanged. The comparison is therefore LTO
+with this formatting-library exclusion, not LTO on every translation unit.
+
+To retry after a failed LTO build, pull this update and rerun the same build
+command. CMake should detect the changed per-source option and rebuild fmt;
+there is no need to remove the source tree or working baseline builds. Run
+the benchmark only after the script finishes successfully and prints a version.
+This workaround still needs full linking verification on the user's Alpine
+GCC 15.2 toolchain. A local mixed LTO/non-LTO formatting link check validates
+that the formatting object is conventional native code and links with LTO code,
+but does not reproduce Alpine's fortified headers.
