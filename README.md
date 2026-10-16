@@ -30,7 +30,7 @@ Diskless changes may disappear at reboot: choose a persistence location before
 installing a winning build. Do not add the whole build tree to the boot backup.
 
 Read EXPERIMENT.md for component test results and the full performance test plan.
-The full miner build and script execution on Alpine are still unverified.
+The generic builds have been built and benchmarked by the user on Alpine. The new Zen 4 profiles still require a full Alpine build and end-to-end benchmark.
 The build script passes sh syntax checking; compiler checks in verify.py cover
 the changed AES component only. Validate the complete rx/0 benchmark checksum
 before using a changed miner with a pool.
@@ -57,5 +57,59 @@ correctness check, not sufficient proof of a sustained performance gain. Use
 repeated longer comparisons with wall-power measurements for that decision.
 
 Current verification: byte-for-byte AES component equivalence at seven
-distances; shell syntax and invalid-argument checks. Full miner builds and
-execution of this script on Alpine have not yet been verified.
+distances; shell syntax and invalid-argument checks. The user has built and run the generic profile on Alpine. The new Zen 4 profiles
+have not yet been built as complete miners or benchmarked on Alpine.
+
+## Zen 4 compiler experiment
+
+Keep prefetch at 7168 while changing compiler options. From this repository on
+the 7945HX:
+
+```sh
+git pull --ff-only
+sh build-alpine.sh 7168 zen4
+.work/build-7168-zen4/xmrig --bench=10M --algo=rx/0
+```
+
+The zen4 profile uses GCC with `-march=znver4 -mtune=znver4`. LTO is explicitly
+OFF. The optional next experiment adds only LTO:
+
+```sh
+sh build-alpine.sh 7168 zen4-lto
+.work/build-7168-zen4-lto/xmrig --bench=10M --algo=rx/0
+```
+
+The LTO profile uses CMake's interprocedural optimisation setting. Existing
+commands with no profile argument still select generic and keep the existing
+output paths. New profile builds are stored separately and never overwrite the
+baseline, install a service or start mining. Changing profiles does not change
+the RandomX JIT's algorithm or instruction rules. Performance gains are not
+promised: a large portion of the hash loop is generated machine code.
+
+These binaries target Zen 4. Do not deploy them to the 3900X or 5900X. Keep the
+same power limit, cooling, thread selection and benchmark length for comparisons.
+Use a matching checksum and repeated runs before judging tiny speed differences.
+Measure wall power during each candidate run; unchanged power has not yet been
+established for these new profiles.
+
+User-reported 10M results before this experiment:
+
+| Profile | Prefetch | H/s | Runs |
+|---|---:|---:|---:|
+| generic | 7168 | 17336.6 | 1 |
+| generic | 6144 | 17350.0 | 1 |
+
+The second result was sent after instructions to test 6144; its screenshot did
+not include the executable command. A 0.077% difference does not establish a
+repeatable gain, so the default 7168 remains the comparison setting.
+
+GCC CPU options: https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
+CMake IPO setting: https://cmake.org/cmake/help/latest/variable/CMAKE_INTERPROCEDURAL_OPTIMIZATION.html
+
+Local verification of the new profiles: both Zen 4 and Zen 4 plus LTO produced
+byte-identical hash, fill state and scratchpad output against generic upstream
+in all 48 AES cases at each of seven prefetch distances. These checks used GCC
+13.3 on a shared EPYC host with the relevant instruction support. Shell syntax
+and four invalid profile/argument cases also passed. This is component
+verification, not a full Alpine miner build or a target performance benchmark.
+Reproduce with `python3 verify.py /path/to/patched/upstream zen4` or `zen4-lto`.

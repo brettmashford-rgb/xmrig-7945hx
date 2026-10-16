@@ -2,6 +2,9 @@
 # Build an experimental miner beside the existing installation; never install it.
 set -eu
 DISTANCE=${1:-7168}
+PROFILE=${2:-generic}
+[ "$#" -le 2 ] || { echo "Usage: sh build-alpine.sh [distance] [generic|zen4|zen4-lto]" >&2; exit 2; }
+case "$PROFILE" in generic|zen4|zen4-lto) ;; *) echo "Unknown build profile: $PROFILE" >&2; exit 2;; esac
 JOBS=${JOBS:-2}
 case "$DISTANCE" in ''|*[!0-9]*|0*) echo 'Distance must be an integer 256..8192 without leading zeros' >&2; exit 2;; esac
 case "$JOBS" in ''|*[!0-9]*|0*) echo 'JOBS must be a positive integer without leading zeros' >&2; exit 2;; esac
@@ -35,8 +38,17 @@ else
     rm -f "$EXPECTED"
     trap - EXIT HUP INT TERM
 fi
-OUT="$BASE/.work/build-$DISTANCE"
-cmake -S "$SOURCE" -B "$OUT" -DCMAKE_BUILD_TYPE=Release -DWITH_OPENCL=OFF -DWITH_CUDA=OFF -DWITH_HWLOC=ON -DWITH_MSR=ON -DWITH_TLS=ON -DWITH_BENCHMARK=ON -DRX_AES_PREFETCH_DISTANCE="$DISTANCE"
+SUFFIX=
+[ "$PROFILE" = generic ] || SUFFIX="-$PROFILE"
+OUT="$BASE/.work/build-$DISTANCE$SUFFIX"
+IPO=OFF
+[ "$PROFILE" != zen4-lto ] || IPO=ON
+set -- -S "$SOURCE" -B "$OUT" -DCMAKE_BUILD_TYPE=Release -DWITH_OPENCL=OFF -DWITH_CUDA=OFF -DWITH_HWLOC=ON -DWITH_MSR=ON -DWITH_TLS=ON -DWITH_BENCHMARK=ON -DRX_AES_PREFETCH_DISTANCE="$DISTANCE" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION="$IPO" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+if [ "$PROFILE" != generic ]; then
+    set -- "$@" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ "-DCMAKE_C_FLAGS=-march=znver4 -mtune=znver4" "-DCMAKE_CXX_FLAGS=-march=znver4 -mtune=znver4"
+fi
+printf 'Building profile %s, prefetch %s, LTO %s\n' "$PROFILE" "$DISTANCE" "$IPO"
+cmake "$@"
 cmake --build "$OUT" -j "$JOBS"
 "$OUT/xmrig" --version
 printf '\nBuilt: %s\n' "$OUT/xmrig"
