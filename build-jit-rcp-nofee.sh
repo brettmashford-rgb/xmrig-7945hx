@@ -9,8 +9,8 @@ case "$JOBS" in ''|*[!0-9]*|0*) echo 'JOBS must be a positive integer' >&2; exit
 [ -f /etc/alpine-release ] || { echo 'Run on Alpine Linux' >&2; exit 1; }
 # Uses the verified baseline builder to install dependencies and obtain pinned source.
 sh "$BASE/build-alpine.sh" 7168 generic
-SOURCE="$BASE/.work/xmrig-jit-rcp-nofee"
-OUT="$BASE/.work/build-7168-jit-rcp-nofee"
+SOURCE="$BASE/.work/xmrig-jit-rcp-nodonate"
+OUT="$BASE/.work/build-7168-jit-rcp-nodonate"
 EXPECTED=$(mktemp)
 trap 'rm -f "$EXPECTED"' EXIT HUP INT TERM
 if [ ! -e "$SOURCE" ]; then
@@ -31,5 +31,5 @@ fi
 cmake -S "$SOURCE" -B "$OUT" -DCMAKE_BUILD_TYPE=Release -DWITH_OPENCL=OFF -DWITH_CUDA=OFF -DWITH_HWLOC=ON -DWITH_MSR=ON -DWITH_TLS=ON -DWITH_BENCHMARK=ON -DRX_AES_PREFETCH_DISTANCE=7168 -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 cmake --build "$OUT" -j "$JOBS"
 "$OUT/xmrig" --version
-printf '\nReciprocal JIT build with developer donation disabled: %s\n' "$OUT/xmrig"
-printf 'Not started or installed. Developer donation is fixed at 0%%, including existing configs.\n'
+printf '\nReciprocal JIT build with developer donation removed: %s\n' "$OUT/xmrig"
+printf 'Not started or installed. Donation strategy, endpoints and options have been removed.\n'

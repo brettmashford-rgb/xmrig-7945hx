@@ -1,29 +1,18 @@
-# Reciprocal JIT build with developer donation disabled
+# RCP build with donation subsystem removed
 
-This build keeps the reciprocal-multiply JIT rewrite and AES prefetch distance 7168. It disables XMRig developer-pool donation mining.
-
-- In src/donate.h, default and minimum donation levels become zero.
-- Pools::setDonateLevel always stores zero. Existing JSON or CLI donation values, including positive ones and later configuration reloads, cannot enable donation in this binary.
-- Pools::donateLevel consequently reports zero. Network creates DonateStrategy only when this level is positive, so the developer-pool strategy is not instantiated.
-- Copyright and licence notices remain intact. This does not alter fees charged by the user's selected pool or platform.
-
-The original builds remain available. This script uses its own source/output trees and does not install, start or replace any pool miner.
-
-## Alpine build
-
-From the repository folder, enter separately:
+Run from the experiment repository on Alpine:
 
 ```sh
 git pull --ff-only
 sh build-jit-rcp-nofee.sh
 ```
 
-Output: .work/build-7168-jit-rcp-nofee/xmrig
+Output: `.work/build-7168-jit-rcp-nodonate/xmrig`.
 
-Use this executable with the existing pool, wallet and worker arguments. No extra donation flag is required. Pool mining startup should display DONATE 0%. Benchmark mode already forces donation to zero upstream, so a benchmark's 0% display alone cannot establish that donation is disabled during pool mining.
+This is a separate source and build directory, including from the earlier forced-zero experiment. It retains the reciprocal-multiply JIT rewrite, generic compiler settings, prefetch distance 7168 and no LTO. The script neither installs nor starts the miner.
 
-## Validation and limits
+The combined patch deletes DonateStrategy.cpp, DonateStrategy.h and donate.h; removes donation source entries from CMake, donation scheduling and share-routing hooks from Network, and donation job switching from Miner. It also removes donation configuration fields, command-line options, help text, startup display and API metadata. The supplied example and embedded default configurations have no developer-pool address; specify your own pool as usual.
 
-The complete configuration translation unit compiled locally both with benchmark support enabled and disabled. Component checks of the actual compiled Pools constructor, level setter and getter passed for default construction and requests INT_MIN, -1, 0, 1, 2, 50, 99, 100 and INT_MAX. Donation remained zero. Source inspection confirmed the configuration reader routes donation values through that setter and that Network's donation strategy creation is gated by the reported level.
+Existing JSON donation fields are ignored because there is no parser or strategy for them. Remove old --donate-level or --donate-over-proxy command-line arguments: these options no longer exist. Normal user pool selection and configured failover remain supported. Licenses and copyright notices are retained.
 
-The combined pinned-source patch applies cleanly and matches the resulting canonical git diff. Shell syntax passes. The reciprocal/AES implementation in this combined patch is the same as the prior reciprocal experiment; fee changes are confined to the donation defaults and configuration setter. The new full no-fee binary has not been linked or run on Alpine here; target build and live pool operation remain to be checked. No new benchmark speed claim is made.
+Validation: the combined patch applies to the pinned clean XMRig v6.26.0 revision and reproduces its canonical diff. A complete Linux CPU miner build with TLS, HTTP/API and benchmark enabled links successfully. CLI help and the binary contain none of the removed donation options, strategy name, built-in donation hostnames or donation-start message. An offline 250K rx/0 run matches checksum 7D6054757BB08A63. The Alpine script passes shell syntax checking; the full Alpine HWLOC/MSR build remains to run on the target. No live pool connection was used for validation.
