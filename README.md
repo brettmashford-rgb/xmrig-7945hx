@@ -135,3 +135,7 @@ but does not reproduce Alpine's fortified headers.
 ## Source-level JIT experiment
 
 The separate [JIT division-mask rewrite](JIT-TERNARY.md) combines an AND/OR instruction pair using AVX-512 on Zen 4. Component correctness tests pass; mining performance is unproven. Build with `sh build-jit-ternary.sh`. The generic baseline remains available.
+
+## Paired scratchpad-load JIT experiment
+
+The FDIV ternary-mask rewrite passed target checksums but did not establish a repeatable speed gain. The next isolated [paired-load rewrite](JIT-PAIRED-LOAD.md) processes scratchpad conversions and masks in 256-bit pairs. Local component checks pass and component timings improved; target mining performance remains unproven. Build with `sh build-jit-paired-load.sh`.

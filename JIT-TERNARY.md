@@ -47,3 +47,7 @@ python3 verify-jit-ternary.py .work/xmrig-jit-ternary
 ```
 
 Instruction reference: Intel Architecture Instruction Set Extensions Programming Reference, VPTERNLOGQ, https://www.intel.com/content/dam/develop/external/us/en/documents/319433-024-697869.pdf . The original copyright and licence notices remain in the patched source files.
+
+## Target results, 17 October 2026
+
+Alpine GCC 15.2 full build succeeded. The target 1M result was 17,477.9 H/s at 96 W, with a matching checksum. Two subsequent JIT 10M runs were 17,395.1 H/s and approximately 17,341 H/s, bracketing an intervening baseline of 17,360.4 H/s. The 10M checksums matched. No repeatable speed improvement was established; this experiment is not the selected baseline.
