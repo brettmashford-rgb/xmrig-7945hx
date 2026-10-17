@@ -1,0 +1,108 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4b36a8d..1c98ebd 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,20 @@
+ cmake_minimum_required(VERSION 3.10)
+ project(xmrig)
+ 
++# Experimental hardware-AES scratchpad prefetch tuning; upstream default.
++set(RX_AES_PREFETCH_DISTANCE "7168" CACHE STRING "RandomX hardware AES prefetch distance in bytes (256..8192, multiple of 256)")
++if (NOT RX_AES_PREFETCH_DISTANCE MATCHES "^[0-9]+$")
++    message(FATAL_ERROR "RX_AES_PREFETCH_DISTANCE must be an integer")
++endif()
++if (RX_AES_PREFETCH_DISTANCE LESS 256 OR RX_AES_PREFETCH_DISTANCE GREATER 8192)
++    message(FATAL_ERROR "RX_AES_PREFETCH_DISTANCE must be between 256 and 8192")
++endif()
++math(EXPR RX_AES_PREFETCH_REMAINDER "${RX_AES_PREFETCH_DISTANCE} % 256")
++if (NOT RX_AES_PREFETCH_REMAINDER EQUAL 0)
++    message(FATAL_ERROR "RX_AES_PREFETCH_DISTANCE must be a multiple of 256")
++endif()
++add_definitions(-DXMRIG_RX_AES_PREFETCH_DISTANCE=${RX_AES_PREFETCH_DISTANCE})
++
+ option(WITH_HWLOC           "Enable hwloc support" ON)
+ option(WITH_CN_LITE         "Enable CryptoNight-Lite algorithms family" ON)
+ option(WITH_CN_HEAVY        "Enable CryptoNight-Heavy algorithms family" ON)
+diff --git a/src/base/net/stratum/Pools.cpp b/src/base/net/stratum/Pools.cpp
+index a2374b9..212dd90 100644
+--- a/src/base/net/stratum/Pools.cpp
++++ b/src/base/net/stratum/Pools.cpp
+@@ -217,9 +217,9 @@ void xmrig::Pools::toJSON(rapidjson::Value &out, rapidjson::Document &doc) const
+ 
+ void xmrig::Pools::setDonateLevel(int level)
+ {
+-    if (level >= kMinimumDonateLevel && level <= 99) {
+-        m_donateLevel = level;
+-    }
++    // This build disables developer-pool mining, including config reloads.
++    (void) level;
++    m_donateLevel = 0;
+ }
+ 
+ 
+diff --git a/src/crypto/randomx/aes_hash.cpp b/src/crypto/randomx/aes_hash.cpp
+index 6cb081c..4fd7d6a 100644
+--- a/src/crypto/randomx/aes_hash.cpp
++++ b/src/crypto/randomx/aes_hash.cpp
+@@ -328,7 +328,15 @@ void hashAndFillAes1Rx4(void *scratchpad, size_t scratchpadSize, void *hash, voi
+ 	rx_vec_i128 fill_state2 = rx_load_vec_i128((rx_vec_i128*)fill_state + 2);
+ 	rx_vec_i128 fill_state3 = rx_load_vec_i128((rx_vec_i128*)fill_state + 3);
+ 
+-	constexpr int PREFETCH_DISTANCE = 7168;
++#ifndef XMRIG_RX_AES_PREFETCH_DISTANCE
++#define XMRIG_RX_AES_PREFETCH_DISTANCE 7168
++#endif
++	static_assert(XMRIG_RX_AES_PREFETCH_DISTANCE >= 256 &&
++		XMRIG_RX_AES_PREFETCH_DISTANCE <= 8192 &&
++		XMRIG_RX_AES_PREFETCH_DISTANCE % 256 == 0,
++		"AES prefetch distance must be 256..8192 bytes and a multiple of 256");
++	// Keep software AES's small startup self-benchmark unchanged.
++	constexpr int PREFETCH_DISTANCE = softAes == 0 ? XMRIG_RX_AES_PREFETCH_DISTANCE : 7168;
+ 	const char* prefetchPtr = ((const char*)scratchpad) + PREFETCH_DISTANCE;
+ 	scratchpadEnd -= PREFETCH_DISTANCE;
+ 
+diff --git a/src/crypto/randomx/jit_compiler_x86.cpp b/src/crypto/randomx/jit_compiler_x86.cpp
+index 45cd4fa..c9efd8b 100644
+--- a/src/crypto/randomx/jit_compiler_x86.cpp
++++ b/src/crypto/randomx/jit_compiler_x86.cpp
+@@ -1062,21 +1062,10 @@ namespace randomx {
+ 			const uint32_t dst = instr.dst;
+ 
+ 			const uint64_t reciprocal = randomx_reciprocal_fast(divisor);
+-			if (imul_rcp_storage_used < 16) {
+-				*(uint64_t*)(imul_rcp_storage) = reciprocal;
+-				*(uint64_t*)(p + pos) = 0x2444AF0F4Cull + (dst << 27) + (static_cast<uint64_t>(248 - imul_rcp_storage_used * 8) << 40);
+-				++imul_rcp_storage_used;
+-				imul_rcp_storage += 11;
+-				pos += 6;
+-			}
+-			else {
+-				*(uint32_t*)(p + pos) = 0xb848;
+-				pos += 2;
+-
+-				emit64(reciprocal, p, pos);
+-
+-				emit32(0xc0af0f4c + (dst << 27), p, pos);
+-			}
++			*(uint32_t*)(p + pos) = 0xb848;
++			pos += 2;
++			emit64(reciprocal, p, pos);
++			emit32(0xc0af0f4c + (dst << 27), p, pos);
+ 
+ 			registerUsage[dst] = pos;
+ 		}
+diff --git a/src/donate.h b/src/donate.h
+index 206b1b8..14cdf9e 100644
+--- a/src/donate.h
++++ b/src/donate.h
+@@ -37,8 +37,8 @@
+  * If you plan on changing donations to 0%, please consider making a one-off donation to my wallet:
+  * XMR: 48edfHu7V9Z84YzzMa6fUueoELZ9ZRXq9VetWzYGzKt52XU5xvqgzYnDK9URnRoJMk1j8nLwEVsaSWJ4fhdUyZijBGUicoD
+  */
+-constexpr const int kDefaultDonateLevel = 1;
+-constexpr const int kMinimumDonateLevel = 1;
++constexpr const int kDefaultDonateLevel = 0;
++constexpr const int kMinimumDonateLevel = 0;
+ 
+ 
+ #endif // XMRIG_DONATE_H
