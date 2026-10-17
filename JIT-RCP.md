@@ -22,7 +22,7 @@ A full miner was built with the rewrite and compared with an otherwise-identical
 
 Means: baseline 3833.6 H/s, rewrite 3892.75 H/s, difference +1.543%. The checksum matches pinned upstream v6.26.0's RX_0 250K reference. These are full RandomX workload tests, not only instruction microbenchmarks.
 
-This is a screening result, NOT an established target improvement. Two runs per build are not sufficient for statistical confidence on a shared host. A separate exploratory baseline run reached 3908.3 H/s, illustrating material run variation. The target uses different topology, Alpine GCC 15.2, MSR/huge pages and power constraints. Target observations are recorded below; attribution of a power improvement remains provisional. Correct hashes for the tested default-seed workload do not prove correctness for all inputs.
+This is a screening result, NOT an established target improvement. Two runs per build are not sufficient for statistical confidence on a shared host. A separate exploratory baseline run reached 3908.3 H/s, illustrating material run variation. The target uses different topology, Alpine GCC 15.2, MSR/huge pages and power constraints. See the conversation for target testing status. Correct hashes for the tested default-seed workload do not prove correctness for all inputs.
 
 Build/link passed locally; patch application, canonical combined-diff and shell syntax checks pass. Dependent/independent instruction microbenchmarks alone had shown no clear advantage, which is why the full workload was tested. See `HOST-SCREENING.md` and `results/2026-10-17-host-rcp.json` for environment and raw run summaries.
 
@@ -44,14 +44,6 @@ First test, with other miners stopped:
 ```
 
 Its checksum must match the baseline 1M checksum. Note wall power and press Ctrl+C when finished. A longer controlled comparison is warranted only if target correctness and the short result justify it. Preserve files to persistent media before rebooting diskless Alpine.
-
-## Ryzen 7945HX observations, 17 October 2026
-
-The Alpine GCC 15.2 build succeeded. The first target run was 10M hashes (rather than the initially requested 1M): 574.618 seconds, 17,402.9 H/s, with the expected 10M checksum B5231262E2792B26. Wall power initially read 91 W and settled at 92 W. A second 10M run was reported at 93 W; its photo reads approximately 17.4 kH/s, but is too blurred to transcribe an exact rate reliably.
-
-The existing 7168 baseline was 17,368.6 H/s at 96 W. Using that prior baseline gives approximately 3–4.5% better observed hashes per watt for the reciprocal candidate. These are provisional comparisons: the user declined another baseline run, and conditions were not controlled closely enough to attribute the power difference conclusively to the patch. Retain this as the leading candidate, not a proven performance claim. Do not repeat the declined baseline test.
-
-The user reports saving the repository/builds to /media/usb/xmrig-7945hx-rcp-backup.tar.gz and running sync. This is a reported backup, not an independently validated restore test. Pool startup has not been switched by these build scripts.
 
 ## Follow-up source audit
 
