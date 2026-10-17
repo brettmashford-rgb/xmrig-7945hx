@@ -1,0 +1,85 @@
+{
+  "threads": 8,
+  "size": "250K",
+  "runs": [
+    {
+      "order": 1,
+      "label": "baseline",
+      "binary": "/tmp/rx-host-baseline",
+      "seconds": 65.549,
+      "hashrate": 3813.9,
+      "checksum": "7D6054757BB08A63",
+      "command": [
+        "/tmp/rx-host-baseline",
+        "--bench=250K",
+        "--algo=rx/0",
+        "--threads=8",
+        "--no-huge-pages",
+        "--no-color",
+        "--print-time=10"
+      ]
+    },
+    {
+      "order": 2,
+      "label": "candidate",
+      "binary": "/tmp/rx-host-rcp",
+      "seconds": 64.588,
+      "hashrate": 3870.7,
+      "checksum": "7D6054757BB08A63",
+      "command": [
+        "/tmp/rx-host-rcp",
+        "--bench=250K",
+        "--algo=rx/0",
+        "--threads=8",
+        "--no-huge-pages",
+        "--no-color",
+        "--print-time=10"
+      ]
+    },
+    {
+      "order": 3,
+      "label": "candidate",
+      "binary": "/tmp/rx-host-rcp",
+      "seconds": 63.861,
+      "hashrate": 3914.8,
+      "checksum": "7D6054757BB08A63",
+      "command": [
+        "/tmp/rx-host-rcp",
+        "--bench=250K",
+        "--algo=rx/0",
+        "--threads=8",
+        "--no-huge-pages",
+        "--no-color",
+        "--print-time=10"
+      ]
+    },
+    {
+      "order": 4,
+      "label": "baseline",
+      "binary": "/tmp/rx-host-baseline",
+      "seconds": 64.879,
+      "hashrate": 3853.3,
+      "checksum": "7D6054757BB08A63",
+      "command": [
+        "/tmp/rx-host-baseline",
+        "--bench=250K",
+        "--algo=rx/0",
+        "--threads=8",
+        "--no-huge-pages",
+        "--no-color",
+        "--print-time=10"
+      ]
+    }
+  ],
+  "context": {
+    "source_revision": "b2ca72480c58d197e18c885d9fc1a0c8d517e60a",
+    "aes_prefetch": 7168,
+    "compiler": "GCC 13.3.0",
+    "host": "AMD EPYC Zen 4 virtual host",
+    "profiling": true,
+    "full_target_equivalence": false,
+    "target_power_measured": false,
+    "baseline_sha256": "226eeb82d6bf951791597561d5b799bcae1b10f2fee14e63d7ef6c996cc8d9cf",
+    "candidate_sha256": "c3a3ad01c8045368e3cb4ac1584de73fb9c4250062c7f761f03d1e5711c2dfba"
+  }
+}

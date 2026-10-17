@@ -139,3 +139,7 @@ The separate [JIT division-mask rewrite](JIT-TERNARY.md) combines an AND/OR inst
 ## Paired scratchpad-load JIT experiment
 
 The FDIV ternary-mask rewrite passed target checksums but did not establish a repeatable speed gain. The next isolated [paired-load rewrite](JIT-PAIRED-LOAD.md) processes scratchpad conversions and masks in 256-bit pairs. Local component checks pass and component timings improved; target mining performance remains unproven. Build with `sh build-jit-paired-load.sh`.
+
+## Reciprocal-multiply JIT experiment and full-workload screening
+
+The paired-load rewrite passed target checksums but reduced hashrate; baseline remains selected. The next [reciprocal-multiply experiment](JIT-RCP.md) was built as a full miner locally: its default-seed 250K checksums match upstream, and its four-run ABBA screen averaged +1.543%. Shared-host variability makes that inconclusive; target performance and power are untested. Build with `sh build-jit-rcp.sh` for a separate experimental binary. [Host screening](HOST-SCREENING.md) documents the automated runner and limitations.

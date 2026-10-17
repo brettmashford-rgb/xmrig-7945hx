@@ -49,3 +49,7 @@ Append `--bench` for optional component timings. Requires Linux x86-64, AVX2/OS 
 ## Previous experiment status
 
 The FDIV ternary-mask experiment passed target 1M and 10M checksum checks, but its two 10M runs (17,395.1 H/s and approximately 17,341 H/s) bracketed the intervening baseline (17,360.4 H/s). It did not establish a repeatable hashrate gain. This paired-load experiment starts from the baseline, not from that patch.
+
+## Target results, 17 October 2026
+
+Alpine GCC 15.2 build and the target 10M checksum check passed. Paired-load achieved 17,059.9 H/s at 94 W (586.170 seconds). Returning to baseline produced 17,368.6 H/s at 96 W (575.751 seconds). The rewrite was 1.78% slower; the approximately 0.31% apparent hashes-per-watt improvement is too small to establish a reliable efficiency gain from this comparison. Keep baseline; this rewrite is not selected.
