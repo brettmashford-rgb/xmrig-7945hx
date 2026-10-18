@@ -14,6 +14,7 @@ import time
 
 BASE = Path(__file__).resolve().parent
 EXPERIMENTS = {
+    'register-pointers': ('build-jit-rcp-register-pointers.sh', 'build-7168-jit-rcp-register-pointers'),
     'dead-store': ('build-jit-rcp-dead-store.sh', 'build-7168-jit-rcp-dead-store'),
     'dataset-t1': ('build-jit-rcp-dataset-t1.sh', 'build-7168-jit-rcp-dataset-t1'),
     'scratch-early': ('build-jit-rcp-scratch-early.sh', 'build-7168-jit-rcp-scratch-early'),
