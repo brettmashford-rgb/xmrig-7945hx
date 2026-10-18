@@ -14,8 +14,10 @@ import time
 
 BASE = Path(__file__).resolve().parent
 EXPERIMENTS = {
+    'dataset-t1': ('build-jit-rcp-dataset-t1.sh', 'build-7168-jit-rcp-dataset-t1'),
     'scratch-early': ('build-jit-rcp-scratch-early.sh', 'build-7168-jit-rcp-scratch-early'),
     'mask-ternary': ('build-jit-rcp-mask-ternary.sh', 'build-7168-jit-rcp-mask-ternary'),
+
     'early-compact': ('build-jit-rcp-early-compact.sh', 'build-7168-jit-rcp-early-compact'),
     'dataset-t0': ('build-jit-rcp-dataset-t0.sh', 'build-7168-jit-rcp-dataset-t0'),
     'early-once': ('build-jit-rcp-early-once.sh', 'build-7168-jit-rcp-early-once'),
