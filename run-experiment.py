@@ -14,6 +14,7 @@ import time
 
 BASE = Path(__file__).resolve().parent
 EXPERIMENTS = {
+    'dead-store': ('build-jit-rcp-dead-store.sh', 'build-7168-jit-rcp-dead-store'),
     'dataset-t1': ('build-jit-rcp-dataset-t1.sh', 'build-7168-jit-rcp-dataset-t1'),
     'scratch-early': ('build-jit-rcp-scratch-early.sh', 'build-7168-jit-rcp-scratch-early'),
     'mask-ternary': ('build-jit-rcp-mask-ternary.sh', 'build-7168-jit-rcp-mask-ternary'),
@@ -191,3 +192,4 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
+
