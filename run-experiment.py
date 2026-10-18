@@ -14,6 +14,7 @@ import time
 
 BASE = Path(__file__).resolve().parent
 EXPERIMENTS = {
+    'dataset-t0': ('build-jit-rcp-dataset-t0.sh', 'build-7168-jit-rcp-dataset-t0'),
     'early-once': ('build-jit-rcp-early-once.sh', 'build-7168-jit-rcp-early-once'),
     'early-dataset': ('build-jit-rcp-early-dataset.sh', 'build-7168-jit-rcp-early-dataset'),
     'fp-convert': ('build-jit-rcp-fp-convert.sh', 'build-7168-jit-rcp-fp-convert'),

@@ -1,0 +1,1221 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4b36a8d..1b733bc 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,20 @@
+ cmake_minimum_required(VERSION 3.10)
+ project(xmrig)
+ 
++# Experimental hardware-AES scratchpad prefetch tuning; upstream default.
++set(RX_AES_PREFETCH_DISTANCE "7168" CACHE STRING "RandomX hardware AES prefetch distance in bytes (256..8192, multiple of 256)")
++if (NOT RX_AES_PREFETCH_DISTANCE MATCHES "^[0-9]+$")
++    message(FATAL_ERROR "RX_AES_PREFETCH_DISTANCE must be an integer")
++endif()
++if (RX_AES_PREFETCH_DISTANCE LESS 256 OR RX_AES_PREFETCH_DISTANCE GREATER 8192)
++    message(FATAL_ERROR "RX_AES_PREFETCH_DISTANCE must be between 256 and 8192")
++endif()
++math(EXPR RX_AES_PREFETCH_REMAINDER "${RX_AES_PREFETCH_DISTANCE} % 256")
++if (NOT RX_AES_PREFETCH_REMAINDER EQUAL 0)
++    message(FATAL_ERROR "RX_AES_PREFETCH_DISTANCE must be a multiple of 256")
++endif()
++add_definitions(-DXMRIG_RX_AES_PREFETCH_DISTANCE=${RX_AES_PREFETCH_DISTANCE})
++
+ option(WITH_HWLOC           "Enable hwloc support" ON)
+ option(WITH_CN_LITE         "Enable CryptoNight-Lite algorithms family" ON)
+ option(WITH_CN_HEAVY        "Enable CryptoNight-Heavy algorithms family" ON)
+@@ -66,7 +80,6 @@ set(HEADERS
+     src/net/JobResult.h
+     src/net/JobResults.h
+     src/net/Network.h
+-    src/net/strategies/DonateStrategy.h
+     src/Summary.h
+     src/version.h
+    )
+@@ -113,7 +126,6 @@ set(SOURCES
+     src/core/Taskbar.cpp
+     src/net/JobResults.cpp
+     src/net/Network.cpp
+-    src/net/strategies/DonateStrategy.cpp
+     src/Summary.cpp
+     src/xmrig.cpp
+    )
+diff --git a/src/Summary.cpp b/src/Summary.cpp
+index 8dae866..f1e54c5 100644
+--- a/src/Summary.cpp
++++ b/src/Summary.cpp
+@@ -171,12 +171,6 @@ static void print_memory(const Config *config)
+ 
+ static void print_threads(const Config *config)
+ {
+-    Log::print(GREEN_BOLD(" * ") WHITE_BOLD("%-13s") WHITE_BOLD("%s%d%%"),
+-               "DONATE",
+-               config->pools().donateLevel() == 0 ? RED_BOLD_S : "",
+-               config->pools().donateLevel()
+-               );
+-
+ #   ifdef XMRIG_FEATURE_ASM
+     if (config->cpu().assembly() == Assembly::AUTO) {
+         const Assembly assembly = Cpu::info()->assembly();
+diff --git a/src/base/kernel/config/BaseTransform.cpp b/src/base/kernel/config/BaseTransform.cpp
+index 339e462..8ef3f7c 100644
+--- a/src/base/kernel/config/BaseTransform.cpp
++++ b/src/base/kernel/config/BaseTransform.cpp
+@@ -242,7 +242,6 @@ void xmrig::BaseTransform::transform(rapidjson::Document &doc, int key, const ch
+     case IConfig::RetryPauseKey:    /* --retry-pause */
+     case IConfig::PrintTimeKey:     /* --print-time */
+     case IConfig::HttpPort:         /* --http-port */
+-    case IConfig::DonateLevelKey:   /* --donate-level */
+     case IConfig::DaemonPollKey:    /* --daemon-poll-interval */
+     case IConfig::DaemonJobTimeoutKey: /* --daemon-job-timeout */
+     case IConfig::DnsTtlKey:        /* --dns-ttl */
+@@ -342,11 +341,6 @@ void xmrig::BaseTransform::transformUint64(rapidjson::Document &doc, int key, ui
+     case IConfig::RetryPauseKey: /* --retry-pause */
+         return set(doc, Pools::kRetryPause, arg);
+ 
+-    case IConfig::DonateLevelKey: /* --donate-level */
+-        return set(doc, Pools::kDonateLevel, arg);
+-
+-    case IConfig::ProxyDonateKey: /* --donate-over-proxy */
+-        return set(doc, Pools::kDonateOverProxy, arg);
+ 
+     case IConfig::HttpPort: /* --http-port */
+         m_http = true;
+diff --git a/src/base/kernel/interfaces/IConfig.h b/src/base/kernel/interfaces/IConfig.h
+index 94c5760..74b7d4a 100644
+--- a/src/base/kernel/interfaces/IConfig.h
++++ b/src/base/kernel/interfaces/IConfig.h
+@@ -45,7 +45,6 @@ public:
+         BackgroundKey        = 'B',
+         ColorKey             = 1002,
+         ConfigKey            = 'c',
+-        DonateLevelKey       = 1003,
+         KeepAliveKey         = 'k',
+         LogFileKey           = 'l',
+         PasswordKey          = 'p',
+@@ -61,7 +60,6 @@ public:
+         VerboseKey           = 1100,
+         TlsKey               = 1013,
+         FingerprintKey       = 1014,
+-        ProxyDonateKey       = 1017,
+         DaemonKey            = 1018,
+         DaemonPollKey        = 1019,
+         SelfSelectKey        = 1028,
+diff --git a/src/base/net/stratum/Pools.cpp b/src/base/net/stratum/Pools.cpp
+index a2374b9..4ffedc4 100644
+--- a/src/base/net/stratum/Pools.cpp
++++ b/src/base/net/stratum/Pools.cpp
+@@ -29,7 +29,6 @@
+ #include "base/kernel/interfaces/IJsonReader.h"
+ #include "base/net/stratum/strategies/FailoverStrategy.h"
+ #include "base/net/stratum/strategies/SinglePoolStrategy.h"
+-#include "donate.h"
+ 
+ 
+ #ifdef XMRIG_FEATURE_BENCHMARK
+@@ -40,8 +39,6 @@
+ namespace xmrig {
+ 
+ 
+-const char *Pools::kDonateLevel     = "donate-level";
+-const char *Pools::kDonateOverProxy = "donate-over-proxy";
+ const char *Pools::kPools           = "pools";
+ const char *Pools::kRetries         = "retries";
+ const char *Pools::kRetryPause      = "retry-pause";
+@@ -50,8 +47,7 @@ const char *Pools::kRetryPause      = "retry-pause";
+ } // namespace xmrig
+ 
+ 
+-xmrig::Pools::Pools() :
+-    m_donateLevel(kDefaultDonateLevel)
++xmrig::Pools::Pools()
+ {
+ #   ifdef XMRIG_PROXY_PROJECT
+     m_retries    = 2;
+@@ -70,16 +66,6 @@ bool xmrig::Pools::isEqual(const Pools &other) const
+ }
+ 
+ 
+-int xmrig::Pools::donateLevel() const
+-{
+-#   ifdef XMRIG_FEATURE_BENCHMARK
+-    return benchSize() || (m_benchmark && !m_benchmark->id().isEmpty()) ? 0 : m_donateLevel;
+-#   else
+-    return m_donateLevel;
+-#   endif
+-}
+-
+-
+ xmrig::IStrategy *xmrig::Pools::createStrategy(IStrategyListener *listener) const
+ {
+     if (active() == 1) {
+@@ -158,8 +144,6 @@ void xmrig::Pools::load(const IJsonReader &reader)
+         }
+     }
+ 
+-    setDonateLevel(reader.getInt(kDonateLevel, kDefaultDonateLevel));
+-    setProxyDonate(reader.getInt(kDonateOverProxy, PROXY_DONATE_AUTO));
+     setRetries(reader.getInt(kRetries));
+     setRetryPause(reader.getInt(kRetryPause));
+ }
+@@ -207,36 +191,12 @@ void xmrig::Pools::toJSON(rapidjson::Value &out, rapidjson::Document &doc) const
+     }
+ #   endif
+ 
+-    doc.AddMember(StringRef(kDonateLevel),      m_donateLevel, allocator);
+-    doc.AddMember(StringRef(kDonateOverProxy),  m_proxyDonate, allocator);
+     out.AddMember(StringRef(kPools),            toJSON(doc), allocator);
+     doc.AddMember(StringRef(kRetries),          retries(), allocator);
+     doc.AddMember(StringRef(kRetryPause),       retryPause(), allocator);
+ }
+ 
+ 
+-void xmrig::Pools::setDonateLevel(int level)
+-{
+-    if (level >= kMinimumDonateLevel && level <= 99) {
+-        m_donateLevel = level;
+-    }
+-}
+-
+-
+-void xmrig::Pools::setProxyDonate(int value)
+-{
+-    switch (value) {
+-    case PROXY_DONATE_NONE:
+-    case PROXY_DONATE_AUTO:
+-    case PROXY_DONATE_ALWAYS:
+-        m_proxyDonate = static_cast<ProxyDonate>(value);
+-
+-    default:
+-        break;
+-    }
+-}
+-
+-
+ void xmrig::Pools::setRetries(int retries)
+ {
+     if (retries > 0 && retries <= 1000) {
+diff --git a/src/base/net/stratum/Pools.h b/src/base/net/stratum/Pools.h
+index b3f6b08..72366b9 100644
+--- a/src/base/net/stratum/Pools.h
++++ b/src/base/net/stratum/Pools.h
+@@ -43,17 +43,10 @@ class IStrategyListener;
+ class Pools
+ {
+ public:
+-    static const char *kDonateLevel;
+-    static const char *kDonateOverProxy;
+     static const char *kPools;
+     static const char *kRetries;
+     static const char *kRetryPause;
+ 
+-    enum ProxyDonate {
+-        PROXY_DONATE_NONE,
+-        PROXY_DONATE_AUTO,
+-        PROXY_DONATE_ALWAYS
+-    };
+ 
+     Pools();
+ 
+@@ -66,13 +59,11 @@ public:
+     inline const std::vector<Pool> &data() const        { return m_data; }
+     inline int retries() const                          { return m_retries; }
+     inline int retryPause() const                       { return m_retryPause; }
+-    inline ProxyDonate proxyDonate() const              { return m_proxyDonate; }
+ 
+     inline bool operator!=(const Pools &other) const    { return !isEqual(other); }
+     inline bool operator==(const Pools &other) const    { return isEqual(other); }
+ 
+     bool isEqual(const Pools &other) const;
+-    int donateLevel() const;
+     IStrategy *createStrategy(IStrategyListener *listener) const;
+     rapidjson::Value toJSON(rapidjson::Document &doc) const;
+     size_t active() const;
+@@ -82,15 +73,11 @@ public:
+     void toJSON(rapidjson::Value &out, rapidjson::Document &doc) const;
+ 
+ private:
+-    void setDonateLevel(int level);
+-    void setProxyDonate(int value);
+     void setRetries(int retries);
+     void setRetryPause(int retryPause);
+ 
+-    int m_donateLevel;
+     int m_retries               = 5;
+     int m_retryPause            = 5;
+-    ProxyDonate m_proxyDonate   = PROXY_DONATE_AUTO;
+     std::vector<Pool> m_data;
+ 
+ #   ifdef XMRIG_FEATURE_BENCHMARK
+diff --git a/src/config.json b/src/config.json
+index 48adef1..9b813a2 100644
+--- a/src/config.json
++++ b/src/config.json
+@@ -55,14 +55,12 @@
+         "cn/0": false,
+         "cn-lite/0": false
+     },
+-    "donate-level": 1,
+-    "donate-over-proxy": 1,
+     "log-file": null,
+     "pools": [
+         {
+             "algo": null,
+             "coin": null,
+-            "url": "donate.v2.xmrig.com:3333",
++            "url": "",
+             "user": "YOUR_WALLET_ADDRESS",
+             "pass": "x",
+             "rig-id": null,
+diff --git a/src/core/Miner.cpp b/src/core/Miner.cpp
+index 5b2cf05..f156ac4 100644
+--- a/src/core/Miner.cpp
++++ b/src/core/Miner.cpp
+@@ -152,7 +152,6 @@ public:
+         reply.AddMember("kind",         APP_KIND, allocator);
+         reply.AddMember("ua",           Platform::userAgent().toJSON(), allocator);
+         reply.AddMember("cpu",          Cpu::toJSON(doc), allocator);
+-        reply.AddMember("donate_level", controller->config()->pools().donateLevel(), allocator);
+         reply.AddMember("paused",       !enabled, allocator);
+ 
+         Value algo(kArrayType);
+@@ -379,7 +378,6 @@ public:
+     Job job;
+     mutable std::map<Algorithm::Id, double> maxHashrate;
+     std::vector<IBackend *> backends;
+-    String userJobId;
+     Timer *timer        = nullptr;
+     uint64_t ticks      = 0;
+ 
+@@ -390,7 +388,6 @@ public:
+ } // namespace xmrig
+ 
+ 
+-
+ xmrig::Miner::Miner(Controller *controller)
+     : d_ptr(new MinerPrivate(controller))
+ {
+@@ -550,7 +547,7 @@ void xmrig::Miner::setEnabled(bool enabled)
+ }
+ 
+ 
+-void xmrig::Miner::setJob(const Job &job, bool donate)
++void xmrig::Miner::setJob(const Job &job)
+ {
+     for (IBackend *backend : d_ptr->backends) {
+         backend->prepare(job);
+@@ -573,10 +570,7 @@ void xmrig::Miner::setJob(const Job &job, bool donate)
+ 
+     mutex.lock();
+ 
+-    const uint8_t index = donate ? 1 : 0;
+-    const bool same_job_index = d_ptr->job.index() == index;
+-
+-    d_ptr->reset = !(d_ptr->job.index() == 1 && index == 0 && d_ptr->userJobId == job.id());
++    d_ptr->reset = true;
+ 
+     // Don't reset nonce if pool sends the same hashing blob again, but with different difficulty (for example)
+     if (d_ptr->job.isEqualBlob(job)) {
+@@ -584,18 +578,13 @@ void xmrig::Miner::setJob(const Job &job, bool donate)
+     }
+ 
+     d_ptr->job   = job;
+-    d_ptr->job.setIndex(index);
+-
+-    if (index == 0) {
+-        d_ptr->userJobId = job.id();
+-    }
++    d_ptr->job.setIndex(0);
+ 
+ #   ifdef XMRIG_ALGO_RANDOMX
+     const bool ready = d_ptr->initRX();
+ 
+     // Always reset nonce on RandomX dataset change
+-    // Except for switching to/from donation
+-    if (!ready && same_job_index) {
++    if (!ready) {
+         d_ptr->reset = true;
+     }
+ #   else
+diff --git a/src/core/Miner.h b/src/core/Miner.h
+index bb4293d..cd61320 100644
+--- a/src/core/Miner.h
++++ b/src/core/Miner.h
+@@ -56,7 +56,7 @@ public:
+     void execCommand(char command);
+     void pause();
+     void setEnabled(bool enabled);
+-    void setJob(const Job &job, bool donate);
++    void setJob(const Job &job);
+     void stop();
+ 
+ protected:
+diff --git a/src/core/config/Config_default.h b/src/core/config/Config_default.h
+index ec09803..55f094e 100644
+--- a/src/core/config/Config_default.h
++++ b/src/core/config/Config_default.h
+@@ -85,14 +85,12 @@ R"===(
+         "cn/0": false,
+         "cn-lite/0": false
+     },
+-    "donate-level": 1,
+-    "donate-over-proxy": 1,
+     "log-file": null,
+     "pools": [
+         {
++            "url": "",
+             "algo": null,
+             "coin": null,
+-            "url": "donate.v2.xmrig.com:3333",
+             "user": "YOUR_WALLET_ADDRESS",
+             "pass": "x",
+             "rig-id": null,
+diff --git a/src/core/config/Config_platform.h b/src/core/config/Config_platform.h
+index 57456f0..c1b5915 100644
+--- a/src/core/config/Config_platform.h
++++ b/src/core/config/Config_platform.h
+@@ -46,8 +46,6 @@ static const option options[] = {
+     { "config",                1, nullptr, IConfig::ConfigKey             },
+     { "cpu-affinity",          1, nullptr, IConfig::CPUAffinityKey        },
+     { "cpu-priority",          1, nullptr, IConfig::CPUPriorityKey        },
+-    { "donate-level",          1, nullptr, IConfig::DonateLevelKey        },
+-    { "donate-over-proxy",     1, nullptr, IConfig::ProxyDonateKey        },
+     { "dry-run",               0, nullptr, IConfig::DryRunKey             },
+     { "keepalive",             0, nullptr, IConfig::KeepAliveKey          },
+     { "log-file",              1, nullptr, IConfig::LogFileKey            },
+diff --git a/src/core/config/usage.h b/src/core/config/usage.h
+index cbec1b4..b82954b 100644
+--- a/src/core/config/usage.h
++++ b/src/core/config/usage.h
+@@ -72,8 +72,6 @@ static inline const std::string &usage()
+     u += "  -r, --retries=N               number of times to retry before switch to backup server (default: 5)\n";
+     u += "  -R, --retry-pause=N           time to pause between retries (default: 5)\n";
+     u += "      --user-agent              set custom user-agent string for pool\n";
+-    u += "      --donate-level=N          donate level, default 1%% (1 minute in 100 minutes)\n";
+-    u += "      --donate-over-proxy=N     control donate over xmrig-proxy feature\n";
+ 
+     u += "\nCPU backend:\n";
+ 
+diff --git a/src/crypto/randomx/aes_hash.cpp b/src/crypto/randomx/aes_hash.cpp
+index 6cb081c..4fd7d6a 100644
+--- a/src/crypto/randomx/aes_hash.cpp
++++ b/src/crypto/randomx/aes_hash.cpp
+@@ -328,7 +328,15 @@ void hashAndFillAes1Rx4(void *scratchpad, size_t scratchpadSize, void *hash, voi
+ 	rx_vec_i128 fill_state2 = rx_load_vec_i128((rx_vec_i128*)fill_state + 2);
+ 	rx_vec_i128 fill_state3 = rx_load_vec_i128((rx_vec_i128*)fill_state + 3);
+ 
+-	constexpr int PREFETCH_DISTANCE = 7168;
++#ifndef XMRIG_RX_AES_PREFETCH_DISTANCE
++#define XMRIG_RX_AES_PREFETCH_DISTANCE 7168
++#endif
++	static_assert(XMRIG_RX_AES_PREFETCH_DISTANCE >= 256 &&
++		XMRIG_RX_AES_PREFETCH_DISTANCE <= 8192 &&
++		XMRIG_RX_AES_PREFETCH_DISTANCE % 256 == 0,
++		"AES prefetch distance must be 256..8192 bytes and a multiple of 256");
++	// Keep software AES's small startup self-benchmark unchanged.
++	constexpr int PREFETCH_DISTANCE = softAes == 0 ? XMRIG_RX_AES_PREFETCH_DISTANCE : 7168;
+ 	const char* prefetchPtr = ((const char*)scratchpad) + PREFETCH_DISTANCE;
+ 	scratchpadEnd -= PREFETCH_DISTANCE;
+ 
+diff --git a/src/crypto/randomx/asm/program_read_dataset.inc b/src/crypto/randomx/asm/program_read_dataset.inc
+index 9c61092..f51662f 100644
+--- a/src/crypto/randomx/asm/program_read_dataset.inc
++++ b/src/crypto/randomx/asm/program_read_dataset.inc
+@@ -5,7 +5,7 @@
+ 	xor rbp, rax                       ;# modify "mx"
+ 	mov edx, ebp                       ;# edx = mx
+ 	and edx, RANDOMX_DATASET_BASE_MASK
+-	prefetchnta byte ptr [rdi+rdx]
++	prefetcht0 byte ptr [rdi+rdx]
+ 	xor r9,  qword ptr [rdi+rcx+8]
+ 	xor r10, qword ptr [rdi+rcx+16]
+ 	xor r11, qword ptr [rdi+rcx+24]
+diff --git a/src/crypto/randomx/jit_compiler_x86.cpp b/src/crypto/randomx/jit_compiler_x86.cpp
+index 45cd4fa..f6ccb92 100644
+--- a/src/crypto/randomx/jit_compiler_x86.cpp
++++ b/src/crypto/randomx/jit_compiler_x86.cpp
+@@ -349,7 +349,7 @@ namespace randomx {
+ 
+ 		vm_flags = flags;
+ 
+-		generateProgramPrologue(prog, pcfg);
++		generateProgramPrologue(prog, pcfg, !RandomX_CurrentConfig.Tweak_V2_PREFETCH);
+ 
+ 		if (RandomX_CurrentConfig.Tweak_V2_PREFETCH) {
+ 			emit(codeReadDatasetV2, readDatasetV2Size, code, codePos);
+@@ -438,7 +438,7 @@ namespace randomx {
+ 		}
+ 	}
+ 
+-	void JitCompilerX86::generateProgramPrologue(Program& prog, ProgramConfiguration& pcfg) {
++	void JitCompilerX86::generateProgramPrologue(Program& prog, ProgramConfiguration& pcfg, bool earlyPrefetch) {
+ 		codePos = ADDR(randomx_program_prologue_first_load) - ADDR(randomx_program_prologue);
+ 
+ 		if (RandomX_CurrentConfig.Tweak_V2_AES && !hasAES) {
+@@ -491,6 +491,28 @@ namespace randomx {
+ 			(*gen4)(this, instr4);
+ 		}
+ 
++		if (earlyPrefetch) {
++			// Each CBRANCH marks every register as used at its end. The
++			// maximum below is therefore after the last branch AND the last
++			// writer of either address input. No later branch needs relocating.
++			const uint32_t cut = std::max(registerUsage[pcfg.readReg2], registerUsage[pcfg.readReg3]);
++			constexpr uint32_t hintSize = 25;
++			// Skip short tails: there must be useful independent work left.
++			if ((cut >= codePosFirst) && (codePos >= cut + 64)) {
++				memmove(code + cut + hintSize, code + cut, codePos - cut);
++				uint32_t pos = cut;
++				emit32(0x00c08b41u + (pcfg.readReg2 << 16), code, pos); --pos;
++				emit32(0x00c03341u + (pcfg.readReg3 << 16), code, pos); --pos;
++				// next address = (high32(rbp) XOR low32(r[readReg2])
++				//                 XOR low32(r[readReg3])) & dataset mask.
++				static const uint8_t head[] = {0x48,0x89,0xea,0x48,0xc1,0xea,0x20,0x31,0xc2,0x81,0xe2};
++				emit(head, sizeof(head), code, pos);
++				emit32(CacheLineAlignMask, code, pos);
++				emit32(0x170c180f, code, pos); // prefetcht0 [rdi+rdx]
++				codePos += hintSize;
++			}
++		}
++
+ 		*(uint64_t*)(code + codePos) = 0xc03341c08b41ull + (static_cast<uint64_t>(pcfg.readReg2) << 16) + (static_cast<uint64_t>(pcfg.readReg3) << 40);
+ 		codePos += 6;
+ 	}
+@@ -1062,21 +1084,10 @@ namespace randomx {
+ 			const uint32_t dst = instr.dst;
+ 
+ 			const uint64_t reciprocal = randomx_reciprocal_fast(divisor);
+-			if (imul_rcp_storage_used < 16) {
+-				*(uint64_t*)(imul_rcp_storage) = reciprocal;
+-				*(uint64_t*)(p + pos) = 0x2444AF0F4Cull + (dst << 27) + (static_cast<uint64_t>(248 - imul_rcp_storage_used * 8) << 40);
+-				++imul_rcp_storage_used;
+-				imul_rcp_storage += 11;
+-				pos += 6;
+-			}
+-			else {
+-				*(uint32_t*)(p + pos) = 0xb848;
+-				pos += 2;
+-
+-				emit64(reciprocal, p, pos);
+-
+-				emit32(0xc0af0f4c + (dst << 27), p, pos);
+-			}
++			*(uint32_t*)(p + pos) = 0xb848;
++			pos += 2;
++			emit64(reciprocal, p, pos);
++			emit32(0xc0af0f4c + (dst << 27), p, pos);
+ 
+ 			registerUsage[dst] = pos;
+ 		}
+diff --git a/src/crypto/randomx/jit_compiler_x86.hpp b/src/crypto/randomx/jit_compiler_x86.hpp
+index 3195187..a45bda3 100644
+--- a/src/crypto/randomx/jit_compiler_x86.hpp
++++ b/src/crypto/randomx/jit_compiler_x86.hpp
+@@ -109,7 +109,7 @@ namespace randomx {
+ 		uint8_t* imul_rcp_storage = nullptr;
+ 		uint32_t imul_rcp_storage_used = 0;
+ 
+-		void generateProgramPrologue(Program&, ProgramConfiguration&);
++		void generateProgramPrologue(Program&, ProgramConfiguration&, bool earlyPrefetch = false);
+ 		void generateProgramEpilogue(Program&, ProgramConfiguration&);
+ 		template<bool rax>
+ 		static void genAddressReg(const Instruction&, const uint32_t src, uint8_t* code, uint32_t& codePos);
+diff --git a/src/donate.h b/src/donate.h
+deleted file mode 100644
+index 206b1b8..0000000
+--- a/src/donate.h
++++ /dev/null
+@@ -1,44 +0,0 @@
+-/* XMRig
+- * Copyright (c) 2018-2022 SChernykh   <https://github.com/SChernykh>
+- * Copyright (c) 2016-2022 XMRig       <https://github.com/xmrig>, <support@xmrig.com>
+- *
+- *   This program is free software: you can redistribute it and/or modify
+- *   it under the terms of the GNU General Public License as published by
+- *   the Free Software Foundation, either version 3 of the License, or
+- *   (at your option) any later version.
+- *
+- *   This program is distributed in the hope that it will be useful,
+- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- *   GNU General Public License for more details.
+- *
+- *   You should have received a copy of the GNU General Public License
+- *   along with this program. If not, see <http://www.gnu.org/licenses/>.
+- */
+-
+-#ifndef XMRIG_DONATE_H
+-#define XMRIG_DONATE_H
+-
+-
+-/*
+- * Dev donation.
+- *
+- * Percentage of your hashing power that you want to donate to the developer can be 0% but supports XMRig Development.
+- *
+- * Example of how it works for the setting of 1%:
+- * Your miner will mine into your usual pool for a random time (in a range from 49.5 to 148.5 minutes),
+- * then switch to the developer's pool for 1 minute, then switch again to your pool for 99 minutes
+- * and then switch again to developer's pool for 1 minute; these rounds will continue until the miner stops.
+- *
+- * Randomised only on the first round to prevent waves on the donation pool.
+- *
+- * Switching is instant and only happens after a successful connection, so you never lose any hashes.
+- *
+- * If you plan on changing donations to 0%, please consider making a one-off donation to my wallet:
+- * XMR: 48edfHu7V9Z84YzzMa6fUueoELZ9ZRXq9VetWzYGzKt52XU5xvqgzYnDK9URnRoJMk1j8nLwEVsaSWJ4fhdUyZijBGUicoD
+- */
+-constexpr const int kDefaultDonateLevel = 1;
+-constexpr const int kMinimumDonateLevel = 1;
+-
+-
+-#endif // XMRIG_DONATE_H
+diff --git a/src/net/Network.cpp b/src/net/Network.cpp
+index 0ca1914..415b65e 100644
+--- a/src/net/Network.cpp
++++ b/src/net/Network.cpp
+@@ -26,6 +26,7 @@
+ #include "backend/common/Tags.h"
+ #include "base/io/log/Log.h"
+ #include "base/io/log/Tags.h"
++#include "base/kernel/interfaces/IStrategy.h"
+ #include "base/net/stratum/Client.h"
+ #include "base/net/stratum/NetworkState.h"
+ #include "base/net/stratum/SubmitResult.h"
+@@ -36,7 +37,6 @@
+ #include "core/Miner.h"
+ #include "net/JobResult.h"
+ #include "net/JobResults.h"
+-#include "net/strategies/DonateStrategy.h"
+ 
+ 
+ #ifdef XMRIG_FEATURE_API
+@@ -72,10 +72,6 @@ xmrig::Network::Network(Controller *controller) :
+     const Pools &pools = controller->config()->pools();
+     m_strategy = pools.createStrategy(m_state);
+ 
+-    if (pools.donateLevel() > 0) {
+-        m_donate = new DonateStrategy(controller, this);
+-    }
+-
+     m_timer = new Timer(this, kTickInterval, kTickInterval);
+ }
+ 
+@@ -85,7 +81,6 @@ xmrig::Network::~Network()
+     JobResults::stop();
+ 
+     delete m_timer;
+-    delete m_donate;
+     delete m_strategy;
+     delete m_state;
+ }
+@@ -116,13 +111,8 @@ void xmrig::Network::execCommand(char command)
+ }
+ 
+ 
+-void xmrig::Network::onActive(IStrategy *strategy, IClient *client)
++void xmrig::Network::onActive(IStrategy *, IClient *client)
+ {
+-    if (m_donate && m_donate == strategy) {
+-        LOG_NOTICE("%s " WHITE_BOLD("dev donate started"), Tags::network());
+-        return;
+-    }
+-
+     const auto &pool = client->pool();
+ 
+ #   ifdef XMRIG_FEATURE_BENCHMARK
+@@ -163,23 +153,14 @@ void xmrig::Network::onConfigChanged(Config *config, Config *previousConfig)
+ }
+ 
+ 
+-void xmrig::Network::onJob(IStrategy *strategy, IClient *client, const Job &job, const rapidjson::Value &)
++void xmrig::Network::onJob(IStrategy *, IClient *client, const Job &job, const rapidjson::Value &)
+ {
+-    if (m_donate && m_donate->isActive() && m_donate != strategy) {
+-        return;
+-    }
+-
+-    setJob(client, job, m_donate == strategy);
++    setJob(client, job);
+ }
+ 
+ 
+ void xmrig::Network::onJobResult(const JobResult &result)
+ {
+-    if (result.index == 1 && m_donate) {
+-        m_donate->submit(result);
+-        return;
+-    }
+-
+     m_strategy->submit(result);
+ }
+ 
+@@ -208,13 +189,8 @@ void xmrig::Network::onLogin(IStrategy *, IClient *client, rapidjson::Document &
+ }
+ 
+ 
+-void xmrig::Network::onPause(IStrategy *strategy)
++void xmrig::Network::onPause(IStrategy *)
+ {
+-    if (m_donate && m_donate == strategy) {
+-        LOG_NOTICE("%s " WHITE_BOLD("dev donate finished"), Tags::network());
+-        m_strategy->resume();
+-    }
+-
+     if (!m_strategy->isActive()) {
+         LOG_ERR("%s " RED("no active pools, stop mining"), Tags::network());
+ 
+@@ -262,7 +238,7 @@ void xmrig::Network::onRequest(IApiRequest &request)
+ #endif
+ 
+ 
+-void xmrig::Network::setJob(IClient *client, const Job &job, bool donate)
++void xmrig::Network::setJob(IClient *client, const Job &job)
+ {
+ #   ifdef XMRIG_FEATURE_BENCHMARK
+     if (!BenchState::size())
+@@ -291,11 +267,7 @@ void xmrig::Network::setJob(IClient *client, const Job &job, bool donate)
+                  Tags::network(), client->pool().host().data(), client->pool().port(), zmq_buf, diff, scale, job.algorithm().name(), height_buf, tx_buf);
+     }
+ 
+-    if (!donate && m_donate) {
+-        static_cast<DonateStrategy *>(m_donate)->update(client, job);
+-    }
+-
+-    m_controller->miner()->setJob(job, donate);
++    m_controller->miner()->setJob(job);
+ }
+ 
+ 
+@@ -305,10 +277,6 @@ void xmrig::Network::tick()
+ 
+     m_strategy->tick(now);
+ 
+-    if (m_donate) {
+-        m_donate->tick(now);
+-    }
+-
+ #   ifdef XMRIG_FEATURE_API
+     m_controller->api()->tick();
+ #   endif
+diff --git a/src/net/Network.h b/src/net/Network.h
+index b936c0d..01c4fb2 100644
+--- a/src/net/Network.h
++++ b/src/net/Network.h
+@@ -73,7 +73,7 @@ protected:
+ private:
+     constexpr static int kTickInterval = 1 * 1000;
+ 
+-    void setJob(IClient *client, const Job &job, bool donate);
++    void setJob(IClient *client, const Job &job);
+     void tick();
+ 
+ #   ifdef XMRIG_FEATURE_API
+@@ -82,7 +82,6 @@ private:
+ #   endif
+ 
+     Controller *m_controller;
+-    IStrategy *m_donate     = nullptr;
+     IStrategy *m_strategy   = nullptr;
+     NetworkState *m_state   = nullptr;
+     Timer *m_timer          = nullptr;
+diff --git a/src/net/strategies/DonateStrategy.cpp b/src/net/strategies/DonateStrategy.cpp
+deleted file mode 100644
+index 1f647ae..0000000
+--- a/src/net/strategies/DonateStrategy.cpp
++++ /dev/null
+@@ -1,372 +0,0 @@
+-/* XMRig
+- * Copyright (c) 2018-2023 SChernykh   <https://github.com/SChernykh>
+- * Copyright (c) 2016-2023 XMRig       <https://github.com/xmrig>, <support@xmrig.com>
+- *
+- *   This program is free software: you can redistribute it and/or modify
+- *   it under the terms of the GNU General Public License as published by
+- *   the Free Software Foundation, either version 3 of the License, or
+- *   (at your option) any later version.
+- *
+- *   This program is distributed in the hope that it will be useful,
+- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- *   GNU General Public License for more details.
+- *
+- *   You should have received a copy of the GNU General Public License
+- *   along with this program. If not, see <http://www.gnu.org/licenses/>.
+- */
+-
+-#include <algorithm>
+-#include <cassert>
+-#include <iterator>
+-
+-
+-#include "net/strategies/DonateStrategy.h"
+-#include "3rdparty/rapidjson/document.h"
+-#include "base/crypto/keccak.h"
+-#include "base/kernel/Platform.h"
+-#include "base/net/stratum/Client.h"
+-#include "base/net/stratum/Job.h"
+-#include "base/net/stratum/strategies/FailoverStrategy.h"
+-#include "base/net/stratum/strategies/SinglePoolStrategy.h"
+-#include "base/tools/Buffer.h"
+-#include "base/tools/Cvt.h"
+-#include "base/tools/Timer.h"
+-#include "core/config/Config.h"
+-#include "core/Controller.h"
+-#include "core/Miner.h"
+-#include "net/Network.h"
+-
+-
+-namespace xmrig {
+-
+-static inline double randomf(double min, double max)                 { return (max - min) * (((static_cast<double>(rand())) / static_cast<double>(RAND_MAX))) + min; }
+-static inline uint64_t random(uint64_t base, double min, double max) { return static_cast<uint64_t>(base * randomf(min, max)); }
+-
+-static const char *kDonateHost = "donate.v2.xmrig.com";
+-#ifdef XMRIG_FEATURE_TLS
+-static const char *kDonateHostTls = "donate.ssl.xmrig.com";
+-#endif
+-
+-} // namespace xmrig
+-
+-
+-xmrig::DonateStrategy::DonateStrategy(Controller *controller, IStrategyListener *listener) :
+-    m_donateTime(static_cast<uint64_t>(controller->config()->pools().donateLevel()) * 60 * 1000),
+-    m_idleTime((100 - static_cast<uint64_t>(controller->config()->pools().donateLevel())) * 60 * 1000),
+-    m_controller(controller),
+-    m_listener(listener)
+-{
+-    uint8_t hash[200];
+-
+-    const auto &user = controller->config()->pools().data().front().user();
+-    keccak(reinterpret_cast<const uint8_t *>(user.data()), user.size(), hash);
+-    Cvt::toHex(m_userId, sizeof(m_userId), hash, 32);
+-
+-#   if defined XMRIG_ALGO_KAWPOW || defined XMRIG_ALGO_GHOSTRIDER
+-    constexpr Pool::Mode mode = Pool::MODE_AUTO_ETH;
+-#   else
+-    constexpr Pool::Mode mode = Pool::MODE_POOL;
+-#   endif
+-
+-#   ifdef XMRIG_FEATURE_TLS
+-    m_pools.emplace_back(kDonateHostTls, 443, m_userId, nullptr, nullptr, 0, true, true, mode);
+-#   endif
+-    m_pools.emplace_back(kDonateHost, 3333, m_userId, nullptr, nullptr, 0, true, false, mode);
+-
+-    if (m_pools.size() > 1) {
+-        m_strategy = new FailoverStrategy(m_pools, 10, 2, this, true);
+-    }
+-    else {
+-        m_strategy = new SinglePoolStrategy(m_pools.front(), 10, 2, this, true);
+-    }
+-
+-    m_timer = new Timer(this);
+-
+-    setState(STATE_IDLE);
+-}
+-
+-
+-xmrig::DonateStrategy::~DonateStrategy()
+-{
+-    delete m_timer;
+-    delete m_strategy;
+-
+-    if (m_proxy) {
+-        m_proxy->deleteLater();
+-    }
+-}
+-
+-
+-void xmrig::DonateStrategy::update(IClient *client, const Job &job)
+-{
+-    setAlgo(job.algorithm());
+-    setProxy(client->pool().proxy());
+-
+-    m_diff   = job.diff();
+-    m_height = job.height();
+-    m_seed   = job.seed();
+-}
+-
+-
+-int64_t xmrig::DonateStrategy::submit(const JobResult &result)
+-{
+-    return m_proxy ? m_proxy->submit(result) : m_strategy->submit(result);
+-}
+-
+-
+-void xmrig::DonateStrategy::connect()
+-{
+-    m_proxy = createProxy();
+-    if (m_proxy) {
+-        m_proxy->connect();
+-    }
+-
+-    else {
+-        m_strategy->connect();
+-    }
+-}
+-
+-
+-void xmrig::DonateStrategy::setAlgo(const xmrig::Algorithm &algo)
+-{
+-    m_algorithm = algo;
+-
+-    m_strategy->setAlgo(algo);
+-}
+-
+-
+-void xmrig::DonateStrategy::setProxy(const ProxyUrl &proxy)
+-{
+-    m_strategy->setProxy(proxy);
+-}
+-
+-
+-void xmrig::DonateStrategy::stop()
+-{
+-    m_timer->stop();
+-    m_strategy->stop();
+-}
+-
+-
+-void xmrig::DonateStrategy::tick(uint64_t now)
+-{
+-    m_now = now;
+-
+-    m_strategy->tick(now);
+-
+-    if (m_proxy) {
+-        m_proxy->tick(now);
+-    }
+-
+-    if (state() == STATE_WAIT && now > m_timestamp) {
+-        setState(STATE_IDLE);
+-    }
+-}
+-
+-
+-void xmrig::DonateStrategy::onActive(IStrategy *, IClient *client)
+-{
+-    if (isActive()) {
+-        return;
+-    }
+-
+-    setState(STATE_ACTIVE);
+-    m_listener->onActive(this, client);
+-}
+-
+-
+-void xmrig::DonateStrategy::onPause(IStrategy *)
+-{
+-}
+-
+-
+-void xmrig::DonateStrategy::onClose(IClient *, int failures)
+-{
+-    if (failures == 2 && m_controller->config()->pools().proxyDonate() == Pools::PROXY_DONATE_AUTO) {
+-        m_proxy->deleteLater();
+-        m_proxy = nullptr;
+-
+-        m_strategy->connect();
+-    }
+-}
+-
+-
+-void xmrig::DonateStrategy::onLogin(IClient *, rapidjson::Document &doc, rapidjson::Value &params)
+-{
+-    using namespace rapidjson;
+-    auto &allocator = doc.GetAllocator();
+-
+-#   ifdef XMRIG_FEATURE_TLS
+-    if (m_tls) {
+-        char buf[40] = { 0 };
+-        snprintf(buf, sizeof(buf), "stratum+ssl://%s", m_pools[0].url().data());
+-        params.AddMember("url", Value(buf, allocator), allocator);
+-    }
+-    else {
+-        params.AddMember("url", m_pools[1].url().toJSON(), allocator);
+-    }
+-#   else
+-    params.AddMember("url", m_pools[0].url().toJSON(), allocator);
+-#   endif
+-
+-    setParams(doc, params);
+-}
+-
+-
+-void xmrig::DonateStrategy::onLogin(IStrategy *, IClient *, rapidjson::Document &doc, rapidjson::Value &params)
+-{
+-    setParams(doc, params);
+-}
+-
+-
+-void xmrig::DonateStrategy::onLoginSuccess(IClient *client)
+-{
+-    if (isActive()) {
+-        return;
+-    }
+-
+-    setState(STATE_ACTIVE);
+-    m_listener->onActive(this, client);
+-}
+-
+-
+-void xmrig::DonateStrategy::onVerifyAlgorithm(const IClient *client, const Algorithm &algorithm, bool *ok)
+-{
+-    m_listener->onVerifyAlgorithm(this, client, algorithm, ok);
+-}
+-
+-
+-void xmrig::DonateStrategy::onVerifyAlgorithm(IStrategy *, const  IClient *client, const Algorithm &algorithm, bool *ok)
+-{
+-    m_listener->onVerifyAlgorithm(this, client, algorithm, ok);
+-}
+-
+-
+-void xmrig::DonateStrategy::onTimer(const Timer *)
+-{
+-    setState(isActive() ? STATE_WAIT : STATE_CONNECT);
+-}
+-
+-
+-xmrig::IClient *xmrig::DonateStrategy::createProxy()
+-{
+-    if (m_controller->config()->pools().proxyDonate() == Pools::PROXY_DONATE_NONE) {
+-        return nullptr;
+-    }
+-
+-    IStrategy *strategy = m_controller->network()->strategy();
+-    if (!strategy->isActive() || !strategy->client()->hasExtension(IClient::EXT_CONNECT)) {
+-        return nullptr;
+-    }
+-
+-    const IClient *client = strategy->client();
+-    m_tls                 = client->hasExtension(IClient::EXT_TLS);
+-
+-    Pool pool(client->pool().proxy().isValid() ? client->pool().host() : client->ip(), client->pool().port(), m_userId, client->pool().password(), client->pool().spendSecretKey(), 0, true, client->isTLS(), Pool::MODE_POOL);
+-    pool.setAlgo(client->pool().algorithm());
+-    pool.setProxy(client->pool().proxy());
+-
+-    IClient *proxy = new Client(-1, Platform::userAgent(), this);
+-    proxy->setPool(pool);
+-    proxy->setQuiet(true);
+-
+-    return proxy;
+-}
+-
+-
+-void xmrig::DonateStrategy::idle(double min, double max)
+-{
+-    m_timer->start(random(m_idleTime, min, max), 0);
+-}
+-
+-
+-void xmrig::DonateStrategy::setJob(IClient *client, const Job &job, const rapidjson::Value &params)
+-{
+-    if (isActive()) {
+-        m_listener->onJob(this, client, job, params);
+-    }
+-}
+-
+-
+-void xmrig::DonateStrategy::setParams(rapidjson::Document &doc, rapidjson::Value &params)
+-{
+-    using namespace rapidjson;
+-    auto &allocator = doc.GetAllocator();
+-    auto algorithms = m_controller->miner()->algorithms();
+-
+-    const size_t index = static_cast<size_t>(std::distance(algorithms.begin(), std::find(algorithms.begin(), algorithms.end(), m_algorithm)));
+-    if (index > 0 && index < algorithms.size()) {
+-        std::swap(algorithms[0], algorithms[index]);
+-    }
+-
+-    Value algo(kArrayType);
+-
+-    for (const auto &a : algorithms) {
+-        algo.PushBack(StringRef(a.name()), allocator);
+-    }
+-
+-    params.AddMember("algo",    algo, allocator);
+-    params.AddMember("diff",    m_diff, allocator);
+-    params.AddMember("height",  m_height, allocator);
+-
+-    if (!m_seed.empty()) {
+-       params.AddMember("seed_hash", Cvt::toHex(m_seed, doc), allocator);
+-    }
+-}
+-
+-
+-void xmrig::DonateStrategy::setResult(IClient *client, const SubmitResult &result, const char *error)
+-{
+-    m_listener->onResultAccepted(this, client, result, error);
+-}
+-
+-
+-void xmrig::DonateStrategy::setState(State state)
+-{
+-    constexpr const uint64_t waitTime = 3000;
+-
+-    assert(m_state != state && state != STATE_NEW);
+-    if (m_state == state) {
+-        return;
+-    }
+-
+-    const State prev = m_state;
+-    m_state = state;
+-
+-    switch (state) {
+-    case STATE_NEW:
+-        break;
+-
+-    case STATE_IDLE:
+-        if (prev == STATE_NEW) {
+-            idle(0.5, 1.5);
+-        }
+-        else if (prev == STATE_CONNECT) {
+-            m_timer->start(20000, 0);
+-        }
+-        else {
+-            m_strategy->stop();
+-            if (m_proxy) {
+-                m_proxy->deleteLater();
+-                m_proxy = nullptr;
+-            }
+-
+-            idle(0.8, 1.2);
+-        }
+-        break;
+-
+-    case STATE_CONNECT:
+-        connect();
+-        break;
+-
+-    case STATE_ACTIVE:
+-        m_timer->start(m_donateTime, 0);
+-        break;
+-
+-    case STATE_WAIT:
+-        m_timestamp = m_now + waitTime;
+-        m_listener->onPause(this);
+-        break;
+-    }
+-}
+diff --git a/src/net/strategies/DonateStrategy.h b/src/net/strategies/DonateStrategy.h
+deleted file mode 100644
+index 80ec45c..0000000
+--- a/src/net/strategies/DonateStrategy.h
++++ /dev/null
+@@ -1,117 +0,0 @@
+-/* XMRig
+- * Copyright (c) 2018-2023 SChernykh   <https://github.com/SChernykh>
+- * Copyright (c) 2016-2023 XMRig       <https://github.com/xmrig>, <support@xmrig.com>
+- *
+- *   This program is free software: you can redistribute it and/or modify
+- *   it under the terms of the GNU General Public License as published by
+- *   the Free Software Foundation, either version 3 of the License, or
+- *   (at your option) any later version.
+- *
+- *   This program is distributed in the hope that it will be useful,
+- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- *   GNU General Public License for more details.
+- *
+- *   You should have received a copy of the GNU General Public License
+- *   along with this program. If not, see <http://www.gnu.org/licenses/>.
+- */
+-
+-#ifndef XMRIG_DONATESTRATEGY_H
+-#define XMRIG_DONATESTRATEGY_H
+-
+-
+-#include "base/kernel/interfaces/IClientListener.h"
+-#include "base/kernel/interfaces/IStrategy.h"
+-#include "base/kernel/interfaces/IStrategyListener.h"
+-#include "base/kernel/interfaces/ITimerListener.h"
+-#include "base/net/stratum/Pool.h"
+-#include "base/tools/Buffer.h"
+-
+-
+-namespace xmrig {
+-
+-
+-class Client;
+-class Controller;
+-
+-
+-class DonateStrategy : public IStrategy, public IStrategyListener, public ITimerListener, public IClientListener
+-{
+-public:
+-    XMRIG_DISABLE_COPY_MOVE_DEFAULT(DonateStrategy)
+-
+-    DonateStrategy(Controller *controller, IStrategyListener *listener);
+-    ~DonateStrategy() override;
+-
+-    void update(IClient *client, const Job &job);
+-
+-protected:
+-    inline bool isActive() const override                                                                              { return state() == STATE_ACTIVE; }
+-    inline IClient *client() const override                                                                            { return m_proxy ? m_proxy : m_strategy->client(); }
+-    inline void onJob(IStrategy *, IClient *client, const Job &job, const rapidjson::Value &params) override           { setJob(client, job, params); }
+-    inline void onJobReceived(IClient *client, const Job &job, const rapidjson::Value &params) override                { setJob(client, job, params); }
+-    inline void onResultAccepted(IClient *client, const SubmitResult &result, const char *error) override              { setResult(client, result, error); }
+-    inline void onResultAccepted(IStrategy *, IClient *client, const SubmitResult &result, const char *error) override { setResult(client, result, error); }
+-    inline void resume() override                                                                                      {}
+-
+-    int64_t submit(const JobResult &result) override;
+-    void connect() override;
+-    void setAlgo(const Algorithm &algo) override;
+-    void setProxy(const ProxyUrl &proxy) override;
+-    void stop() override;
+-    void tick(uint64_t now) override;
+-
+-    void onActive(IStrategy *strategy, IClient *client) override;
+-    void onPause(IStrategy *strategy) override;
+-
+-    void onClose(IClient *client, int failures) override;
+-    void onLogin(IClient *client, rapidjson::Document &doc, rapidjson::Value &params) override;
+-    void onLogin(IStrategy *strategy, IClient *client, rapidjson::Document &doc, rapidjson::Value &params) override;
+-    void onLoginSuccess(IClient *client) override;
+-    void onVerifyAlgorithm(const IClient *client, const Algorithm &algorithm, bool *ok) override;
+-    void onVerifyAlgorithm(IStrategy *strategy, const  IClient *client, const Algorithm &algorithm, bool *ok) override;
+-
+-    void onTimer(const Timer *timer) override;
+-
+-private:
+-    enum State {
+-        STATE_NEW,
+-        STATE_IDLE,
+-        STATE_CONNECT,
+-        STATE_ACTIVE,
+-        STATE_WAIT
+-    };
+-
+-    inline State state() const { return m_state; }
+-
+-    IClient *createProxy();
+-    void idle(double min, double max);
+-    void setJob(IClient *client, const Job &job, const rapidjson::Value &params);
+-    void setParams(rapidjson::Document &doc, rapidjson::Value &params);
+-    void setResult(IClient *client, const SubmitResult &result, const char *error);
+-    void setState(State state);
+-
+-    Algorithm m_algorithm;
+-    bool m_tls                      = false;
+-    Buffer m_seed;
+-    char m_userId[65]               = { 0 };
+-    const uint64_t m_donateTime;
+-    const uint64_t m_idleTime;
+-    Controller *m_controller;
+-    IClient *m_proxy                = nullptr;
+-    IStrategy *m_strategy           = nullptr;
+-    IStrategyListener *m_listener;
+-    State m_state                   = STATE_NEW;
+-    std::vector<Pool> m_pools;
+-    Timer *m_timer                  = nullptr;
+-    uint64_t m_diff                 = 0;
+-    uint64_t m_height               = 0;
+-    uint64_t m_now                  = 0;
+-    uint64_t m_timestamp            = 0;
+-};
+-
+-
+-} // namespace xmrig
+-
+-
+-#endif // XMRIG_DONATESTRATEGY_H
