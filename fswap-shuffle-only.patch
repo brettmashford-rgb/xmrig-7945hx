@@ -1,0 +1,33 @@
+--- a/src/crypto/randomx/jit_compiler_x86.cpp
++++ b/src/crypto/randomx/jit_compiler_x86.cpp
+@@ -1226,13 +1226,29 @@
+ 		codePos = pos;
+ 	}
+ 
++#ifdef RX_FSWAP_TEST
++    bool rx_fswap_force_fallback = false;
++    unsigned rx_fswap_uses = 0;
++#endif
+ 	void JitCompilerX86::h_FSWAP_R(const Instruction& instr) {
+ 		uint8_t* const p = code;
+ 		uint32_t pos = codePos;
+ 
+ 		const uint64_t dst = instr.dst;
+ 
+-		*(uint64_t*)(p + pos) = 0x01c0c60f66ull + (((dst << 3) + dst) << 24);
++#ifdef RX_FSWAP_TEST
++        if (rx_fswap_force_fallback) {
++            *(uint64_t*)(p + pos) = 0x01c0c60f66ull + (((dst << 3) + dst) << 24);
++        }
++        else
++#endif
++        {
++            // PSHUFD 0x4e swaps the 64-bit halves without changing their bits.
++            *(uint64_t*)(p + pos) = 0x4ec0700f66ull + (((dst << 3) + dst) << 24);
++#ifdef RX_FSWAP_TEST
++            ++rx_fswap_uses;
++#endif
++        }
+ 		pos += 5;
+ 
+ 		codePos = pos;
