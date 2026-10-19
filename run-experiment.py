@@ -14,6 +14,7 @@ import time
 
 BASE = Path(__file__).resolve().parent
 EXPERIMENTS = {
+    'branch-align32': ('build-jit-rcp-branch-align32.sh', 'build-7168-jit-rcp-branch-align32-r2'),
     'align-swap': ('build-jit-rcp-align-swap.sh', 'build-7168-jit-rcp-align-swap-r2'),
     'body-align32': ('build-jit-rcp-body-align32.sh', 'build-7168-jit-rcp-body-align32-r2'),
     'fswap-shuffle': ('build-jit-rcp-fswap-shuffle.sh', 'build-7168-jit-rcp-fswap-shuffle-r2'),
