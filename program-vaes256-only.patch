@@ -1,0 +1,56 @@
+--- a/src/crypto/randomx/aes_hash.cpp
++++ b/src/crypto/randomx/aes_hash.cpp
+@@ -203,6 +203,31 @@
+ static constexpr randomx::Instruction inst{ 0xFF, 7, 7, 0xFF, 0xFFFFFFFFU };
+ alignas(16) static const randomx::Instruction inst_mask[2] = { inst, inst };
+ 
++#if defined(__GNUC__) && defined(__x86_64__)
++#include <immintrin.h>
++__attribute__((target("avx2,vaes"))) static inline __m256i programPair(__m128i a,__m128i b){return _mm256_set_m128i(b,a);}
++__attribute__((target("avx2,vaes"), noinline)) void fillAes4Rx4_VAES256(void* state,size_t outputSize,void* buffer){
++ auto input=(const __m128i*)state;auto output=(uint8_t*)buffer;
++ __m256i even=programPair(_mm_loadu_si128(input),_mm_loadu_si128(input+2));
++ __m256i odd=programPair(_mm_loadu_si128(input+1),_mm_loadu_si128(input+3));
++ __m256i keys[4];for(int i=0;i<4;++i)keys[i]=programPair(RandomX_CurrentConfig.fillAes4Rx4_Key[i],RandomX_CurrentConfig.fillAes4Rx4_Key[i+4]);
++ // Instruction byte mask: ff 07 07 ff ff ff ff ff, repeated.
++ const __m256i instructionMask=_mm256_set1_epi64x(static_cast<long long>(0xffffffffFF0707ffULL));
++ for(size_t block=0;block<outputSize/64;++block){
++  for(int round=0;round<4;++round){even=_mm256_aesdec_epi128(even,keys[round]);odd=_mm256_aesenc_epi128(odd,keys[round]);}
++  __m256i lo=_mm256_permute2x128_si256(even,odd,0x20),hi=_mm256_permute2x128_si256(even,odd,0x31);
++  if(block>=2){lo=_mm256_and_si256(lo,instructionMask);hi=_mm256_and_si256(hi,instructionMask);}
++  _mm256_storeu_si256((__m256i*)(output+block*64),lo);_mm256_storeu_si256((__m256i*)(output+block*64+32),hi);
++ }
++ _mm256_zeroupper();
++}
++
++#ifdef RX_PROGRAM_VAES_TEST
++bool rx_program_vaes_force_fallback = false;
++unsigned rx_program_vaes_uses = 0;
++#endif
++#endif
++
+ template<int softAes>
+ void fillAes4Rx4(void *state, size_t outputSize, void *buffer)
+ {
+@@ -218,6 +243,21 @@
+ 	}
+ #endif
+ 
++#if defined(__GNUC__) && defined(__x86_64__)
++    static const bool programVaesSupported = __builtin_cpu_supports("avx2") && __builtin_cpu_supports("vaes");
++    if (softAes == 0 && programVaesSupported && outputSize >= 128 && outputSize % 64 == 0
++#ifdef RX_PROGRAM_VAES_TEST
++        && !rx_program_vaes_force_fallback
++#endif
++    ) {
++#ifdef RX_PROGRAM_VAES_TEST
++        ++rx_program_vaes_uses;
++#endif
++        fillAes4Rx4_VAES256(state, outputSize, buffer);
++        return;
++    }
++#endif
++
+ 	const uint8_t* outptr = (uint8_t*)buffer;
+ 	const uint8_t* outputEnd = outptr + outputSize;
+ 

@@ -14,6 +14,7 @@ import time
 
 BASE = Path(__file__).resolve().parent
 EXPERIMENTS = {
+    'program-vaes256': ('build-jit-rcp-program-vaes256.sh', 'build-7168-jit-rcp-program-vaes256'),
     'template-cache': ('build-jit-rcp-template-cache.sh', 'build-7168-jit-rcp-template-cache'),
     'operand-lean': ('build-jit-rcp-operand-lean.sh', 'build-7168-jit-rcp-operand-lean'),
     'operand-hoist': ('build-jit-rcp-operand-hoist.sh', 'build-7168-jit-rcp-operand-hoist'),
