@@ -1,0 +1,81 @@
+--- a/src/crypto/randomx/jit_compiler_x86.cpp
++++ b/src/crypto/randomx/jit_compiler_x86.cpp
+@@ -61,6 +61,7 @@
+ #ifdef RX_POINTER_TEST
+ int rx_pointer_test_mode = 0;
+ unsigned rx_pointer_test_uses = 0;
++unsigned rx_template_test_copies = 0;
+ #endif
+ 
+ static bool hugePagesJIT = false;
+@@ -321,6 +322,7 @@
+ 		else {
+ 			memcpy(code + prologueSize, codeLoopLoad, loopLoadSize);
+ 		}
++        cachedLoopLoadKind = hasXOP ? 2 : 1;
+ 		memcpy(code + epilogueOffset, codeEpilogue, epilogueSize);
+ 
+ 		codePosFirst = prologueSize + (hasXOP ? loopLoadXOPSize : loopLoadSize);
+@@ -396,6 +398,7 @@
+ 
+ 	template<size_t N>
+ 	void JitCompilerX86::generateSuperscalarHash(SuperscalarProgram(&programs)[N]) {
++        cachedLoopLoadKind = 0;
+ 		uint8_t* p = code;
+ 		if (initDatasetAVX2) {
+ 			codePos = 0;
+@@ -453,6 +456,7 @@
+ 	void JitCompilerX86::generateSuperscalarHash(SuperscalarProgram(&programs)[RANDOMX_CACHE_MAX_ACCESSES]);
+ 
+ 	void JitCompilerX86::generateDatasetInitCode() {
++        cachedLoopLoadKind = 0;
+ 		// AVX2 code is generated in generateSuperscalarHash()
+ 		if (!initDatasetAVX2) {
+ 			memcpy(code, codeDatasetInit, datasetInitSize);
+@@ -463,13 +467,25 @@
+         // Select on each program, so light/V2 programs always restore the original path.
+         const uint8_t* loopLoad = hasXOP ? codeLoopLoadXOP : codeLoopLoad;
+         size_t loadSize = hasXOP ? loopLoadXOPSize : loopLoadSize;
++        uint32_t selectedKind = hasXOP ? 2 : 1;
+ #if defined(__GNUC__) && defined(__x86_64__)
+         if (registerPointers) {
++            selectedKind = 3;
+             loopLoad = reinterpret_cast<const uint8_t*>(&randomx_pointer_load);
+             loadSize = reinterpret_cast<const uint8_t*>(&randomx_pointer_load_end) - loopLoad;
+         }
+ #endif
+-        memcpy(code + prologueSize, loopLoad, loadSize);
++        if (cachedLoopLoadKind != selectedKind
++#ifdef RX_POINTER_TEST
++            || rx_pointer_test_mode == 2
++#endif
++        ) {
++            memcpy(code + prologueSize, loopLoad, loadSize);
++            cachedLoopLoadKind = selectedKind;
++#ifdef RX_POINTER_TEST
++            ++rx_template_test_copies;
++#endif
++        }
+         codePosFirst = prologueSize + loadSize;
+ 		codePos = ADDR(randomx_program_prologue_first_load) - ADDR(randomx_program_prologue);
+ 
+@@ -491,7 +507,7 @@
+ #		endif
+ 
+ 		imul_rcp_storage = code + (ADDR(randomx_program_imul_rcp_store) - codePrologue) + 2;
+-		imul_rcp_storage_used = 0;
++
+ 
+ 		memcpy(imul_rcp_storage - 34, &pcfg.eMask, sizeof(pcfg.eMask));
+ 		codePos = codePosFirst;
+--- a/src/crypto/randomx/jit_compiler_x86.hpp
++++ b/src/crypto/randomx/jit_compiler_x86.hpp
+@@ -107,7 +107,7 @@
+ 		size_t allocatedSize = 0;
+ 
+ 		uint8_t* imul_rcp_storage = nullptr;
+-		uint32_t imul_rcp_storage_used = 0;
++		uint32_t cachedLoopLoadKind = 0;
+ 
+ 		void generateProgramPrologue(Program&, ProgramConfiguration&, bool registerPointers = false);
+ 		void generateProgramEpilogue(Program&, ProgramConfiguration&, bool registerPointers = false);
