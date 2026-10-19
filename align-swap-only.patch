@@ -1,0 +1,79 @@
+--- a/src/crypto/randomx/jit_compiler_x86.cpp
++++ b/src/crypto/randomx/jit_compiler_x86.cpp
+@@ -77,6 +77,12 @@
+ }
+ 
+ namespace randomx {
++#ifdef RX_BODYALIGN_TEST
++    bool rx_bodyalign_force_fallback = false;
++    unsigned rx_bodyalign_uses = 0;
++    uintptr_t rx_bodyalign_last_start = 0;
++#endif
++
+ 	/*
+ 
+ 	REGISTER ALLOCATION:
+@@ -471,6 +477,24 @@
+ #endif
+         memcpy(code + prologueSize, loopLoad, loadSize);
+         codePosFirst = prologueSize + loadSize;
++        bool alignBody = registerPointers;
++#ifdef RX_BODYALIGN_TEST
++        if (rx_bodyalign_force_fallback) alignBody = false;
++#endif
++        if (alignBody) {
++            // Align the generated VM body, retaining the existing outer-loop target.
++            size_t padding = (32 - (reinterpret_cast<uintptr_t>(code + codePosFirst) & 31)) & 31;
++            while (padding) {
++                const size_t n = padding > 9 ? 9 : padding;
++                memcpy(code + codePosFirst, NOPX[n - 1], n);
++                codePosFirst += n;
++                padding -= n;
++            }
++#ifdef RX_BODYALIGN_TEST
++            ++rx_bodyalign_uses;
++            rx_bodyalign_last_start = reinterpret_cast<uintptr_t>(code + codePosFirst);
++#endif
++        }
+ 		codePos = ADDR(randomx_program_prologue_first_load) - ADDR(randomx_program_prologue);
+ 
+ 		if (RandomX_CurrentConfig.Tweak_V2_AES && !hasAES) {
+@@ -1209,6 +1233,10 @@
+ 		codePos = pos;
+ 	}
+ 
++#ifdef RX_SWAP_TEST
++    bool rx_swap_force_fallback = false;
++    unsigned rx_swap_uses = 0;
++#endif
+ 	void JitCompilerX86::h_ISWAP_R(const Instruction& instr) {
+ 		uint8_t* const p = code;
+ 		uint32_t pos = codePos;
+@@ -1217,8 +1245,25 @@
+ 		const uint32_t dst = instr.dst;
+ 
+ 		if (src != dst) {
+-			*(uint32_t*)(p + pos) = 0xc0874d + (((dst << 3) + src) << 16);
+-			pos += 3;
++#ifdef RX_SWAP_TEST
++            if (rx_swap_force_fallback) {
++                *(uint32_t*)(p + pos) = 0xc0874d + (((dst << 3) + src) << 16);
++                pos += 3;
++            }
++            else
++#endif
++            {
++                // RAX is a temporary between VM instructions; preserve all VM registers.
++                *(uint32_t*)(p + pos) = 0xc08b49 + (dst << 16); // mov rax, dst
++                pos += 3;
++                *(uint32_t*)(p + pos) = 0xc08b4d + (((dst << 3) + src) << 16); // mov dst, src
++                pos += 3;
++                *(uint32_t*)(p + pos) = 0xc08b4c + (src << 19);
++                pos += 3;
++#ifdef RX_SWAP_TEST
++                ++rx_swap_uses;
++#endif
++            }
+ 			registerUsage[dst] = pos;
+ 			registerUsage[src] = pos;
+ 		}
