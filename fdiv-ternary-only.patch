@@ -1,0 +1,34 @@
+--- a/src/crypto/randomx/jit_compiler_x86.cpp
++++ b/src/crypto/randomx/jit_compiler_x86.cpp
+@@ -1328,6 +1328,10 @@
+ 		codePos = pos;
+ 	}
+ 
++#ifdef RX_FDIV_TEST
++    bool rx_fdiv_force_fallback = false;
++    unsigned rx_fdiv_uses = 0;
++#endif
+ 	void JitCompilerX86::h_FDIV_M(const Instruction& instr) {
+ 		uint8_t* const p = code;
+ 		uint32_t pos = codePos;
+@@ -1345,6 +1349,20 @@
+ 			*(uint64_t*)(p + pos) = 0xd0e6a218488full;
+ 			pos += 6;
+ 		}
++#if defined(__GNUC__) && defined(__x86_64__)
++        else if (__builtin_cpu_supports("avx512f") && __builtin_cpu_supports("avx512vl")
++#ifdef RX_FDIV_TEST
++            && !rx_fdiv_force_fallback
++#endif
++        ) {
++            // xmm12 = (xmm12 & xmm13) | xmm14, preserving both divisor lanes.
++            const uint8_t mask[] = { 0x62, 0x53, 0x95, 0x08, 0x25, 0xe6, 0xea };
++            emit(mask, sizeof(mask), p, pos);
++#ifdef RX_FDIV_TEST
++            ++rx_fdiv_uses;
++#endif
++        }
++#endif
+ 		else {
+ 			*(uint64_t*)(p + pos) = 0xe6560f45e5540f45ull;
+ 			pos += 8;
