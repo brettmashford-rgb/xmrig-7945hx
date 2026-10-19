@@ -32,7 +32,10 @@ EXPERIMENTS = {
     'round-nop': ('build-jit-rcp-round-nop.sh', 'build-7168-jit-rcp-round-nop'),
     'round-store': ('build-jit-rcp-round-store.sh', 'build-7168-jit-rcp-round-store'),
 }
-EXPECTED = '898B6E0431C28A6B'
+BENCHMARKS = {
+    '1M': (1000000, '898B6E0431C28A6B', 900),
+    '10M': (10000000, 'B5231262E2792B26', 1800),
+}
 ANSI = re.compile(r'\x1b\[[0-?]*[ -/]*[@-~]')
 FINISHED = re.compile(r'benchmark finished in\s+([\d.]+) seconds\s+\(([\d.]+) h/s\)\s+hash sum =\s*([0-9a-fA-F]+)')
 
@@ -139,9 +142,12 @@ def result_folder():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('experiment', nargs='?', choices=EXPERIMENTS, default='fp-convert')
+    parser.add_argument('--bench', choices=BENCHMARKS, default='1M',
+                        help='benchmark length (default: 1M)')
     parser.add_argument('--skip-build', action='store_true', help='test the already-built binary')
     parser.add_argument('--watts', type=float, help='optional measured wall power')
     args = parser.parse_args()
+    hashes, expected_checksum, benchmark_timeout = BENCHMARKS[args.bench]
     if args.watts is not None and (not 0 < args.watts < 100000):
         parser.error('--watts must be a positive finite reading')
     pids = active_miners()
@@ -152,8 +158,8 @@ def main():
     builder, directory = EXPERIMENTS[args.experiment]
     binary = BASE / '.work' / directory / 'xmrig'
     folder = result_folder()
-    info = {'experiment': args.experiment, 'hashes': 1000000, 'algorithm': 'rx/0',
-            'expected_checksum': EXPECTED, 'wall_watts': args.watts,
+    info = {'experiment': args.experiment, 'hashes': hashes, 'algorithm': 'rx/0',
+            'expected_checksum': expected_checksum, 'wall_watts': args.watts,
             'started_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
             'status': 'started'}
     code = 1
@@ -164,9 +170,9 @@ def main():
             raise RuntimeError('Build output is missing: %s' % binary)
         if active_miners():
             raise RuntimeError('Another miner started during the build; test cancelled')
-        info.update(capture([str(binary), '--bench=1M', '--algo=rx/0'],
-                            folder / 'benchmark.log', 900, benchmark=True))
-        info['status'] = 'passed' if info['checksum'] == EXPECTED else 'checksum_failed'
+        info.update(capture([str(binary), '--bench=' + args.bench, '--algo=rx/0'],
+                            folder / 'benchmark.log', benchmark_timeout, benchmark=True))
+        info['status'] = 'passed' if info['checksum'] == expected_checksum else 'checksum_failed'
         if args.watts is not None:
             info['hashes_per_joule'] = info['hashrate_h_s'] / args.watts
         code = 0 if info['status'] == 'passed' else 1
@@ -178,7 +184,7 @@ def main():
     finally:
         info['finished_utc'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
         (folder / 'result.json').write_text(json.dumps(info, indent=2) + '\n')
-        lines = ['Experiment: ' + args.experiment, 'Status: ' + info['status']]
+        lines = ['Experiment: ' + args.experiment, 'Benchmark: ' + args.bench, 'Status: ' + info['status']]
         if 'hashrate_h_s' in info:
             lines += ['Hashrate: %.1f H/s' % info['hashrate_h_s'],
                       'Checksum: ' + info['checksum']]
