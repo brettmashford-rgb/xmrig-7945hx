@@ -7,8 +7,19 @@ JOBS=${JOBS:-2}
 case "$JOBS" in ''|*[!0-9]*|0*) echo 'JOBS must be a positive integer' >&2; exit 2;; esac
 [ "$#" -eq 0 ] || { echo 'Usage: sh build-jit-rcp-swap-moves.sh' >&2; exit 2; }
 [ -f /etc/alpine-release ] || { echo 'Run on Alpine Linux' >&2; exit 1; }
-# Uses the verified baseline builder to install dependencies and obtain pinned source.
-sh "$BASE/build-alpine.sh" 7168 generic
+# Prepare dependencies without rebuilding or modifying the shared baseline working tree.
+if [ "$(id -u)" -eq 0 ]; then
+    apk add --no-cache git make cmake libstdc++ gcc g++ libuv-dev openssl-dev hwloc-dev linux-headers ca-certificates
+fi
+for tool in git cmake make gcc g++; do
+    command -v "$tool" >/dev/null 2>&1 || { echo "Missing dependency: $tool" >&2; exit 1; }
+done
+UPSTREAM="$BASE/.work/xmrig-v6.26.0"
+if [ ! -e "$UPSTREAM" ]; then
+    mkdir -p "$BASE/.work"
+    git clone --depth 1 --branch v6.26.0 https://github.com/xmrig/xmrig.git "$UPSTREAM"
+fi
+[ "$(git -C "$UPSTREAM" rev-parse HEAD)" = "$PIN" ] || { echo 'Unexpected upstream revision; refusing to build.' >&2; exit 1; }
 SOURCE="$BASE/.work/xmrig-jit-rcp-swap-moves"
 OUT="$BASE/.work/build-7168-jit-rcp-swap-moves"
 EXPECTED=$(mktemp)
