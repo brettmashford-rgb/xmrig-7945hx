@@ -1,0 +1,138 @@
+--- a/src/crypto/randomx/jit_compiler_x86.cpp
++++ b/src/crypto/randomx/jit_compiler_x86.cpp
+@@ -53,6 +53,7 @@
+ #endif
+ 
+ #if defined(__GNUC__) && defined(__x86_64__)
++extern "C" void randomx_round_cache_init();
+ extern "C" void randomx_pointer_load();
+ extern "C" void randomx_pointer_load_end();
+ extern "C" void randomx_pointer_store();
+@@ -77,6 +78,39 @@
+ }
+ 
+ namespace randomx {
++#ifdef RX_ROUND_TEST
++    bool rx_round_force_fallback = false;
++    unsigned rx_round_uses = 0;
++#endif
++    static bool useRoundRegisterCache(uint32_t flags, bool xop) {
++#if defined(__GNUC__) && defined(__x86_64__) && !defined(WINABI) && !defined(_WIN32)
++#ifdef RX_ROUND_TEST
++        if (rx_round_force_fallback) return false;
++#endif
++        return !xop && (flags & RANDOMX_FLAG_AMD) && (flags & RANDOMX_FLAG_FULL_MEM) &&
++            !RandomX_CurrentConfig.Tweak_V2_PREFETCH && !RandomX_CurrentConfig.Tweak_V2_AES &&
++            !RandomX_CurrentConfig.Tweak_V2_CFROUND &&
++            __builtin_cpu_supports("avx512f") && __builtin_cpu_supports("avx512vl");
++#else
++        return false;
++#endif
++    }
++    static void emitRoundRegisterCache(uint8_t* code, uint32_t& pos) {
++        // eax contains the rotated rounding selector; xmm18 caches its masked value.
++        static const uint8_t bytes[] = {
++            0x83,0xe0,0x0c,                         // and eax, 12
++            0x62,0xe1,0x7d,0x08,0x7e,0xd1,         // vmovd ecx, xmm18
++            0x39,0xc8,0x74,0x0c,                   // cmp eax, ecx; je end
++            0x0f,0xae,0x14,0x04,0xeb,0x00,         // ldmxcsr [rsp+rax]; preserve existing jump
++            0x62,0xe1,0x7d,0x08,0x6e,0xd0          // vmovd xmm18, eax
++        };
++        memcpy(code + pos, bytes, sizeof(bytes));
++        pos += sizeof(bytes);
++#ifdef RX_ROUND_TEST
++        ++rx_round_uses;
++#endif
++    }
++
+ 	/*
+ 
+ 	REGISTER ALLOCATION:
+@@ -383,6 +417,7 @@
+ 	}
+ 
+ 	void JitCompilerX86::generateProgramLight(Program& prog, ProgramConfiguration& pcfg, uint32_t datasetOffset) {
++        vm_flags &= ~RANDOMX_FLAG_FULL_MEM; // Never retain the full-memory rounding cache in light mode.
+ 		generateProgramPrologue(prog, pcfg);
+ 		emit(codeReadDatasetLightSshInit, readDatasetLightInitSize, code, codePos);
+ 		*(uint32_t*)(code + codePos) = 0xc381;
+@@ -498,6 +533,12 @@
+ 		prevCFROUND = -1;
+ 		prevFPOperation = -1;
+ 
++#if defined(__GNUC__) && defined(__x86_64__)
++        const size_t roundInit = reinterpret_cast<const uint8_t*>(&randomx_round_cache_init) - codePrologue;
++        static const uint8_t init[] = {0x62,0xa3,0x6d,0x00,0x25,0xd2,0xff,0x90};
++        memcpy(code + roundInit, useRoundRegisterCache(vm_flags, hasXOP) ? init : codePrologue + roundInit, sizeof(init));
++#endif
++
+ 		//mark all registers as used
+ 		uint64_t* r = (uint64_t*)registerUsage;
+ 		uint64_t k = codePos;
+@@ -1371,10 +1412,12 @@
+ 	void JitCompilerX86::h_CFROUND(const Instruction& instr) {
+ 		uint8_t* const p = code;
+ 		int32_t t = prevCFROUND;
++        const bool registerCache = useRoundRegisterCache(vm_flags, hasXOP);
+ 
+ 		if ((t > prevFPOperation) && !RandomX_CurrentConfig.Tweak_V2_CFROUND) {
+ 			if (vm_flags & RANDOMX_FLAG_AMD) {
+-				memcpy(p + t, NOP26, 26);
++				if (registerCache) memset(p + t, 0x90, 32);
++                else memcpy(p + t, NOP26, 26);
+ 			}
+ 			else {
+ 				memcpy(p + t, NOP14, 14);
+@@ -1390,6 +1433,13 @@
+ 		const int rotate = (static_cast<int>(instr.getImm32() & 63) - 2) & 63;
+ 		*(uint32_t*)(p + pos + 3) = 0x00C8C148 + (rotate << 24);
+ 
++        if (registerCache) {
++            pos += 7;
++            emitRoundRegisterCache(p, pos);
++            codePos = pos;
++            return;
++        }
++
+ 		if (vm_flags & RANDOMX_FLAG_AMD) {
+ 			if (RandomX_CurrentConfig.Tweak_V2_CFROUND) {
+ 				*(uint32_t*)(p + pos + 7) = 0x1375F0A8;
+@@ -1431,10 +1481,12 @@
+ 	void JitCompilerX86::h_CFROUND_BMI2(const Instruction& instr) {
+ 		uint8_t* const p = code;
+ 		int32_t t = prevCFROUND;
++        const bool registerCache = useRoundRegisterCache(vm_flags, hasXOP);
+ 
+ 		if ((t > prevFPOperation) && !RandomX_CurrentConfig.Tweak_V2_CFROUND){
+ 			if (vm_flags & RANDOMX_FLAG_AMD) {
+-				memcpy(p + t, NOP25, 25);
++				if (registerCache) memset(p + t, 0x90, 31);
++                else memcpy(p + t, NOP25, 25);
+ 			}
+ 			else {
+ 				memcpy(p + t, NOP13, 13);
+@@ -1449,6 +1501,13 @@
+ 		const uint64_t rotate = (static_cast<int>(instr.getImm32() & 63) - 2) & 63;
+ 		*(uint64_t*)(p + pos) = 0xC0F0FBC3C4ULL | (src << 32) | (rotate << 40);
+ 
++        if (registerCache) {
++            pos += 6;
++            emitRoundRegisterCache(p, pos);
++            codePos = pos;
++            return;
++        }
++
+ 		if (vm_flags & RANDOMX_FLAG_AMD) {
+ 			if (RandomX_CurrentConfig.Tweak_V2_CFROUND) {
+ 				*(uint32_t*)(p + pos + 6) = 0x1375F0A8;
+--- a/src/crypto/randomx/jit_compiler_x86_static.S
++++ b/src/crypto/randomx/jit_compiler_x86_static.S
+@@ -120,6 +120,8 @@
+ 	mov dword ptr [rsp+4], 0xBFC0
+ 	mov dword ptr [rsp+8], 0xDFC0
+ 	mov dword ptr [rsp+12], 0xFFC0
++.global DECL(randomx_round_cache_init)
++DECL(randomx_round_cache_init):
+ 	mov dword ptr [rsp+32], -1
+ 	jmp DECL(randomx_program_imul_rcp_store)
+ 

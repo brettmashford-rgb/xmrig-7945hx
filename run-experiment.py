@@ -14,6 +14,7 @@ import time
 
 BASE = Path(__file__).resolve().parent
 EXPERIMENTS = {
+    'round-register': ('build-jit-rcp-round-register.sh', 'build-7168-jit-rcp-round-register-r2'),
     'swap-moves': ('build-jit-rcp-swap-moves.sh', 'build-7168-jit-rcp-swap-moves-r2'),
     'fdiv-ternary': ('build-jit-rcp-fdiv-ternary.sh', 'build-7168-jit-rcp-fdiv-ternary'),
     'program-vaes256': ('build-jit-rcp-program-vaes256.sh', 'build-7168-jit-rcp-program-vaes256'),
