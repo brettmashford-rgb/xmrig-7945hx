@@ -14,6 +14,7 @@ import time
 
 BASE = Path(__file__).resolve().parent
 EXPERIMENTS = {
+    'operand-hoist': ('build-jit-rcp-operand-hoist.sh', 'build-7168-jit-rcp-operand-hoist'),
     'register-mask-early': ('build-jit-rcp-register-mask-early.sh', 'build-7168-jit-rcp-register-mask-early'),
     'register-mask-round': ('build-jit-rcp-register-mask-round.sh', 'build-7168-jit-rcp-register-mask-round'),
     'vaes256': ('build-jit-rcp-vaes256.sh', 'build-7168-jit-rcp-vaes256'),
