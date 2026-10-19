@@ -1,0 +1,152 @@
+--- a/src/crypto/randomx/jit_compiler_x86.cpp
++++ b/src/crypto/randomx/jit_compiler_x86.cpp
+@@ -32,6 +32,9 @@
+ #include <cstring>
+ #include <climits>
+ #include <atomic>
++#include <array>
++#include <algorithm>
++#include "crypto/randomx/instruction.hpp"
+ 
+ #include "crypto/randomx/jit_compiler_x86.hpp"
+ #include "backend/cpu/Cpu.h"
+@@ -61,6 +64,7 @@
+ #ifdef RX_POINTER_TEST
+ int rx_pointer_test_mode = 0;
+ unsigned rx_pointer_test_uses = 0;
++unsigned rx_operand_test_uses = 0;
+ #endif
+ 
+ static bool hugePagesJIT = false;
+@@ -506,6 +510,123 @@
+ 			r[j] = k;
+ 		}
+ 
++        // A single independent operand can remain live in XMM18.
++        // Only the guarded normal full-memory AVX-512 path uses this plan.
++        if (registerPointers && RandomX_CurrentConfig.ProgramSize == 256
++#ifdef RX_POINTER_TEST
++            && rx_pointer_test_mode != 2
++#endif
++        ) {
++            // Classification only: do not compile bytecode or calculate reciprocals.
++            const uint32_t frequencies[] = {
++                RandomX_CurrentConfig.RANDOMX_FREQ_IADD_RS,
++                RandomX_CurrentConfig.RANDOMX_FREQ_IADD_M,
++                RandomX_CurrentConfig.RANDOMX_FREQ_ISUB_R,
++                RandomX_CurrentConfig.RANDOMX_FREQ_ISUB_M,
++                RandomX_CurrentConfig.RANDOMX_FREQ_IMUL_R,
++                RandomX_CurrentConfig.RANDOMX_FREQ_IMUL_M,
++                RandomX_CurrentConfig.RANDOMX_FREQ_IMULH_R,
++                RandomX_CurrentConfig.RANDOMX_FREQ_IMULH_M,
++                RandomX_CurrentConfig.RANDOMX_FREQ_ISMULH_R,
++                RandomX_CurrentConfig.RANDOMX_FREQ_ISMULH_M,
++                RandomX_CurrentConfig.RANDOMX_FREQ_IMUL_RCP,
++                RandomX_CurrentConfig.RANDOMX_FREQ_INEG_R,
++                RandomX_CurrentConfig.RANDOMX_FREQ_IXOR_R,
++                RandomX_CurrentConfig.RANDOMX_FREQ_IXOR_M,
++                RandomX_CurrentConfig.RANDOMX_FREQ_IROR_R,
++                RandomX_CurrentConfig.RANDOMX_FREQ_IROL_R,
++                RandomX_CurrentConfig.RANDOMX_FREQ_ISWAP_R,
++                RandomX_CurrentConfig.RANDOMX_FREQ_FSWAP_R,
++                RandomX_CurrentConfig.RANDOMX_FREQ_FADD_R,
++                RandomX_CurrentConfig.RANDOMX_FREQ_FADD_M,
++                RandomX_CurrentConfig.RANDOMX_FREQ_FSUB_R,
++                RandomX_CurrentConfig.RANDOMX_FREQ_FSUB_M,
++                RandomX_CurrentConfig.RANDOMX_FREQ_FSCAL_R,
++                RandomX_CurrentConfig.RANDOMX_FREQ_FMUL_R,
++                RandomX_CurrentConfig.RANDOMX_FREQ_FDIV_M,
++                RandomX_CurrentConfig.RANDOMX_FREQ_FSQRT_R,
++                RandomX_CurrentConfig.RANDOMX_FREQ_CBRANCH,
++                RandomX_CurrentConfig.RANDOMX_FREQ_CFROUND,
++                RandomX_CurrentConfig.RANDOMX_FREQ_ISTORE,
++                RandomX_CurrentConfig.RANDOMX_FREQ_NOP
++            };
++            std::array<InstructionType, 256> opcodeType;
++            opcodeType.fill(InstructionType::NOP);
++            unsigned opcode = 0;
++            for (unsigned kind = 0; kind < 30; ++kind)
++                for (unsigned count = 0; count < frequencies[kind] && opcode < 256; ++count)
++                    opcodeType[opcode++] = static_cast<InstructionType>(kind);
++            std::array<InstructionType, 256> types;
++            std::array<int, 256> loadAt;
++            loadAt.fill(-1);
++            std::array<bool, 256> hoisted{};
++            std::array<bool, 257> boundary{};
++            boundary[0] = true;
++            std::array<int, 8> lastWriter;
++            lastWriter.fill(-1);
++            for (int i = 0; i < 256; ++i) {
++                const auto& instr = prog(i);
++                auto kind = opcodeType[instr.opcode];
++                if ((kind == InstructionType::IMUL_RCP && isZeroOrPowerOf2(instr.getImm32())) ||
++                    (kind == InstructionType::ISWAP_R && instr.dst == instr.src))
++                    kind = InstructionType::NOP;
++                types[i] = kind;
++                if (kind == InstructionType::CBRANCH) {
++                    boundary[i + 1] = true;
++                    boundary[lastWriter[instr.dst] + 1] = true;
++                    lastWriter.fill(i);
++                }
++                else if (static_cast<unsigned>(kind) <= static_cast<unsigned>(InstructionType::ISWAP_R)) {
++                    lastWriter[instr.dst] = i;
++                    if (kind == InstructionType::ISWAP_R) lastWriter[instr.src] = i;
++                }
++            }
++            lastWriter.fill(-1);
++            int barrier = -1, block = 0, previousUse = -1;
++            for (int i = 0; i < 256; ++i) {
++                if (boundary[i]) block = i;
++                const auto kind = types[i];
++                const auto& instr = prog(i);
++                if (kind == InstructionType::FADD_M || kind == InstructionType::FSUB_M) {
++                    const int cut = std::max({block, barrier + 1, lastWriter[instr.src] + 1, previousUse + 1});
++                    if (i - cut >= 3) {
++                        loadAt[cut] = i;
++                        hoisted[i] = true;
++                        previousUse = i;
++                    }
++                }
++                if (static_cast<unsigned>(kind) <= static_cast<unsigned>(InstructionType::ISWAP_R)) {
++                    lastWriter[instr.dst] = i;
++                    if (kind == InstructionType::ISWAP_R) lastWriter[instr.src] = i;
++                }
++                if (kind == InstructionType::ISTORE || kind == InstructionType::CFROUND ||
++                    kind == InstructionType::CBRANCH) barrier = i;
++            }
++            for (int i = 0; i < 256; ++i) {
++                if (loadAt[i] >= 0) {
++                    const auto& target = prog(loadAt[i]);
++                    genAddressReg<true>(target, target.src, code, codePos);
++                    static const uint8_t convert[] = {0x62,0xe1,0x7e,0x08,0xe6,0x14,0x06};
++                    emit(convert, sizeof(convert), code, codePos); // vcvtdq2pd xmm18, [rsi+rax]
++#ifdef RX_POINTER_TEST
++                    ++rx_operand_test_uses;
++#endif
++                }
++                const auto& instr = prog(i);
++                if (hoisted[i]) {
++                    prevFPOperation = codePos;
++                    const uint32_t dst = instr.dst % RegisterCountFlt;
++                    const uint8_t arithmetic[] = {0x62,0xb1,static_cast<uint8_t>(0xfd - dst * 8),0x08,
++                        static_cast<uint8_t>(types[i] == InstructionType::FADD_M ? 0x58 : 0x5c),
++                        static_cast<uint8_t>(0xc2 + dst * 8)};
++                    emit(arithmetic, sizeof(arithmetic), code, codePos);
++                }
++                else {
++                    (*engine[instr.opcode])(this, instr);
++                }
++            }
++        }
++        else {
+ 		for (int i = 0, n = static_cast<int>(RandomX_CurrentConfig.ProgramSize); i < n; i += 4) {
+ 			Instruction& instr1 = prog(i);
+ 			Instruction& instr2 = prog(i + 1);
+@@ -522,6 +643,7 @@
+ 			(*gen3)(this, instr3);
+ 			(*gen4)(this, instr4);
+ 		}
++        }
+ 
+ 		*(uint64_t*)(code + codePos) = 0xc03341c08b41ull + (static_cast<uint64_t>(pcfg.readReg2) << 16) + (static_cast<uint64_t>(pcfg.readReg3) << 40);
+ 		codePos += 6;
