@@ -20,8 +20,8 @@ if [ ! -e "$UPSTREAM" ]; then
     git clone --depth 1 --branch v6.26.0 https://github.com/xmrig/xmrig.git "$UPSTREAM"
 fi
 [ "$(git -C "$UPSTREAM" rev-parse HEAD)" = "$PIN" ] || { echo 'Unexpected upstream revision; refusing to build.' >&2; exit 1; }
-SOURCE="$BASE/.work/xmrig-jit-rcp-swap-moves"
-OUT="$BASE/.work/build-7168-jit-rcp-swap-moves"
+SOURCE="$BASE/.work/xmrig-jit-rcp-swap-moves-r2"
+OUT="$BASE/.work/build-7168-jit-rcp-swap-moves-r2"
 EXPECTED=$(mktemp)
 REFERENCE=$(mktemp -d)
 trap 'rm -f "$EXPECTED"; rm -rf "$REFERENCE"' EXIT HUP INT TERM
@@ -42,7 +42,7 @@ if git -C "$SOURCE" diff --quiet && git -C "$SOURCE" diff --cached --quiet; then
 else
     ACTUAL=$(mktemp)
     git -C "$SOURCE" diff HEAD > "$ACTUAL"
-    cmp -s "$ACTUAL" "$EXPECTED" || { rm -f "$ACTUAL"; echo 'Source has other changes; refusing to build.' >&2; exit 1; }
+    cmp -s "$ACTUAL" "$EXPECTED" || { rm -f "$ACTUAL"; echo "Unexpected changes in $SOURCE; refusing to build." >&2; exit 1; }
     rm -f "$ACTUAL"
 fi
 cmake -S "$SOURCE" -B "$OUT" -DCMAKE_BUILD_TYPE=Release -DWITH_OPENCL=OFF -DWITH_CUDA=OFF -DWITH_HWLOC=ON -DWITH_MSR=ON -DWITH_TLS=ON -DWITH_BENCHMARK=ON -DRX_AES_PREFETCH_DISTANCE=7168 -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
