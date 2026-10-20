@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-"""Switch an existing Alpine tmux miner to SupportXMR, preserving its binary."""
+"""Switch an Alpine tmux miner to SupportXMR, optionally upgrading its binary."""
 import argparse
+import hashlib
+import urllib.request
 import datetime
 import os
 from pathlib import Path
@@ -44,6 +46,8 @@ def parse_start(text):
 def pool_args(inner):
     kept = [inner[0]]
     old_user = None
+    old_pass = None
+    old_pool = None
     i = 1
     while i < len(inner):
         arg = inner[i]
@@ -56,12 +60,18 @@ def pool_args(inner):
                 value = inner[i]
             if key in ('-u', '--user'):
                 old_user = value
+            if key in ('-p', '--pass'):
+                old_pass = value
+            if key in ('-o', '--url'):
+                old_pool = value
         elif key in FLAG_OPTIONS:
             pass
         else:
             kept.append(arg)
         i += 1
     worker = old_user.rsplit('.', 1)[1] if old_user and '.' in old_user else None
+    if not worker and old_pool and 'pool.supportxmr.com' in old_pool and valid_worker(old_pass):
+        worker = old_pass
     return kept, worker
 
 
@@ -102,10 +112,64 @@ def atomic_write(path, content):
         temp.unlink(missing_ok=True)
 
 
+def persistent_miner(text, executable):
+    """Locate the persistent source of the startup copy without guessing names."""
+    matches = []
+    for line in text.splitlines():
+        try:
+            tokens = shlex.split(line, comments=True)
+        except ValueError:
+            continue
+        if len(tokens) >= 3 and tokens[0] == 'cp' and tokens[-1] == executable:
+            source = Path(tokens[-2])
+            if source.parent == Path('/media/usb'):
+                matches.append(source)
+    if not matches and Path(executable).parent == Path('/media/usb'):
+        matches.append(Path(executable))
+    if len(matches) != 1 or not matches[0].is_file():
+        raise ValueError('Cannot identify the persistent miner copy; no upgrade performed.')
+    return matches[0]
+
+
+def stage_miner(url, expected, destination):
+    if not re.fullmatch(r'[0-9a-fA-F]{64}', expected or ''):
+        raise ValueError('A SHA-256 digest is required for a miner upgrade.')
+    if not url.startswith(('http://', 'https://')):
+        raise ValueError('Miner URL must use http:// or https://.')
+    temp = destination.with_name('.' + destination.name + '.upgrade-' + str(os.getpid()))
+    try:
+        digest = hashlib.sha256()
+        count = 0
+        with urllib.request.urlopen(url, timeout=30) as response, temp.open('xb') as out:
+            while True:
+                block = response.read(1024 * 1024)
+                if not block:
+                    break
+                count += len(block)
+                if count > 64 * 1024 * 1024:
+                    raise ValueError('Miner download exceeds 64 MiB.')
+                digest.update(block)
+                out.write(block)
+        if digest.hexdigest() != expected.lower():
+            raise ValueError('Miner SHA-256 mismatch; current miner was not changed.')
+        temp.chmod(0o755)
+        version = subprocess.run([str(temp), '--version'], check=True, timeout=15,
+                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        if 'XMRig' not in version.stdout:
+            raise ValueError('Downloaded binary did not identify as XMRig.')
+        print('Miner checksum and executable compatibility check passed.', flush=True)
+        return temp
+    except Exception:
+        temp.unlink(missing_ok=True)
+        raise
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--wallet', help='Monero wallet; prompted if omitted')
     ap.add_argument('--worker', help='Worker name; inferred from old NiceHash username if possible')
+    ap.add_argument('--miner-url', help='Optional replacement miner URL')
+    ap.add_argument('--miner-sha256', help='Required SHA-256 for replacement miner')
     ap.add_argument('--dry-run', action='store_true', help='Show the planned startup script without changes')
     args = ap.parse_args()
     candidates = []
@@ -128,7 +192,14 @@ def main():
         raise ValueError('Use letters, digits, underscores or hyphens for the worker name.')
     updated, session = rewrite(original, wallet, worker)
     print('Pool:', POOL, '(TLS)\nWorker:', worker, '\nStartup:', start)
-    print('Existing miner binary and CPU settings retained.')
+    if args.miner_url:
+        persistent = persistent_miner(original, inner[0])
+        if not re.fullmatch(r'[0-9a-fA-F]{64}', args.miner_sha256 or ''):
+            raise ValueError('Supply --miner-sha256 for the replacement binary.')
+        print('Miner upgrade destination:', persistent, '(CPU settings retained)')
+    else:
+        persistent = None
+        print('Existing miner binary and CPU settings retained.')
     if args.dry_run:
         print(updated)
         return
@@ -136,6 +207,8 @@ def main():
         raise ValueError('Run as root.')
     if not os.path.ismount('/media/usb'):
         raise ValueError('/media/usb is not mounted; no changes made.')
+    if os.statvfs('/media/usb').f_flag & os.ST_RDONLY:
+        subprocess.run(['mount', '-o', 'remount,rw', '/media/usb'], check=True)
     for tool in ('tmux', 'lbu', 'sh'):
         if not shutil.which(tool):
             raise ValueError('Missing tool: ' + tool)
@@ -143,6 +216,12 @@ def main():
     backup = Path('/media/usb') / (start.name + '.before-supportxmr-' + stamp)
     shutil.copy2(start, backup)
     print('Backup:', backup, flush=True)
+    staged = stage_miner(args.miner_url, args.miner_sha256, persistent) if persistent else None
+    binary_backup = None
+    if persistent:
+        binary_backup = persistent.with_name(persistent.name + '.before-upgrade-' + stamp)
+        shutil.copy2(persistent, binary_backup)
+        print('Miner backup:', binary_backup, flush=True)
     active = subprocess.run(['tmux', 'has-session', '-t', '=' + session],
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
     if active:
@@ -162,9 +241,15 @@ def main():
     else:
         raise ValueError('Old tmux session remains; startup settings have not been changed.')
     try:
+        if staged:
+            os.replace(staged, persistent)
         atomic_write(start, updated)
         subprocess.run(['lbu', 'commit'], check=True)
     except Exception:
+        if binary_backup:
+            restore = persistent.with_name('.' + persistent.name + '.restore-' + str(os.getpid()))
+            shutil.copy2(binary_backup, restore)
+            os.replace(restore, persistent)
         atomic_write(start, original)
         subprocess.run(['lbu', 'commit'], check=False)
         if active:
@@ -176,7 +261,7 @@ def main():
     print('Saved for reboot and started. Checking miner output...', flush=True)
     time.sleep(5)
     subprocess.run(['tmux', 'capture-pane', '-p', '-t', session + ':', '-S', '-35'], check=True)
-    print('Check for pool jobs and accepted shares. No miner binary was replaced.')
+    print('Check for pool jobs and accepted shares.' + (' Miner binary upgraded.' if persistent else ' No miner binary was replaced.'))
 
 
 if __name__ == '__main__':

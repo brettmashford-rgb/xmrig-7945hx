@@ -16,4 +16,13 @@ Before modifying startup settings, the script requires a mounted `/media/usb`, m
 
 Only one simple, quoted, single-line `tmux new-session -d -s NAME "miner arguments"` command is supported. Ambiguous/complex scripts are refused for manual review. `--dry-run` prints the proposed script without modifying anything or stopping mining. Do not share that output if the wallet should remain private.
 
-Validation: eight tests cover preserving CPU settings and worker suffixes, alternative miner binary names, equal-sign options, repeat application, ambiguous scripts, command-chain refusal, missing values, and worker-name input. Real pool connectivity must be verified on each rig after running.
+Validation: twelve tests cover preserving CPU settings and worker suffixes, alternative miner binary names, equal-sign options, repeat application, ambiguous scripts, command-chain refusal, missing values, worker-name input, SupportXMR worker retention, download integrity, executable staging, successful installation, and rollback on save failure. Real pool connectivity must be verified on each rig after running.
+
+
+## Optional miner upgrade
+
+Pass `--miner-url URL --miner-sha256 SHA256` to upgrade the persistent executable while switching pools. The script identifies the persistent miner from its startup `cp` command, so both `/media/usb/xmrig` and `/media/usb/xmrig-miner` naming are supported. It remounts a read-only USB read/write, downloads to a separate file, verifies SHA-256, and runs `--version` before stopping mining or replacing the executable. A timestamped binary backup is kept on the USB. If saving fails, both the persistent binary and startup settings are restored.
+
+The replacement must match the architecture, libc and runtime dependencies of the rigs. The generic Alpine body-align32 build is intended for these x86-64 Ryzen rigs; optional instruction paths remain CPU-gated, so older CPUs may use fallback paths. A version check is not a substitute for observing accepted pool shares on each CPU. The helper itself does not install runtime libraries; install the replacement's dependencies before running it. Download hashes must come from the intended source machine.
+
+Existing SupportXMR worker names are recovered from the password when the username is a plain wallet. No CPU settings are changed by the upgrade.

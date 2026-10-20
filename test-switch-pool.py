@@ -2,6 +2,9 @@ import importlib.util
 from pathlib import Path
 import shlex
 import unittest
+from unittest.mock import patch
+import tempfile, hashlib, io, subprocess, types
+from contextlib import ExitStack
 spec=importlib.util.spec_from_file_location('switch_pool',Path(__file__).with_name('switch-pool.py'));m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 WALLET='4'+'1'*94
 class PoolSwitchTests(unittest.TestCase):
@@ -32,4 +35,56 @@ class PoolSwitchTests(unittest.TestCase):
  def test_safe_worker_names(self):
   for name in ['3900x','5900x-2','7945hx']:self.assertTrue(m.valid_worker(name))
   for name in ['','bad name','x;reboot']:self.assertFalse(m.valid_worker(name))
+ def test_supportxmr_worker_preserved(self):
+  _, worker=m.pool_args(['/root/xmrig','-o',m.POOL,'-u',WALLET,'-p','7900','--tls'])
+  self.assertEqual(worker,'7900')
+ def test_download_bad_hash_preserves_binary(self):
+  with tempfile.TemporaryDirectory() as d:
+   dest=Path(d)/'xmrig';dest.write_bytes(b'OLD')
+   with patch.object(m.urllib.request,'urlopen',return_value=io.BytesIO(b'NEW')):
+    with self.assertRaises(ValueError):m.stage_miner('http://example/miner','0'*64,dest)
+   self.assertEqual(dest.read_bytes(),b'OLD');self.assertEqual(list(Path(d).iterdir()),[dest])
+ def test_download_version_before_install(self):
+  blob=b'#!/bin/sh\necho XMRig-test\n'
+  with tempfile.TemporaryDirectory() as d:
+   dest=Path(d)/'xmrig';dest.write_bytes(b'OLD')
+   with patch.object(m.urllib.request,'urlopen',return_value=io.BytesIO(blob)):
+    staged=m.stage_miner('http://example/miner',hashlib.sha256(blob).hexdigest(),dest)
+   self.assertEqual(dest.read_bytes(),b'OLD');self.assertEqual(staged.read_bytes(),blob)
+ def test_upgrade_transaction_and_rollback(self):
+  for fail_commit in [False,True]:
+   with self.subTest(fail_commit=fail_commit), tempfile.TemporaryDirectory() as d, ExitStack() as stack:
+    root=Path(d);usb=root/'usb';etc=root/'etc';usb.mkdir();etc.mkdir()
+    original=self.startup();start=etc/'xmrig.start';start.write_text(original);start.chmod(0o755)
+    binary=usb/'xmrig-miner';binary.write_bytes(b'OLD');staged=usb/'staged';staged.write_bytes(b'NEW');staged.chmod(0o755)
+    def path_map(value):
+     text=str(value)
+     if text=='/etc/local.d':return etc
+     if text.startswith('/media/usb'):return usb/text[len('/media/usb'):].lstrip('/')
+     return Path(value)
+    calls=[];commits=[]
+    def run(argv,**kwargs):
+     calls.append(argv)
+     if argv[:2]==['tmux','has-session']:return subprocess.CompletedProcess(argv,1)
+     if argv==['lbu','commit']:
+      commits.append(argv)
+      if fail_commit and len(commits)==1:raise subprocess.CalledProcessError(1,argv)
+     return subprocess.CompletedProcess(argv,0)
+    stack.enter_context(patch.object(m,'Path',side_effect=path_map))
+    stack.enter_context(patch.object(m.sys,'argv',['switch-pool.py','--wallet',WALLET,'--miner-url','http://example/miner','--miner-sha256','0'*64]))
+    stack.enter_context(patch.object(m.os,'geteuid',return_value=0))
+    stack.enter_context(patch.object(m.os.path,'ismount',return_value=True))
+    stack.enter_context(patch.object(m.os,'statvfs',return_value=types.SimpleNamespace(f_flag=0)))
+    stack.enter_context(patch.object(m.os,'sync'))
+    stack.enter_context(patch.object(m.shutil,'which',return_value='/bin/sh'))
+    stack.enter_context(patch.object(m,'stage_miner',return_value=staged))
+    stack.enter_context(patch.object(m,'miners_running',return_value=[]))
+    stack.enter_context(patch.object(m.subprocess,'run',side_effect=run))
+    stack.enter_context(patch.object(m.time,'sleep'))
+    if fail_commit:
+     with self.assertRaises(subprocess.CalledProcessError):m.main()
+     self.assertEqual(binary.read_bytes(),b'OLD');self.assertEqual(start.read_text(),original)
+    else:
+     m.main();self.assertEqual(binary.read_bytes(),b'NEW');self.assertIn(m.POOL,start.read_text())
+    self.assertTrue(any(x.name.startswith('xmrig-miner.before-upgrade-') for x in usb.iterdir()))
 if __name__=='__main__':unittest.main()
