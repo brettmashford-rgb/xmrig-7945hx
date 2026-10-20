@@ -1,0 +1,66 @@
+--- a/src/crypto/randomx/jit_compiler_x86.cpp
++++ b/src/crypto/randomx/jit_compiler_x86.cpp
+@@ -77,6 +77,17 @@
+ }
+ 
+ namespace randomx {
++#ifdef RX_PHASE_TEST
++    bool rx_phase_force_fallback = false;
++    unsigned rx_phase_uses = 0;
++#endif
++
++#ifdef RX_BODYALIGN_TEST
++    bool rx_bodyalign_force_fallback = false;
++    unsigned rx_bodyalign_uses = 0;
++    uintptr_t rx_bodyalign_last_start = 0;
++#endif
++
+ 	/*
+ 
+ 	REGISTER ALLOCATION:
+@@ -313,6 +324,20 @@
+ 
+ 		// Shift code base address to improve caching - all threads will use different L2/L3 cache sets
+ 		code = allocatedCode + (codeOffset.fetch_add(codeOffsetIncrement) % CodeSize);
++        // Preserve 32-byte alignment while changing the 64-byte cache-line phase.
++        // Base offsets are multiples of 64; the existing double-size allocation
++        // leaves at least 64 bytes beyond the maximum offset plus CodeSize.
++        bool shiftPhase = true;
++#ifdef RX_PHASE_TEST
++        if (rx_phase_force_fallback) shiftPhase = false;
++#endif
++        if (shiftPhase) {
++            code += 32;
++#ifdef RX_PHASE_TEST
++            ++rx_phase_uses;
++#endif
++        }
++
+ 
+ 		memcpy(code, codePrologue, prologueSize);
+ 		if (hasXOP) {
+@@ -471,6 +496,24 @@
+ #endif
+         memcpy(code + prologueSize, loopLoad, loadSize);
+         codePosFirst = prologueSize + loadSize;
++        bool alignBody = registerPointers;
++#ifdef RX_BODYALIGN_TEST
++        if (rx_bodyalign_force_fallback) alignBody = false;
++#endif
++        if (alignBody) {
++            // Align the generated VM body, retaining the existing outer-loop target.
++            size_t padding = (32 - (reinterpret_cast<uintptr_t>(code + codePosFirst) & 31)) & 31;
++            while (padding) {
++                const size_t n = padding > 9 ? 9 : padding;
++                memcpy(code + codePosFirst, NOPX[n - 1], n);
++                codePosFirst += n;
++                padding -= n;
++            }
++#ifdef RX_BODYALIGN_TEST
++            ++rx_bodyalign_uses;
++            rx_bodyalign_last_start = reinterpret_cast<uintptr_t>(code + codePosFirst);
++#endif
++        }
+ 		codePos = ADDR(randomx_program_prologue_first_load) - ADDR(randomx_program_prologue);
+ 
+ 		if (RandomX_CurrentConfig.Tweak_V2_AES && !hasAES) {
