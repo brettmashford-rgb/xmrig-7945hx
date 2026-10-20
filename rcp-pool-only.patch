@@ -1,0 +1,108 @@
+diff --git a/src/crypto/randomx/jit_compiler_x86.cpp b/src/crypto/randomx/jit_compiler_x86.cpp
+index 7fef5aa..6c49ddd 100644
+--- a/src/crypto/randomx/jit_compiler_x86.cpp
++++ b/src/crypto/randomx/jit_compiler_x86.cpp
+@@ -77,6 +77,20 @@ void randomx_set_optimized_dataset_init(int value)
+ }
+ 
+ namespace randomx {
++#ifdef RX_POOL_TEST
++    bool rx_pool_force_fallback = false;
++    unsigned rx_pool_uses = 0;
++#endif
++    // Below the light-mode superscalar area; enabled only for 256-instruction
++    // full-memory register-mask programs. Maximum pool size is 256 * 8 bytes.
++    constexpr uint32_t reciprocalPoolOffset = 24576;
++
++#ifdef RX_BODYALIGN_TEST
++    bool rx_bodyalign_force_fallback = false;
++    unsigned rx_bodyalign_uses = 0;
++    uintptr_t rx_bodyalign_last_start = 0;
++#endif
++
+ 	/*
+ 
+ 	REGISTER ALLOCATION:
+@@ -380,6 +394,9 @@ namespace randomx {
+ 		}
+ 
+ 		generateProgramEpilogue(prog, pcfg, registerPointers);
++        if (imul_rcp_storage == code + reciprocalPoolOffset && codePos >= reciprocalPoolOffset)
++            throw std::runtime_error("Generated code overlaps reciprocal pool");
++
+ 	}
+ 
+ 	void JitCompilerX86::generateProgramLight(Program& prog, ProgramConfiguration& pcfg, uint32_t datasetOffset) {
+@@ -471,6 +488,24 @@ namespace randomx {
+ #endif
+         memcpy(code + prologueSize, loopLoad, loadSize);
+         codePosFirst = prologueSize + loadSize;
++        bool alignBody = registerPointers;
++#ifdef RX_BODYALIGN_TEST
++        if (rx_bodyalign_force_fallback) alignBody = false;
++#endif
++        if (alignBody) {
++            // Align the generated VM body, retaining the existing outer-loop target.
++            size_t padding = (32 - (reinterpret_cast<uintptr_t>(code + codePosFirst) & 31)) & 31;
++            while (padding) {
++                const size_t n = padding > 9 ? 9 : padding;
++                memcpy(code + codePosFirst, NOPX[n - 1], n);
++                codePosFirst += n;
++                padding -= n;
++            }
++#ifdef RX_BODYALIGN_TEST
++            ++rx_bodyalign_uses;
++            rx_bodyalign_last_start = reinterpret_cast<uintptr_t>(code + codePosFirst);
++#endif
++        }
+ 		codePos = ADDR(randomx_program_prologue_first_load) - ADDR(randomx_program_prologue);
+ 
+ 		if (RandomX_CurrentConfig.Tweak_V2_AES && !hasAES) {
+@@ -494,6 +529,12 @@ namespace randomx {
+ 		imul_rcp_storage_used = 0;
+ 
+ 		memcpy(imul_rcp_storage - 34, &pcfg.eMask, sizeof(pcfg.eMask));
++        bool poolEnabled = registerPointers && RandomX_CurrentConfig.ProgramSize == 256;
++#ifdef RX_POOL_TEST
++        if (rx_pool_force_fallback) poolEnabled = false;
++#endif
++        if (poolEnabled) imul_rcp_storage = code + reciprocalPoolOffset;
++
+ 		codePos = codePosFirst;
+ 		prevCFROUND = -1;
+ 		prevFPOperation = -1;
+@@ -1101,11 +1142,29 @@ namespace randomx {
+ 		if (!isZeroOrPowerOf2(divisor)) {
+ 			const uint32_t dst = instr.dst;
+ 
+-			const uint64_t reciprocal = randomx_reciprocal_fast(divisor);
+-			*(uint32_t*)(p + pos) = 0xb848;
+-			pos += 2;
+-			emit64(reciprocal, p, pos);
+-			emit32(0xc0af0f4c + (dst << 27), p, pos);
++            const uint64_t reciprocal = randomx_reciprocal_fast(divisor);
++            if (imul_rcp_storage == code + reciprocalPoolOffset) {
++                if (imul_rcp_storage_used >= 256 || pos + 8 >= reciprocalPoolOffset)
++                    throw std::runtime_error("Reciprocal pool bounds exceeded");
++                const uint32_t slot = reciprocalPoolOffset + 8 * imul_rcp_storage_used++;
++                memcpy(code + slot, &reciprocal, sizeof(reciprocal));
++                // imul r8..r15, qword ptr [rip + disp32]
++                emitByte(0x4c, p, pos);
++                emitByte(0x0f, p, pos);
++                emitByte(0xaf, p, pos);
++                emitByte(0x05 + (dst << 3), p, pos);
++                const int32_t displacement = static_cast<int32_t>(slot) - static_cast<int32_t>(pos + 4);
++                emit32(static_cast<uint32_t>(displacement), p, pos);
++#ifdef RX_POOL_TEST
++                ++rx_pool_uses;
++#endif
++            }
++            else {
++                *(uint32_t*)(p + pos) = 0xb848;
++                pos += 2;
++                emit64(reciprocal, p, pos);
++                emit32(0xc0af0f4c + (dst << 27), p, pos);
++            }
+ 
+ 			registerUsage[dst] = pos;
+ 		}
