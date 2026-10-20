@@ -1,0 +1,187 @@
+#!/usr/bin/env python3
+"""Switch an existing Alpine tmux miner to SupportXMR, preserving its binary."""
+import argparse
+import datetime
+import os
+from pathlib import Path
+import re
+import shlex
+import shutil
+import subprocess
+import sys
+import time
+
+POOL = 'pool.supportxmr.com:443'
+VALUE_OPTIONS = {'-o', '--url', '-u', '--user', '-p', '--pass', '--rig-id',
+                 '--tls-fingerprint', '--coin', '--algo', '-a', '--userpass', '-O'}
+FLAG_OPTIONS = {'--nicehash', '--tls', '--keepalive', '-k'}
+
+
+def parse_start(text):
+    matches = []
+    for index, line in enumerate(text.splitlines(keepends=True)):
+        if not line.strip() or line.lstrip().startswith('#'):
+            continue
+        try:
+            outer = shlex.split(line, comments=True)
+        except ValueError:
+            continue
+        if len(outer) < 6 or outer[:2] != ['tmux', 'new-session'] or '-s' not in outer:
+            continue
+        session = outer[outer.index('-s') + 1]
+        inner = shlex.split(outer[-1])
+        if not inner or Path(inner[0]).name not in ('xmrig', 'xmrig-miner'):
+            continue
+        # Only the simple quoted command format used by these rigs is supported.
+        if outer.index('-s') + 2 != len(outer) - 1 or any(x in inner for x in ('&&', ';', '|', '&')):
+            raise ValueError('Unsupported startup command; send the startup script for review.')
+        matches.append((index, outer, inner, session))
+    if len(matches) != 1:
+        raise ValueError('Expected one simple tmux miner command in the startup script.')
+    return matches[0]
+
+
+def pool_args(inner):
+    kept = [inner[0]]
+    old_user = None
+    i = 1
+    while i < len(inner):
+        arg = inner[i]
+        key, eq, value = arg.partition('=')
+        if key in VALUE_OPTIONS:
+            if not eq:
+                i += 1
+                if i >= len(inner):
+                    raise ValueError('Missing value for ' + key)
+                value = inner[i]
+            if key in ('-u', '--user'):
+                old_user = value
+        elif key in FLAG_OPTIONS:
+            pass
+        else:
+            kept.append(arg)
+        i += 1
+    worker = old_user.rsplit('.', 1)[1] if old_user and '.' in old_user else None
+    return kept, worker
+
+
+def valid_worker(worker):
+    return bool(worker and re.fullmatch(r'[A-Za-z0-9_-]{1,64}', worker))
+
+
+def rewrite(text, wallet, worker):
+    index, outer, inner, session = parse_start(text)
+    kept, _ = pool_args(inner)
+    kept += ['-o', POOL, '--tls', '-a', 'rx/0', '-u', wallet, '-p', worker, '-k']
+    outer[-1] = shlex.join(kept)
+    lines = text.splitlines(keepends=True)
+    lines[index] = shlex.join(outer) + '\n'
+    return ''.join(lines), session
+
+
+def miners_running():
+    found = []
+    for item in Path('/proc').iterdir():
+        if not item.name.isdigit():
+            continue
+        try:
+            if (item / 'comm').read_text().strip() in ('xmrig', 'xmrig-miner'):
+                found.append(item.name)
+        except (OSError, UnicodeError):
+            continue
+    return found
+
+
+def atomic_write(path, content):
+    temp = path.with_name(path.name + '.pool-switch-tmp')
+    try:
+        temp.write_text(content)
+        temp.chmod(path.stat().st_mode & 0o777)
+        os.replace(temp, path)
+    finally:
+        temp.unlink(missing_ok=True)
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('--wallet', help='Monero wallet; prompted if omitted')
+    ap.add_argument('--worker', help='Worker name; inferred from old NiceHash username if possible')
+    ap.add_argument('--dry-run', action='store_true', help='Show the planned startup script without changes')
+    args = ap.parse_args()
+    candidates = []
+    for path in Path('/etc/local.d').glob('*.start'):
+        text = path.read_text()
+        if 'tmux' in text and ('xmrig-miner' in text or 'xmrig' in text):
+            candidates.append((path, text))
+    if len(candidates) != 1:
+        raise ValueError('Cannot identify one miner startup script. Run: cat /etc/local.d/*.start')
+    start, original = candidates[0]
+    _, _, inner, session = parse_start(original)
+    _, inferred = pool_args(inner)
+    wallet = args.wallet or input('Paste Monero wallet: ').strip()
+    if not re.fullmatch(r'[48][1-9A-HJ-NP-Za-km-z]{94}|[48][1-9A-HJ-NP-Za-km-z]{105}', wallet):
+        raise ValueError('Wallet format is not a recognised mainnet Monero address.')
+    worker = args.worker or inferred
+    if not valid_worker(worker):
+        worker = input('Worker name (e.g. 3900x or 5900x-2): ').strip()
+    if not valid_worker(worker):
+        raise ValueError('Use letters, digits, underscores or hyphens for the worker name.')
+    updated, session = rewrite(original, wallet, worker)
+    print('Pool:', POOL, '(TLS)\nWorker:', worker, '\nStartup:', start)
+    print('Existing miner binary and CPU settings retained.')
+    if args.dry_run:
+        print(updated)
+        return
+    if os.geteuid() != 0:
+        raise ValueError('Run as root.')
+    if not os.path.ismount('/media/usb'):
+        raise ValueError('/media/usb is not mounted; no changes made.')
+    for tool in ('tmux', 'lbu', 'sh'):
+        if not shutil.which(tool):
+            raise ValueError('Missing tool: ' + tool)
+    stamp = datetime.datetime.now().strftime('%Y%m%d-%H%M%S-%f')
+    backup = Path('/media/usb') / (start.name + '.before-supportxmr-' + stamp)
+    shutil.copy2(start, backup)
+    print('Backup:', backup, flush=True)
+    active = subprocess.run(['tmux', 'has-session', '-t', '=' + session],
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+    if active:
+        subprocess.run(['tmux', 'send-keys', '-t', '=' + session, 'C-c'], check=True)
+    for _ in range(50):
+        if not miners_running():
+            break
+        time.sleep(0.2)
+    else:
+        raise ValueError('A miner is still running; startup settings have not been changed.')
+    # Wait for tmux to release the old session before starting its replacement.
+    for _ in range(25):
+        if subprocess.run(['tmux', 'has-session', '-t', '=' + session],
+                          stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+            break
+        time.sleep(0.2)
+    else:
+        raise ValueError('Old tmux session remains; startup settings have not been changed.')
+    try:
+        atomic_write(start, updated)
+        subprocess.run(['lbu', 'commit'], check=True)
+    except Exception:
+        atomic_write(start, original)
+        subprocess.run(['lbu', 'commit'], check=False)
+        if active:
+            subprocess.run(['sh', str(start)], check=False)
+        print('Startup settings restored from backup.', file=sys.stderr)
+        raise
+    os.sync()
+    subprocess.run(['sh', str(start)], check=True)
+    print('Saved for reboot and started. Checking miner output...', flush=True)
+    time.sleep(5)
+    subprocess.run(['tmux', 'capture-pane', '-p', '-t', '=' + session, '-S', '-35'], check=True)
+    print('Check for pool jobs and accepted shares. No miner binary was replaced.')
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except (ValueError, OSError, subprocess.CalledProcessError) as exc:
+        print('STOP:', exc, file=sys.stderr)
+        sys.exit(1)
