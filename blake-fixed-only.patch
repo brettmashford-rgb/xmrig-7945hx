@@ -1,0 +1,71 @@
+diff --git a/src/crypto/randomx/blake2/avx2/blake2b_avx2.c b/src/crypto/randomx/blake2/avx2/blake2b_avx2.c
+index 6177ea1..1771985 100644
+--- a/src/crypto/randomx/blake2/avx2/blake2b_avx2.c
++++ b/src/crypto/randomx/blake2/avx2/blake2b_avx2.c
+@@ -96,7 +96,24 @@ ALIGN(64) static const uint64_t blake2b_IV[8] = {
+   b = XOR(b, iv1);                                        \
+ } while(0)
+ 
++// Fixed two-block unkeyed Blake2b-512 used between RandomX programs.
++static int blake2b_256_64_avx2(void* out_ptr, const void* in_ptr) {
++  const uint8_t* in = (const uint8_t*)in_ptr;
++  __m256i a = XOR(LOAD(&blake2b_IV[0]), _mm256_set_epi64x(0, 0, 0, 0x01010040UL));
++  __m256i b = LOAD(&blake2b_IV[4]);
++  BLAKE2B_COMPRESS_V1(a, b, in, 128, 0, 0, 0);
++  BLAKE2B_COMPRESS_V1(a, b, in + 128, 256, 0, UINT64_MAX, 0);
++  STOREU((uint8_t*)out_ptr, a);
++  STOREU((uint8_t*)out_ptr + 32, b);
++  _mm256_zeroupper();
++  return 0;
++}
++
+ int blake2b_avx2(void* out_ptr, size_t outlen, const void* in_ptr, size_t inlen) {
++  if (inlen == 256 && outlen == 64) {
++    return blake2b_256_64_avx2(out_ptr, in_ptr);
++  }
++
+   const __m256i parameter_block = _mm256_set_epi64x(0, 0, 0, 0x01010000UL | (uint32_t)outlen);
+   ALIGN(64) uint8_t buffer[BLAKE2B_BLOCKBYTES];
+   __m256i a = XOR(LOAD(&blake2b_IV[0]), parameter_block);
+diff --git a/src/crypto/randomx/jit_compiler_x86.cpp b/src/crypto/randomx/jit_compiler_x86.cpp
+index 7fef5aa..8c37409 100644
+--- a/src/crypto/randomx/jit_compiler_x86.cpp
++++ b/src/crypto/randomx/jit_compiler_x86.cpp
+@@ -77,6 +77,12 @@ void randomx_set_optimized_dataset_init(int value)
+ }
+ 
+ namespace randomx {
++#ifdef RX_BODYALIGN_TEST
++    bool rx_bodyalign_force_fallback = false;
++    unsigned rx_bodyalign_uses = 0;
++    uintptr_t rx_bodyalign_last_start = 0;
++#endif
++
+ 	/*
+ 
+ 	REGISTER ALLOCATION:
+@@ -471,6 +477,24 @@ namespace randomx {
+ #endif
+         memcpy(code + prologueSize, loopLoad, loadSize);
+         codePosFirst = prologueSize + loadSize;
++        bool alignBody = registerPointers;
++#ifdef RX_BODYALIGN_TEST
++        if (rx_bodyalign_force_fallback) alignBody = false;
++#endif
++        if (alignBody) {
++            // Align the generated VM body, retaining the existing outer-loop target.
++            size_t padding = (32 - (reinterpret_cast<uintptr_t>(code + codePosFirst) & 31)) & 31;
++            while (padding) {
++                const size_t n = padding > 9 ? 9 : padding;
++                memcpy(code + codePosFirst, NOPX[n - 1], n);
++                codePosFirst += n;
++                padding -= n;
++            }
++#ifdef RX_BODYALIGN_TEST
++            ++rx_bodyalign_uses;
++            rx_bodyalign_last_start = reinterpret_cast<uintptr_t>(code + codePosFirst);
++#endif
++        }
+ 		codePos = ADDR(randomx_program_prologue_first_load) - ADDR(randomx_program_prologue);
+ 
+ 		if (RandomX_CurrentConfig.Tweak_V2_AES && !hasAES) {
