@@ -146,7 +146,7 @@ def main():
     active = subprocess.run(['tmux', 'has-session', '-t', '=' + session],
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
     if active:
-        subprocess.run(['tmux', 'send-keys', '-t', '=' + session, 'C-c'], check=True)
+        subprocess.run(['tmux', 'send-keys', '-t', session + ':', 'C-c'], check=True)
     for _ in range(50):
         if not miners_running():
             break
@@ -175,7 +175,7 @@ def main():
     subprocess.run(['sh', str(start)], check=True)
     print('Saved for reboot and started. Checking miner output...', flush=True)
     time.sleep(5)
-    subprocess.run(['tmux', 'capture-pane', '-p', '-t', '=' + session, '-S', '-35'], check=True)
+    subprocess.run(['tmux', 'capture-pane', '-p', '-t', session + ':', '-S', '-35'], check=True)
     print('Check for pool jobs and accepted shares. No miner binary was replaced.')
 
 
