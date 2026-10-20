@@ -16,7 +16,7 @@ Before modifying startup settings, the script requires a mounted `/media/usb`, m
 
 A simple single-line tmux command or direct miner command (optionally ending with `> /var/log/xmrig.log 2>&1 &`) is supported. Direct background startup is converted to tmux, and only the exact matching executable is signalled to stop. Ambiguous/complex scripts are refused for manual review. `--dry-run` prints the proposed script without modifying anything or stopping mining. Do not share that output if the wallet should remain private.
 
-Validation: fifteen tests cover preserving CPU settings and worker suffixes, alternative miner binary names, equal-sign options, repeat application, ambiguous scripts, command-chain refusal, missing values, worker-name input, SupportXMR worker retention, download integrity, executable staging, successful installation, and rollback on save failure. Real pool connectivity must be verified on each rig after running.
+Validation: seventeen tests cover preserving CPU settings and worker suffixes, alternative miner binary names, equal-sign options, repeat application, ambiguous scripts, command-chain refusal, missing values, worker-name input, SupportXMR worker retention, download integrity, executable staging, successful installation, and rollback on save failure. Real pool connectivity must be verified on each rig after running.
 
 
 ## Optional miner upgrade
@@ -28,3 +28,5 @@ The replacement must match the architecture, libc and runtime dependencies of th
 Existing SupportXMR worker names are recovered from the password when the username is a plain wallet. No CPU settings are changed by the upgrade.
 
 Interactive prompts use `/dev/tty`, allowing the installer to be delivered through a Python heredoc. When no worker suffix or existing SupportXMR password can be recovered, type a short worker name at the prompt.
+
+Direct log redirection accepts overwrite/append (`>`/`>>`), optional stdout/stderr descriptors, stderr duplication (`2>&1`), and background launch with or without surrounding spaces. Pipes, chained commands, other output locations and unsupported descriptors are refused.

@@ -31,12 +31,37 @@ def parse_start(text):
             continue
         if outer and Path(outer[0]).name in ('xmrig', 'xmrig-miner'):
             # Older rigs launch directly with a log redirect and background '&'.
-            command = re.sub(r'\s+>\s*/var/log/[A-Za-z0-9_.-]+\s+2>&1\s*&\s*$', '', line.strip())
-            if command == line.strip():
-                command = re.sub(r'\s*&\s*$', '', command)
-            inner = shlex.split(command)
-            if any(any(c in arg for c in (';', '|', '&', '>', '<', '`', '$')) for arg in inner):
-                raise ValueError('Unsupported shell operators in the direct miner command.')
+            lexer = shlex.shlex(line, posix=True, punctuation_chars=';&|<>')
+            lexer.whitespace_split = True
+            lexer.commenters = '#'
+            tokens = list(lexer)
+            inner = []
+            i = 0
+            while i < len(tokens):
+                token = tokens[i]
+                if token == '&' and i == len(tokens) - 1:
+                    break
+                fd = None
+                if token in ('1', '2') and i + 1 < len(tokens) and tokens[i + 1] in ('>', '>>', '>&'):
+                    fd = token
+                    i += 1
+                    token = tokens[i]
+                if token in ('>', '>>', '>&'):
+                    if i + 1 >= len(tokens):
+                        raise ValueError('Missing log-redirection target.')
+                    target = tokens[i + 1]
+                    if token == '>&':
+                        if fd != '2' or target != '1':
+                            raise ValueError('Only stderr-to-stdout redirection is supported.')
+                    elif not re.fullmatch(r'/var/log/[A-Za-z0-9_.-]+', target):
+                        raise ValueError('Only /var/log/ miner log redirection is supported.')
+                    i += 2
+                    continue
+                if any(c in token for c in (';', '|', '&', '>', '<', '`', '$')):
+                    raise ValueError('Unsupported shell operators in the direct miner command.')
+                inner.append(token)
+                i += 1
+            command = shlex.join(inner)
             session = 'xmrig'
             outer = ['tmux', 'new-session', '-d', '-s', session, command]
         elif len(outer) >= 6 and outer[:2] == ['tmux', 'new-session'] and '-s' in outer:

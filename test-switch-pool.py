@@ -100,4 +100,14 @@ class PoolSwitchTests(unittest.TestCase):
   with patch('builtins.open',mock_open(read_data='5900x-2\n')) as opened:
    self.assertEqual(m.terminal_input('Worker: '),'5900x-2')
    opened.assert_called_once_with('/dev/tty','r+')
+ def test_background_log_redirect_variants(self):
+  for suffix in [' > /var/log/xmrig.log 2>&1 &', ' >> /var/log/xmrig.log 2>&1 &', '>/var/log/xmrig.log 2>&1&', ' 1>>/var/log/xmrig.log 2 >& 1 &', ' 2>/var/log/miner.err &', ' &']:
+   with self.subTest(suffix=suffix):
+    line='/root/xmrig-miner -o old:9200 -u OLD.3900x -p x --nicehash'+suffix+'\n'
+    new,_=m.rewrite(line,WALLET,'3900x')
+    _,_,inner,_=m.parse_start(new)
+    self.assertEqual(inner[0],'/root/xmrig-miner');self.assertIn(m.POOL,inner);self.assertNotIn('>',new)
+ def test_dangerous_redirect_refused(self):
+  for suffix in [' > /etc/passwd &',' | sh',' ; reboot',' > /var/log/a 2>&3 &']:
+   with self.subTest(suffix=suffix), self.assertRaises(ValueError):m.parse_start('/root/xmrig-miner -u OLD'+suffix)
 if __name__=='__main__':unittest.main()
