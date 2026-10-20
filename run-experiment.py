@@ -14,6 +14,7 @@ import time
 
 BASE = Path(__file__).resolve().parent
 EXPERIMENTS = {
+    'aes-unroll256': ('build-jit-rcp-aes-unroll256.sh', 'build-7168-jit-rcp-aes-unroll256-r2'),
     'aes-prefetch128': ('build-jit-rcp-aes-prefetch128.sh', 'build-7168-jit-rcp-aes-prefetch128-r2'),
     'direct-add': ('build-jit-rcp-direct-add.sh', 'build-7168-jit-rcp-direct-add-r2'),
     'rcp-pool': ('build-jit-rcp-rcp-pool.sh', 'build-7168-jit-rcp-rcp-pool-r2'),
