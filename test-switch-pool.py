@@ -79,6 +79,7 @@ class PoolSwitchTests(unittest.TestCase):
     stack.enter_context(patch.object(m.shutil,'which',return_value='/bin/sh'))
     stack.enter_context(patch.object(m,'stage_miner',return_value=staged))
     stack.enter_context(patch.object(m,'miners_running',return_value=[]))
+    stack.enter_context(patch.object(m,'stop_direct_miner',return_value=False))
     stack.enter_context(patch.object(m.subprocess,'run',side_effect=run))
     stack.enter_context(patch.object(m.time,'sleep'))
     if fail_commit:
@@ -87,4 +88,16 @@ class PoolSwitchTests(unittest.TestCase):
     else:
      m.main();self.assertEqual(binary.read_bytes(),b'NEW');self.assertIn(m.POOL,start.read_text())
     self.assertTrue(any(x.name.startswith('xmrig-miner.before-upgrade-') for x in usb.iterdir()))
+ def test_background_startup(self):
+  original='#!/bin/sh\ncp /media/usb/xmrig-miner /root/xmrig-miner\nchmod +x /root/xmrig-miner\n/root/xmrig-miner -o old:9200 -a rx/0 -u OLD.3900x -p x --nicehash --threads=24 > /var/log/xmrig.log 2>&1 &\n'
+  new,session=m.rewrite(original,WALLET,'3900x')
+  self.assertEqual(session,'xmrig');self.assertEqual(new.splitlines()[:3],original.splitlines()[:3])
+  _,outer,inner,_=m.parse_start(new);self.assertEqual(outer[:2],['tmux','new-session']);self.assertIn('--threads=24',inner);self.assertNotIn('--nicehash',inner);self.assertNotIn('>',new)
+ def test_unsafe_background_refused(self):
+  with self.assertRaises(ValueError):m.parse_start('/root/xmrig -u OLD & reboot\n')
+ def test_terminal_input_uses_tty(self):
+  from unittest.mock import mock_open
+  with patch('builtins.open',mock_open(read_data='5900x-2\n')) as opened:
+   self.assertEqual(m.terminal_input('Worker: '),'5900x-2')
+   opened.assert_called_once_with('/dev/tty','r+')
 if __name__=='__main__':unittest.main()

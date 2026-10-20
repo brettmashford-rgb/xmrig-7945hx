@@ -9,6 +9,7 @@ from pathlib import Path
 import re
 import shlex
 import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -28,18 +29,28 @@ def parse_start(text):
             outer = shlex.split(line, comments=True)
         except ValueError:
             continue
-        if len(outer) < 6 or outer[:2] != ['tmux', 'new-session'] or '-s' not in outer:
+        if outer and Path(outer[0]).name in ('xmrig', 'xmrig-miner'):
+            # Older rigs launch directly with a log redirect and background '&'.
+            command = re.sub(r'\s+>\s*/var/log/[A-Za-z0-9_.-]+\s+2>&1\s*&\s*$', '', line.strip())
+            if command == line.strip():
+                command = re.sub(r'\s*&\s*$', '', command)
+            inner = shlex.split(command)
+            if any(any(c in arg for c in (';', '|', '&', '>', '<', '`', '$')) for arg in inner):
+                raise ValueError('Unsupported shell operators in the direct miner command.')
+            session = 'xmrig'
+            outer = ['tmux', 'new-session', '-d', '-s', session, command]
+        elif len(outer) >= 6 and outer[:2] == ['tmux', 'new-session'] and '-s' in outer:
+            session = outer[outer.index('-s') + 1]
+            inner = shlex.split(outer[-1])
+            if not inner or Path(inner[0]).name not in ('xmrig', 'xmrig-miner'):
+                continue
+            if outer.index('-s') + 2 != len(outer) - 1 or any(x in inner for x in ('&&', ';', '|', '&')):
+                raise ValueError('Unsupported startup command; send the startup script for review.')
+        else:
             continue
-        session = outer[outer.index('-s') + 1]
-        inner = shlex.split(outer[-1])
-        if not inner or Path(inner[0]).name not in ('xmrig', 'xmrig-miner'):
-            continue
-        # Only the simple quoted command format used by these rigs is supported.
-        if outer.index('-s') + 2 != len(outer) - 1 or any(x in inner for x in ('&&', ';', '|', '&')):
-            raise ValueError('Unsupported startup command; send the startup script for review.')
         matches.append((index, outer, inner, session))
     if len(matches) != 1:
-        raise ValueError('Expected one simple tmux miner command in the startup script.')
+        raise ValueError('Expected one recognised miner command in the startup script.')
     return matches[0]
 
 
@@ -164,6 +175,32 @@ def stage_miner(url, expected, destination):
         raise
 
 
+def terminal_input(prompt):
+    # Installer is delivered through a Python heredoc, so stdin is not the keyboard.
+    with open('/dev/tty', 'r+') as tty:
+        tty.write(prompt)
+        tty.flush()
+        answer = tty.readline()
+    if not answer:
+        raise ValueError('No terminal response; specify --worker or --wallet explicitly.')
+    return answer.strip()
+
+
+def stop_direct_miner(executable):
+    stopped = False
+    for item in Path('/proc').iterdir():
+        if not item.name.isdigit():
+            continue
+        try:
+            target = os.readlink(item / 'exe').removesuffix(' (deleted)')
+            if target == executable:
+                os.kill(int(item.name), signal.SIGINT)
+                stopped = True
+        except (OSError, ValueError):
+            continue
+    return stopped
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--wallet', help='Monero wallet; prompted if omitted')
@@ -175,19 +212,19 @@ def main():
     candidates = []
     for path in Path('/etc/local.d').glob('*.start'):
         text = path.read_text()
-        if 'tmux' in text and ('xmrig-miner' in text or 'xmrig' in text):
+        if 'xmrig-miner' in text or 'xmrig' in text:
             candidates.append((path, text))
     if len(candidates) != 1:
         raise ValueError('Cannot identify one miner startup script. Run: cat /etc/local.d/*.start')
     start, original = candidates[0]
     _, _, inner, session = parse_start(original)
     _, inferred = pool_args(inner)
-    wallet = args.wallet or input('Paste Monero wallet: ').strip()
+    wallet = args.wallet or terminal_input('Paste Monero wallet: ')
     if not re.fullmatch(r'[48][1-9A-HJ-NP-Za-km-z]{94}|[48][1-9A-HJ-NP-Za-km-z]{105}', wallet):
         raise ValueError('Wallet format is not a recognised mainnet Monero address.')
     worker = args.worker or inferred
     if not valid_worker(worker):
-        worker = input('Worker name (e.g. 3900x or 5900x-2): ').strip()
+        worker = terminal_input('Worker name (e.g. 3900x or 5900x-2): ')
     if not valid_worker(worker):
         raise ValueError('Use letters, digits, underscores or hyphens for the worker name.')
     updated, session = rewrite(original, wallet, worker)
@@ -224,8 +261,11 @@ def main():
         print('Miner backup:', binary_backup, flush=True)
     active = subprocess.run(['tmux', 'has-session', '-t', '=' + session],
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+    was_running = active
     if active:
         subprocess.run(['tmux', 'send-keys', '-t', session + ':', 'C-c'], check=True)
+    else:
+        was_running = stop_direct_miner(inner[0])
     for _ in range(50):
         if not miners_running():
             break
@@ -252,7 +292,7 @@ def main():
             os.replace(restore, persistent)
         atomic_write(start, original)
         subprocess.run(['lbu', 'commit'], check=False)
-        if active:
+        if was_running:
             subprocess.run(['sh', str(start)], check=False)
         print('Startup settings restored from backup.', file=sys.stderr)
         raise
