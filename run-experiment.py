@@ -14,6 +14,7 @@ import time
 
 BASE = Path(__file__).resolve().parent
 EXPERIMENTS = {
+    'direct-add': ('build-jit-rcp-direct-add.sh', 'build-7168-jit-rcp-direct-add-r2'),
     'rcp-pool': ('build-jit-rcp-rcp-pool.sh', 'build-7168-jit-rcp-rcp-pool-r2'),
     'jit-phase32': ('build-jit-rcp-jit-phase32.sh', 'build-7168-jit-rcp-jit-phase32-r2'),
     'branch-align32': ('build-jit-rcp-branch-align32.sh', 'build-7168-jit-rcp-branch-align32-r2'),

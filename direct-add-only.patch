@@ -1,0 +1,72 @@
+diff --git a/src/crypto/randomx/jit_compiler_x86.cpp b/src/crypto/randomx/jit_compiler_x86.cpp
+index 7fef5aa..510caf5 100644
+--- a/src/crypto/randomx/jit_compiler_x86.cpp
++++ b/src/crypto/randomx/jit_compiler_x86.cpp
+@@ -77,6 +77,17 @@ void randomx_set_optimized_dataset_init(int value)
+ }
+ 
+ namespace randomx {
++#ifdef RX_DIRECTADD_TEST
++    bool rx_directadd_force_fallback = false;
++    unsigned rx_directadd_uses = 0;
++#endif
++
++#ifdef RX_BODYALIGN_TEST
++    bool rx_bodyalign_force_fallback = false;
++    unsigned rx_bodyalign_uses = 0;
++    uintptr_t rx_bodyalign_last_start = 0;
++#endif
++
+ 	/*
+ 
+ 	REGISTER ALLOCATION:
+@@ -471,6 +482,24 @@ namespace randomx {
+ #endif
+         memcpy(code + prologueSize, loopLoad, loadSize);
+         codePosFirst = prologueSize + loadSize;
++        bool alignBody = registerPointers;
++#ifdef RX_BODYALIGN_TEST
++        if (rx_bodyalign_force_fallback) alignBody = false;
++#endif
++        if (alignBody) {
++            // Align the generated VM body, retaining the existing outer-loop target.
++            size_t padding = (32 - (reinterpret_cast<uintptr_t>(code + codePosFirst) & 31)) & 31;
++            while (padding) {
++                const size_t n = padding > 9 ? 9 : padding;
++                memcpy(code + codePosFirst, NOPX[n - 1], n);
++                codePosFirst += n;
++                padding -= n;
++            }
++#ifdef RX_BODYALIGN_TEST
++            ++rx_bodyalign_uses;
++            rx_bodyalign_last_start = reinterpret_cast<uintptr_t>(code + codePosFirst);
++#endif
++        }
+ 		codePos = ADDR(randomx_program_prologue_first_load) - ADDR(randomx_program_prologue);
+ 
+ 		if (RandomX_CurrentConfig.Tweak_V2_AES && !hasAES) {
+@@ -857,6 +886,24 @@ namespace randomx {
+ 		uint8_t* const p = code + pos;
+ 
+ 		const uint32_t dst = instr.dst;
++        bool directAdd = instr.getModShift() == 0 && dst != RegisterNeedsDisplacement;
++#ifdef RX_DIRECTADD_TEST
++        if (rx_directadd_force_fallback) directAdd = false;
++#endif
++        if (directAdd) {
++            // Unscaled IADD_RS has no immediate displacement. ADD is one byte
++            // shorter than LEA; native flags are not part of the VM state.
++            // CBRANCH establishes its own flags immediately before branching.
++            p[0] = 0x4d;
++            p[1] = 0x01;
++            p[2] = 0xc0 | (instr.src << 3) | dst;
++            codePos = pos + 3;
++            registerUsage[dst] = codePos;
++#ifdef RX_DIRECTADD_TEST
++            ++rx_directadd_uses;
++#endif
++            return;
++        }
+ 		const uint32_t sib = (instr.getModShift() << 6) | (instr.src << 3) | dst;
+ 
+ 		uint32_t k = 0x048d4f + (dst << 19);
