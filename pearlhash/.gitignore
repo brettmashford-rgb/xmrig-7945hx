@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+build/
+captures/
+*.bundle
+target/
