@@ -1,5 +1,20 @@
 # PearlHash development checkpoints
 
+## v0.0.4-gpu-noise-check
+
+Download: [Linux x86_64 sm_120 noise/digest test](releases/pearlhash-dev-v0.0.4-linux-x86_64.tar.gz).
+
+SHA-256: `07a714d4888de665aba3686d0c9e1d60049e32fd3d701f15806d943467532df7`.
+
+Adds independent fixed-length keyed BLAKE3, deterministic noise generation and
+final digest kernels. Native sm_120 compilation succeeds. All 12 CPU inputs
+and 13 invalid-input cases pass, including host sanitizer checks. Five new
+GPU noise/digest tests are **pending**; the user has already confirmed seven
+v0.0.3 GPU matrix/transcript checks on the RTX 5060. Supplied seeds/indices;
+no seed derivation, commitments, proofs, pool client, accepted shares or gains.
+No compiler installation on the rig; no service or clock changes. See
+[scope and rebuild instructions](gpu/README.md). Prior archives unchanged.
+
 ## v0.0.3-gpu-math-check
 
 Download: [Linux x86_64 sm_120 offline math test](releases/pearlhash-dev-v0.0.3-linux-x86_64.tar.gz).
@@ -11,7 +26,7 @@ harness. Approximately 260 KiB compressed. No compiler installation on the rig.
 Seven compact inputs; all cumulative products and transcript words are checked.
 CPU reference checks and malformed-input rejection pass, including host
 AddressSanitizer/UndefinedBehaviorSanitizer checks (leak detection disabled).
-**GPU execution pending; not a miner; no pool verdict or performance claims.**
+**All seven GPU tests passed on the user's RTX 5060; not a miner; no pool verdict or performance claims.**
 No GPU noise/digest, Merkle proof construction or pool protocol implementation.
 See [scope and rebuild instructions](gpu/README.md). Existing miners and clocks
 are untouched. The v0.0.2 archive remains unchanged.

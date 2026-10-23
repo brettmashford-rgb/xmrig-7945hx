@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "keyed64.h"
 
 using U = uint32_t;
 static_assert(sizeof(int) == 4);
@@ -23,11 +24,17 @@ static U read_u32(std::istream &in) {
 struct Fixture {
     U rows, cols, k, rank;
     std::vector<int> a, bt, products;
+    bool with_noise=false;
+    std::array<U,8> seed_a{}, seed_b{}, digest{};
+    std::vector<U> indices_a, indices_b;
+    std::vector<int> signal_a, signal_b;
     std::array<U,16> expected{}, words{};
     explicit Fixture(const char *path) {
         std::ifstream in(path, std::ios::binary);
         char magic[8];
-        require(bool(in.read(magic, 8)) && !std::memcmp(magic,"PHGPU01\0",8), "bad fixture magic");
+        require(bool(in.read(magic, 8)), "bad fixture magic");
+        with_noise=!std::memcmp(magic,"PHGPU02\0",8);
+        require(with_noise || !std::memcmp(magic,"PHGPU01\0",8), "bad fixture magic");
         rows=read_u32(in); cols=read_u32(in); k=read_u32(in); rank=read_u32(in);
         require(rows && rows<=32 && cols && cols<=32 && k && k<=65536 &&
                 rank>=32 && rank<=1024 && !(rank & (rank-1)) && !(k%rank), "unsupported dimensions");
@@ -39,6 +46,33 @@ struct Fixture {
             x=int(value);
         }
         for (auto &x: expected) x=read_u32(in);
+        if(with_noise) {
+            for(auto *seed : {&seed_a,&seed_b}) for(auto &x:*seed) x=read_u32(in);
+            indices_a.resize(rows); indices_b.resize(cols);
+            for(auto *indices : {&indices_a,&indices_b}) for(auto &x:*indices) {
+                x=read_u32(in);
+                require(uint64_t(x)*rank+rank<=0x100000000ULL,"noise row index overflow");
+            }
+            signal_a.resize(rows*k); signal_b.resize(cols*k);
+            for(auto *signal : {&signal_a,&signal_b}) for(auto &x:*signal) {
+                U bits=read_u32(in);
+                int64_t value=bits<=0x7fffffffU?int64_t(bits):int64_t(bits)-0x100000000LL;
+                require(value>=-64 && value<=64,"signal outside [-64,64]");
+                x=int(value);
+            }
+            for(auto &x:digest) x=read_u32(in);
+            auto check_noise=[&](const auto &signal,const auto &noised,const auto &indices,
+                                 const auto &seed,U label) {
+                for(size_t p=0;p<signal.size();++p)
+                    require(signal[p]+ph::noise(indices[p/k],U(p%k),rank,label,seed.data())==noised[p],
+                            "CPU noise differs from fixture");
+            };
+            check_noise(signal_a,a,indices_a,seed_a,0x65745f41U);
+            check_noise(signal_b,bt,indices_b,seed_b,0x65745f42U);
+            std::array<U,8> computed{};
+            ph::keyed64(expected.data(),seed_a.data(),computed.data());
+            require(computed==digest,"CPU digest differs from fixture");
+        }
         require(in.peek()==std::char_traits<char>::eof(), "trailing fixture bytes");
         // Worst-case prefix bound avoids signed overflow on CPU and GPU.
         require(uint64_t(k)*127*127<=uint64_t(std::numeric_limits<int>::max()), "unsafe accumulation");
@@ -128,7 +162,28 @@ struct Driver {
     void run(Fixture &f) {
         auto a=alloc(f.a.size()*4), bt=alloc(f.bt.size()*4);
         auto products=alloc(f.products.size()*4), words=alloc(64);
-        upload(a,f.a.data(),f.a.size()*4); upload(bt,f.bt.data(),f.bt.size()*4);
+        if(!f.with_noise) {
+            upload(a,f.a.data(),f.a.size()*4); upload(bt,f.bt.data(),f.bt.size()*4);
+        }
+        Ptr seed_a=0;
+        if(f.with_noise) {
+            auto generate=[&](const auto &signal,const auto &expected,const auto &indices,
+                              const auto &seed,Ptr dest,U rows,U label) {
+                auto s=alloc(signal.size()*4), ix=alloc(indices.size()*4), key=alloc(32);
+                upload(s,signal.data(),signal.size()*4); upload(ix,indices.data(),indices.size()*4);
+                upload(key,seed.data(),32);
+                // Never prefill GPU noise outputs with expected answers.
+                std::vector<U> poison(signal.size(),0xdeadbeefU);
+                upload(dest,poison.data(),poison.size()*4);
+                void *args[]={&s,&ix,&key,&dest,&rows,&f.k,&f.rank,&label};
+                launch("noise_add",(U(signal.size())+127)/128,128,args);
+                std::vector<int> result(signal.size()); download(result.data(),dest,result.size()*4);
+                require(result==expected,"GPU signal + noise differs from fixture");
+                return key;
+            };
+            seed_a=generate(f.signal_a,f.a,f.indices_a,f.seed_a,a,f.rows,0x65745f41U);
+            generate(f.signal_b,f.bt,f.indices_b,f.seed_b,bt,f.cols,0x65745f42U);
+        }
         // Poison outputs so partial kernel writes cannot pass silently.
         std::vector<U> poison(f.products.size(),0xdeadbeefU);
         std::array<U,16> word_poison; word_poison.fill(0xdeadbeefU);
@@ -142,6 +197,13 @@ struct Driver {
         download(result.data(),products,result.size()*4); download(folded.data(),words,64);
         require(result==f.products,"GPU cumulative products differ from independent int64 CPU calculation");
         require(folded==f.expected,"GPU transcript differs from fixture");
+        if(f.with_noise) {
+            auto digest=alloc(32);
+            upload(digest,word_poison.data(),32);
+            void *args[]={&words,&seed_a,&digest}; launch("digest64",1,1,args);
+            std::array<U,8> result_digest{}; download(result_digest.data(),digest,32);
+            require(result_digest==f.digest,"GPU digest differs from fixture");
+        }
     }
 };
 
@@ -153,10 +215,11 @@ int main(int argc, char **argv) {
         if (!cpu) driver.init(argv[1]);
         for (int i=2;i<argc;++i) {
             Fixture f(argv[i]); if(!cpu) driver.run(f);
-            std::cout<<"PASS: "<<(cpu?"CPU input/transcript check: ":"GPU cumulative products + transcript: ")
+            std::cout<<"PASS: "<<(cpu?"CPU ":"GPU ")
+                     <<(f.with_noise?"noise + products + transcript + digest: ":"products + transcript: ")
                      <<argv[i]<<" ("<<f.rows<<"x"<<f.cols<<", k="<<f.k<<", rank="<<f.rank<<")\n";
         }
-        std::cout<<"Offline math only; no GPU noise, digest, Merkle proof, pool client or pool verdict.\n";
+        std::cout<<"Offline math only; supplied seeds, no seed derivation, Merkle proof, pool client or pool verdict.\n";
         return 0;
     } catch (const std::exception &e) { std::cerr<<"FAIL: "<<e.what()<<"\n"; return 1; }
 }

@@ -1,12 +1,15 @@
 # Independent PearlHash miner development
 
-Version: **0.0.3-gpu-math-check**. This remains **not a miner**. Native sm_120
-CUDA kernels and an offline Linux test harness now compile. GPU execution on
-the RTX 5060 is pending. No pool client, accepted custom-miner share or measured
-speed/power improvement exists. Pool encoding remains unresolved.
+Version: **0.0.4-gpu-noise-check**. This remains **not a miner**.
+
+The user confirmed all seven v0.0.3 matrix/transcript checks pass on the RTX
+5060. New native sm_120 noise-generation and final keyed BLAKE3 kernels compile;
+their GPU execution is pending. Host checks match the independent Python
+reference and official-generated V2/V3 noise/transcript/digest outputs.
+No pool client, accepted custom-miner share or measured speed/power gains exist.
+The Pearlhash pool encoding remains unresolved.
 
 See [GPU correctness checkpoint](gpu/README.md) and [downloads](RELEASES.md).
-The kernels check pre-noised cumulative products and transcript folding only.
 
 ## Source and implemented components
 
@@ -32,9 +35,9 @@ Pinned commit: `82e6eee7076aafe10123e08db78f100d270c0582`.
 Protocol findings: [docs/reconnaissance.md](docs/reconnaissance.md).
 Benchmark/release gates: [docs/validation.md](docs/validation.md).
 
-## Run the included CPU binary
+## Run the v0.0.2 CPU binary
 
-The Linux x86_64 archive includes `bin/pearl-cpu-oracle` (glibc 2.34+ and
+The v0.0.2 Linux x86_64 archive includes `bin/pearl-cpu-oracle` (glibc 2.34+ and
 libgcc_s required). No CUDA or Rust compiler is needed to run it. Runtime makes
 no network connections. From the extracted directory:
 
@@ -65,7 +68,7 @@ revision are committed. Rust 1.99.1 was used. The separate [GPU test build](gpu/
 Building fetches dependency sources/submodules and takes more space than the
 executable alone. Do not install that toolchain into the small rig persistence.
 
-The release archive includes a self-contained Git bundle. From its directory:
+The v0.0.2 release archive includes a self-contained Git bundle. From its directory:
 
 ```sh
 git clone pearlhash-dev.bundle ../pearlhash-dev-git
@@ -92,7 +95,8 @@ Compiled binaries belong to release archives rather than Git history.
   under an intentionally tiny share target.
 - CLI verifies both saved fixtures. Corrupted proofs are rejected in tests.
 - The complete upstream ZK/circuit test suite was **not** executed.
-- Native sm_120 compilation succeeds; seven compact CPU input/transcript checks
-  and malformed-input rejection pass. Sanitized host checks pass with leak
-  detection disabled due to host process-inspection restrictions.
-- No GPU execution, custom pool share or benchmark yet.
+- v0.0.3: seven GPU matrix/transcript checks passed on the user's RTX 5060.
+- v0.0.4: native sm_120 noise/digest kernels compile. Twelve CPU math cases and
+  13 malformed-input cases pass, including sanitized host checks with leak
+  detection disabled due to process-inspection restrictions.
+- New GPU noise/digest execution is pending; no custom pool share or benchmark.

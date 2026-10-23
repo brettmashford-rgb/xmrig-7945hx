@@ -47,7 +47,21 @@ transcript fold over pre-noised fixture matrices. Seven compact CPU checks and
 malformed-input rejection pass. Host sanitizer checks pass with leak detection
 disabled. The user has confirmed both v0.0.2 oracle fixtures on the rig.
 
-GPU execution is pending. GPU noise/digest and proof construction are not
-implemented. Pool encoding remains unresolved. No custom live share submission
+At v0.0.3, GPU execution was pending and GPU noise/digest were not
+implemented. See the newer checkpoint status below. Pool encoding remains unresolved. No custom live share submission
 or speed/power improvement has been demonstrated. Offline validity is not pool
 acceptance. See [GPU checkpoint scope](../gpu/README.md).
+
+## Rig confirmation and next checkpoint
+
+The user supplied a Termius screenshot confirming all seven v0.0.3 GPU
+matrix/transcript tests passed on the RTX 5060 sm_120, with archive/internal
+checksums OK. This does not validate noise, digest, proof construction or
+pool compatibility.
+
+At v0.0.4, independent fixed-length keyed BLAKE3 and noise code builds for
+sm_120 and matches Python/official-generated outputs on the CPU. All 12
+compact CPU cases and 13 invalid-input cases pass. New GPU noise/digest tests
+remain pending. Noise seeds and row indices are still fixture inputs. No
+seed derivation, commitment/proof construction, target handling or pool client
+is added by this checkpoint. No accepted shares or performance gains.

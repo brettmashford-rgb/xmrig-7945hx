@@ -23,7 +23,10 @@ def build(library, output):
     print(f'NVRTC {major.value}.{minor.value}; native sm_120; GPU not used')
     program = C.c_void_p()
     source = (Path(__file__).parents[1] / 'gpu/correctness.cu').read_bytes()
-    rc = lib.nvrtcCreateProgram(C.byref(program), source, b'correctness.cu', 0, None, None)
+    header = (Path(__file__).parents[1] / 'gpu/keyed64.h').read_bytes()
+    headers = (C.c_char_p * 1)(header)
+    names = (C.c_char_p * 1)(b'keyed64.h')
+    rc = lib.nvrtcCreateProgram(C.byref(program), source, b'correctness.cu', 1, headers, names)
     if rc:
         raise RuntimeError(f'nvrtcCreateProgram: {rc}')
     try:

@@ -48,6 +48,33 @@ class HarnessTests(unittest.TestCase):
             with self.subTest(message=message):
                 self.check_data(payload, message)
 
+    def test_five_noise_digest_vectors(self):
+        paths=sorted((self.vectors.parent/'gpu-noise').glob('*.bin'))
+        self.assertEqual(len(paths),5)
+        p=subprocess.run([self.binary,'--cpu-only',*map(str,paths)],capture_output=True,text=True)
+        self.assertEqual(p.returncode,0,p.stdout+p.stderr)
+        self.assertEqual(p.stdout.count('noise + products + transcript + digest:'),5)
+
+    def test_invalid_noise_digest_inputs(self):
+        data=(self.vectors.parent/'gpu-noise/rank1024.bin').read_bytes()
+        rows,cols,k,rank=struct.unpack_from('<4I',data,8)
+        extension=24+4*(rows+cols)*k+64
+        indices=extension+64
+        signals=indices+4*(rows+cols)
+        def replace(offset,value):
+            return data[:offset]+struct.pack('<I',value)+data[offset+4:]
+        cases=[
+            (data[:extension]+bytes([data[extension]^1])+data[extension+1:], 'CPU noise differs'),
+            (replace(indices,0xffffffff), 'noise row index overflow'),
+            (replace(signals,65), 'signal outside [-64,64]'),
+            (data[:-1]+bytes([data[-1]^1]), 'CPU digest differs'),
+            (data[:-1], 'truncated fixture'),
+            (data+b'!', 'trailing fixture bytes'),
+        ]
+        for payload,message in cases:
+            with self.subTest(message=message):
+                self.check_data(payload,message)
+
 
 if __name__ == '__main__':
     unittest.main()

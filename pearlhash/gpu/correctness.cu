@@ -1,4 +1,20 @@
 // ISC license; see ../LICENSE. Correctness baseline, not a mining kernel.
+#include "keyed64.h"
+
+extern "C" __global__ void noise_add(const int *signal, const unsigned *indices,
+                                   const unsigned *key, int *noised,
+                                   unsigned rows, unsigned k, unsigned rank,
+                                   unsigned label) {
+    unsigned p=blockIdx.x*blockDim.x+threadIdx.x;
+    if(p>=rows*k) return;
+    noised[p]=signal[p]+ph::noise(indices[p/k],p%k,rank,label,key);
+}
+
+extern "C" __global__ void digest64(const unsigned *words, const unsigned *key,
+                                  unsigned *digest) {
+    if(blockIdx.x || threadIdx.x) return;
+    ph::keyed64(words,key,digest);
+}
 extern "C" __global__ void cumulative(const int *a, const int *bt, int *out,
                                     unsigned rows, unsigned cols,
                                     unsigned k, unsigned rank) {
