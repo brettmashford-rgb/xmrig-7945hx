@@ -116,3 +116,14 @@ login is confirmed by the user's 2026-10-24 Termius screenshot: accepted login,
 16-character extranonce, notify field lengths [400,64,16,1], PASS and normal
 shell return. Source checksum also passed. The notify payload's separate scrambling, field semantics,
 production search, submission and pool acceptance remain unresolved.
+
+
+## Submission capture decoder
+
+The new offline decoder uses independent outer decoding and TCP reassembly.
+Five tests add connection/request-id isolation, negative/ambiguous responses,
+partial/malformed frames and larger captured submissions. All fourteen pool
+transport tests pass. It does not generate shares or open a pool connection.
+The preserved old messages decode with zero submissions. Header research has
+produced structurally plausible candidate bytes; the general inner codec,
+job configuration/version semantics and independent submission remain open.

@@ -14,7 +14,7 @@ No submitted/accepted custom share or measured speed/power gain exists.
 
 See [independent proof pipeline](proof/README.md),
 [GPU math scope](gpu/README.md), [login-only pool probe](docs/pool-probe.md),
-and [downloads](RELEASES.md).
+[existing-miner submission capture](docs/share-capture.md), and [downloads](RELEASES.md).
 
 ## Source and implemented components
 

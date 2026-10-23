@@ -149,3 +149,37 @@ uploaded. A login success establishes transport/login compatibility only.
 It supplies neither production mining nor proof submission. The user's
 2026-10-24 Termius screenshot confirms the independent live login, extranonce
 and notify exchange passed on the rig, with source checksum OK.
+
+
+## Saved live notify and header research
+
+The user displayed the saved independent-probe notify on 2026-10-24. Its four
+fields are 400/64/16/1 characters, with the final string "3", as in capture 03.
+This confirms the observed shape, not consensus version or target byte order.
+
+Further isolated inspection allowed the legacy notify decoder to be called on
+synthetic inputs without entering vendor mining main. For the inspected path it
+returns 76 bytes from a 200-byte input, and controlled input-bit changes act as
+byte-local XOR changes in the first 76 bytes; later bytes do not affect those
+outputs. An additional repeating key step is present in client/device constants.
+After that step, the older captured sample produces header-shaped bytes with
+version 0x20000000, a timestamp matching the capture and plausible compact nbits.
+The manually transcribed current sample produces the same version and a
+plausible probe-session timestamp. This is a research candidate, not a complete
+independent/general inner codec or a verified production job object. The full
+transformation rule and the remaining 124 bytes are still unresolved. The
+pinned official header layout is 4-byte LE version, two reversed 32-byte hashes,
+4-byte LE timestamp and 4-byte LE nbits (proof_utils.rs). Structural plausibility
+does not by itself prove header authenticity or consensus validity.
+
+WildRig was additionally loaded in isolation only as far as the intercepted
+startup hook, with socket/connect/send syscalls denied. Its mining main was not
+entered. Constants/static data were inspected for the additional key step; no
+vendor executable or code is included as a runtime dependency or redistributed.
+This project continues to contain independent implementations, not a wrapper.
+
+The legacy submission template mentions nonce, worker_nonce, miner_nonce,
+m, n, k, tail_mode, rank, tile_h, tile_w, a_rows and b_cols. These names alone
+are not proof of the current pool's accepted submission format or field
+semantics. The next evidence needed is an actual existing-miner submit and its
+correlated response; see [bounded capture decoding](share-capture.md).

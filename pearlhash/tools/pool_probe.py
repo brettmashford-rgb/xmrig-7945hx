@@ -43,11 +43,13 @@ def encode(message, nonce=None):
     return line
 
 
-def decode(line):
+def decode(line, *, max_line=MAX_LINE):
+    if type(max_line) is not int or not 1 <= max_line <= 8 * 1024 * 1024:
+        raise ValueError("invalid decoder size limit")
     if not isinstance(line, bytes) or not line.endswith(b"\n"):
         raise ValueError("frame must end in LF")
     body = line[:-1]
-    if len(line) > MAX_LINE or len(body) < 10 or len(body) % 2:
+    if len(line) > max_line or len(body) < 10 or len(body) % 2:
         raise ValueError("invalid frame length")
     if any(c not in b"0123456789abcdefABCDEF" for c in body):
         raise ValueError("frame is not strict ASCII hex")
