@@ -8,7 +8,8 @@ Merkle openings and serializes dense PlainProofs; new V2/V3 proofs pass the
 pinned official verifier. Both fresh V2/V3 GPU-candidate-to-proof runs also
 passed on the user's RTX 5060, with archive/internal checksums verified.
 An independent outer transport codec and login-only diagnostic are now available;
-live login, the scrambled inner job payload and submission remain unvalidated.
+the user has confirmed live login, extranonce and notify decoding on the rig.
+The scrambled inner job payload and submission remain unvalidated.
 No submitted/accepted custom share or measured speed/power gain exists.
 
 See [independent proof pipeline](proof/README.md),

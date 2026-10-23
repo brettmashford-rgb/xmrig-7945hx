@@ -112,5 +112,7 @@ locally with mode 0600, and disconnects after login/extranonce/notify. It does
 not execute GPU work, submit shares, reconnect or touch services/clocks.
 Five synthetic tests cover codec golden/round trips, malformed frames, fragmented
 replies, successful login and rejected/truncated exchanges. Live independent
-login is pending. The notify payload's separate scrambling, field semantics,
+login is confirmed by the user's 2026-10-24 Termius screenshot: accepted login,
+16-character extranonce, notify field lengths [400,64,16,1], PASS and normal
+shell return. Source checksum also passed. The notify payload's separate scrambling, field semantics,
 production search, submission and pool acceptance remain unresolved.

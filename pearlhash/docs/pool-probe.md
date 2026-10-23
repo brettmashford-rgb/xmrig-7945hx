@@ -22,3 +22,13 @@ Tests: from pearlhash/, run unittest discovery with pattern test_pool*.py.
 These use synthetic data and an in-memory fake socket, with no pool contact.
 Outer codec reconstruction/evidence and remaining blockers are recorded in
 [pool-capture-findings.md](pool-capture-findings.md).
+
+
+## Rig result
+
+The user supplied a Termius screenshot on 2026-10-24 (Australia/Brisbane):
+source checksum OK; LOGIN accepted; EXTRANONCE characters=16; NOTIFY field
+lengths=[400,64,16,1]; PASS and normal shell return. This was our independent
+agent and diagnostic worker on the original endpoint. The tool reported zero
+submitted shares and no GPU/service/clock work. Login compatibility is now
+confirmed; inner job decoding and custom share acceptance are not.

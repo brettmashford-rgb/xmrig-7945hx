@@ -146,4 +146,6 @@ The login-only probe sends our own `pearlhash-dev/0.0.6-probe` agent, defaults
 to the distinct `5060-dev-probe` worker and contacts only pool.pearlhash.xyz:9000.
 It retains decoded messages locally; no transcript/wallet is automatically
 uploaded. A login success establishes transport/login compatibility only.
-It supplies neither production mining nor proof submission. Live test pending.
+It supplies neither production mining nor proof submission. The user's
+2026-10-24 Termius screenshot confirms the independent live login, extranonce
+and notify exchange passed on the rig, with source checksum OK.
