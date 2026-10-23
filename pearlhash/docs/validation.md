@@ -95,6 +95,22 @@ disabled due to host restrictions. Source/limits are in proof/README.md.
 The v0.0.4 GPU checker/cubin are reused unchanged. The new runner asks them to
 check a fresh candidate's complete selected math, then constructs its proof
 and requires official verification. That two-version GPU-to-proof path is
-pending on the rig. CPU-only tests are explicitly labeled. The jobs are
+now confirmed on the user's RTX 5060 for both V2 and V3, with archive/internal
+checksums OK. CPU-only tests are explicitly labeled. The jobs are
 synthetic/easy-target/fixed small dimensions, not current pool jobs. Pool codec,
 live protocol/version context, submitted shares and performance remain open.
+
+
+## Independent transport diagnostic
+
+The outer codec now reproduces all eleven messages in the two preserved
+captures. The captured acknowledgements correlate to login/report_info, not
+share submissions. No captured submit or share verdict exists. A login-only
+Python probe uses our own agent name and a distinct worker on the same pool.
+It sends one login, waits at most 30 seconds / 16 messages, stores its transcript
+locally with mode 0600, and disconnects after login/extranonce/notify. It does
+not execute GPU work, submit shares, reconnect or touch services/clocks.
+Five synthetic tests cover codec golden/round trips, malformed frames, fragmented
+replies, successful login and rejected/truncated exchanges. Live independent
+login is pending. The notify payload's separate scrambling, field semantics,
+production search, submission and pool acceptance remain unresolved.

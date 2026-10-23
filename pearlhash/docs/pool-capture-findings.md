@@ -1,8 +1,9 @@
 # Observed Pearlhash traffic — 2026-10-23
 
-These are capture observations, not a decoded protocol specification.
-No field meanings, cipher, key derivation, share encoding or target semantics
-have been inferred as implementation requirements.
+This records transport observations and subsequent independent decoding.
+The outer JSON transport is now reproduced; inner job payload, target semantics
+and share submission remain unresolved. Historical observations below are
+retained with the decoding follow-up at the end.
 
 ## Capture 02 (existing live connection)
 
@@ -77,7 +78,8 @@ ambiguous candidates, not a general validated decoder. No candidate field or
 certificate version is accepted as protocol truth.
 
 Public client artifacts were downloaded and checksum-checked on the development
-host for static inspection only; neither was executed or redistributed:
+host, initially for static inspection. Neither is redistributed. Later isolated
+legacy encoder experiments are described below; WildRig was not executed:
 
 - Pearlhash legacy V14 `pearl-miner`: publisher SHA-256
   `249696c9c91f8821d194219cbbe37f56df541c157fe3ddda2ff063aaf1c60e63`.
@@ -100,3 +102,48 @@ not protocol or share-verification tests.
 Remaining blocker: a reproducible complete codec and exact handshake/job/proof
 submission semantics for pool.pearlhash.xyz:9000. No fabricated shares were sent,
 no pool connection was opened for these offline checks, and no pool was changed.
+
+
+## Independent outer codec (after v0.0.5 rig confirmation)
+
+After ASCII hex decoding, the first four bytes are a big-endian u32 nonce n.
+For the 48 positive coefficients p listed in tools/pool_probe.py, the mask is
+`(n * p - n % p) & 255`. XOR the remaining bytes with that repeating mask
+and parse UTF-8 JSON. Encoding is the same XOR followed by hex and LF. This
+obfuscation has no authentication and must not be treated as encryption.
+Our encoder selects n in 10..0xfffffffe, avoiding observed legacy clamping
+of values below 10 and 0xffffffff. The decoder applies the formula to any u32.
+Input framing is strictly bounded and checked; duplicate JSON keys/nonfinite
+numbers are rejected. This is an independently implemented Python codec;
+there is no vendor executable/library/runtime dependency.
+
+Evidence: all eleven messages from both captures decode consistently. Controlled
+legacy encoder experiments additionally match 1,033 nonce cases each for a
+192-byte repeated body, a two-byte `{}` body and every byte 0..255. Experiments
+intercepted startup and exited without entering the vendor mining main;
+socket/connect/send syscalls were denied by seccomp. Vendor binaries/research
+harnesses and private captures are not included in this repository. A synthetic
+nonce-10 encoder golden is in the tests. This is behavioral reconstruction,
+not a claim that the pool has published an authoritative protocol specification.
+
+Decoded capture 03:
+
+- Outbound id=0 method=login, params=[wallet, worker, agent].
+- Inbound status=1,id=0,result=true: login acknowledgement.
+- Inbound status=1,id=-1,result=["extranonce", 16 hex characters].
+- Two inbound status=1,id=-1,result arrays starting with "notify", followed
+  by strings of 400,64,16,1 characters. The last is "3". We do not yet assign
+  consensus version, header/config/target or work identity semantics to these.
+- Outbound id=2 method=report_info, params contains reported GPU name/hashrate.
+- Inbound status=1,id=2,result=true: report_info acknowledgement.
+
+Capture 02 contains report_info requests id=255/257 and corresponding true
+responses. Neither preserved capture contains a submit request or share verdict.
+A notify's 400-character hex field decodes to 200 bytes with separate scrambling;
+applying the outer codec again does not establish a meaningful job layout.
+
+The login-only probe sends our own `pearlhash-dev/0.0.6-probe` agent, defaults
+to the distinct `5060-dev-probe` worker and contacts only pool.pearlhash.xyz:9000.
+It retains decoded messages locally; no transcript/wallet is automatically
+uploaded. A login success establishes transport/login compatibility only.
+It supplies neither production mining nor proof submission. Live test pending.

@@ -14,9 +14,10 @@ original seed/math tests also pass with Python packages disabled. No pip/CUDA/
 Rust installation on the rig. Reuses the already-validated v0.0.4 GPU checker
 and cubin unchanged, plus the rig's existing v0.0.2 official CPU oracle.
 
-The fresh **GPU-to-proof run is pending**; all 12 previous GPU math cases passed.
+Both fresh **V2/V3 GPU-to-proof runs passed on the user's RTX 5060**, with
+archive/internal checksums verified; all 12 previous GPU math cases passed.
 Synthetic easy-target fixed small jobs only. No live job decoder, production
-search, pool client, submitted/accepted share or measured gain. See
+search, share-submitting pool client, submitted/accepted share or measured gain. See
 [independent proof scope and build instructions](proof/README.md).
 
 ## v0.0.4-gpu-noise-check

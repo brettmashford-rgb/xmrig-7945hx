@@ -43,8 +43,9 @@ the official oracle, which remains mandatory for this runner.
 
 GPU cubin and math executable are byte-for-byte copies from v0.0.4, whose
 five new GPU cases passed on the user's RTX 5060. No GPU source/kernel was
-changed by this checkpoint. The two **fresh candidate-to-proof GPU runs are
-pending** on the rig. Old fixtures are not replayed by this new test.
+changed by this checkpoint. Both **fresh V2/V3 candidate-to-proof GPU runs
+passed on the user's RTX 5060**, including official offline verification.
+Archive/internal checksums also passed. Old fixtures were not replayed.
 
 ## Run on the rig
 
