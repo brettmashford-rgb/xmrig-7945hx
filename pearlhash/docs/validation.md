@@ -42,5 +42,12 @@ noise matrices, full jackpot transcripts and digests. Negative tests cover
 changed header, changed matrix opening, invalid signal, wrong seed context and
 an intentionally tiny target. See README for the exact scope of each test.
 
-No CUDA compilation, GPU test, custom live share submission or speed/power
-improvement has been demonstrated. Offline validity is not pool acceptance.
+At v0.0.3, native sm_120 kernels compile for cumulative products and the
+transcript fold over pre-noised fixture matrices. Seven compact CPU checks and
+malformed-input rejection pass. Host sanitizer checks pass with leak detection
+disabled. The user has confirmed both v0.0.2 oracle fixtures on the rig.
+
+GPU execution is pending. GPU noise/digest and proof construction are not
+implemented. Pool encoding remains unresolved. No custom live share submission
+or speed/power improvement has been demonstrated. Offline validity is not pool
+acceptance. See [GPU checkpoint scope](../gpu/README.md).

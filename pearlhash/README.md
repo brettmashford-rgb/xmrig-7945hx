@@ -1,8 +1,12 @@
 # Independent PearlHash miner development
 
-Version: **0.0.2-cpu-reference**. This is an offline CPU validation checkpoint,
-**not a GPU miner**. No pool client, accepted custom-miner share, CUDA kernel,
-or measured speed/power improvement exists yet.
+Version: **0.0.3-gpu-math-check**. This remains **not a miner**. Native sm_120
+CUDA kernels and an offline Linux test harness now compile. GPU execution on
+the RTX 5060 is pending. No pool client, accepted custom-miner share or measured
+speed/power improvement exists. Pool encoding remains unresolved.
+
+See [GPU correctness checkpoint](gpu/README.md) and [downloads](RELEASES.md).
+The kernels check pre-noised cumulative products and transcript folding only.
 
 ## Source and implemented components
 
@@ -41,7 +45,7 @@ RAYON_NUM_THREADS=2 ./bin/pearl-cpu-oracle verify tests/vectors/official-v3.json
 
 Expected: `VALID: official offline CPU verifier; not a pool verdict` twice.
 No service or clock settings are changed. Tested on the development host;
-execution on the user's Debian rig is still pending. `SHA256SUMS` in the archive
+both V2/V3 fixtures also passed on the user's Debian rig. `SHA256SUMS` in the archive
 covers source files, the Git bundle and binary.
 
 ## Run independent CPU checks
@@ -57,7 +61,7 @@ python3 -m venv .venv
 ## Build and restore Git history
 
 See [oracle/README.md](oracle/README.md). Cargo.lock and the exact upstream Git
-revision are committed. Rust 1.99.1 was used. No CUDA build target exists yet.
+revision are committed. Rust 1.99.1 was used. The separate [GPU test build](gpu/README.md) uses NVRTC 12.9.
 Building fetches dependency sources/submodules and takes more space than the
 executable alone. Do not install that toolchain into the small rig persistence.
 
@@ -88,4 +92,7 @@ Compiled binaries belong to release archives rather than Git history.
   under an intentionally tiny share target.
 - CLI verifies both saved fixtures. Corrupted proofs are rejected in tests.
 - The complete upstream ZK/circuit test suite was **not** executed.
-- No CUDA compilation, GPU execution, custom pool share or benchmark yet.
+- Native sm_120 compilation succeeds; seven compact CPU input/transcript checks
+  and malformed-input rejection pass. Sanitized host checks pass with leak
+  detection disabled due to host process-inspection restrictions.
+- No GPU execution, custom pool share or benchmark yet.
