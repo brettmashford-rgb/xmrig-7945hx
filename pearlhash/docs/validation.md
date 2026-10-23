@@ -65,3 +65,17 @@ compact CPU cases and 13 invalid-input cases pass. New GPU noise/digest tests
 remain pending. Noise seeds and row indices are still fixture inputs. No
 seed derivation, commitment/proof construction, target handling or pool client
 is added by this checkpoint. No accepted shares or performance gains.
+
+## v0.0.4 rig result
+
+The user's next Termius screenshot confirms the v0.0.4 archive and internal
+checksums passed, GPU 0 was the RTX 5060 sm_120, and all five noise/product/
+transcript/digest tests returned PASS. The shell returned normally. All 12
+offline GPU tests across v0.0.3 and v0.0.4 are now confirmed on the rig.
+The fixture seeds are still supplied; proof/commitment construction, pool
+codec/client compatibility and real accepted shares remain unvalidated.
+No new benchmark or speed/power gain is established by these tests.
+
+The offline PCAP framing analyzer has four synthetic tests and reproduces both
+preserved captures without TCP gaps or conflicting retransmissions. It is not
+a codec or a source of job/target/proof/verdict semantics; see pool findings.

@@ -52,3 +52,51 @@ Using another pool for initial acceptance tests would require the user's pool
 selection; it is not a silent substitute for Pearlhash compatibility.
 
 Raw private-session captures are retained separately from this source release.
+
+## Offline follow-up after GPU validation
+
+The original captures were rechecked with the new standard-library-only
+`tools/inspect_pool_capture.py`. It reads classic PCAP locally, reassembles
+IPv4 TCP streams, checks retransmission overlaps/gaps, and inspects strict
+newline-delimited ASCII hexadecimal. It makes no connections and does not
+print wallet addresses, raw payloads or guessed field meanings.
+
+Capture 03 reproduces 19 packets and directional decoded lengths
+131/113 outbound and 37/67/537/537/37 inbound. Both directions include SYN,
+all captured streams end at line boundaries, and no sequence gap or conflicting
+retransmission is detected. Capture 02 reproduces 14 packets, outbound lengths
+115/115 and inbound 39/39; its initial framing remains unverified because the
+capture begins mid-session. Neither capture contains an incomplete final line.
+
+In the 131-byte line and both 537-byte lines, skipping four decoded bytes and
+comparing byte pairs 48 positions apart yields 100% agreement of the high bit.
+That is a reproducible descriptive statistic. It is consistent with a repeating
+mask over ASCII-like content, but does not identify an encoding, key derivation,
+prefix format or plaintext. Exploratory guessed-plaintext decoding produced
+ambiguous candidates, not a general validated decoder. No candidate field or
+certificate version is accepted as protocol truth.
+
+Public client artifacts were downloaded and checksum-checked on the development
+host for static inspection only; neither was executed or redistributed:
+
+- Pearlhash legacy V14 `pearl-miner`: publisher SHA-256
+  `249696c9c91f8821d194219cbbe37f56df541c157fe3ddda2ff063aaf1c60e63`.
+  https://github.com/pearlhash/pearlhash-miner/releases/tag/V14
+- WildRig Multi 0.51.7 Linux archive: publisher SHA-256
+  `29530c2d575491155649feb68f738215765889ca5b3d6b5bd81dda4d0dd58da1`.
+  https://github.com/andru-kun/wildrig-multi/releases/tag/0.51.7
+
+The inspected executable layouts expose little useful protocol text through
+static string/section inspection. This did not resolve the codec. Other pools'
+published JSON dialects are not evidence of this endpoint's deployed protocol.
+
+Four synthetic analyzer tests pass: split/reordered/retransmitted lines,
+sequence wrap, unknown initial boundary, and rejection of invalid hex,
+truncation, missing initial bytes, gaps and conflicting overlaps. Supported
+capture parsing is deliberately narrow; unsupported VLAN/fragmented traffic
+and multiple sessions on one tuple fail explicitly. These are transport tests,
+not protocol or share-verification tests.
+
+Remaining blocker: a reproducible complete codec and exact handshake/job/proof
+submission semantics for pool.pearlhash.xyz:9000. No fabricated shares were sent,
+no pool connection was opened for these offline checks, and no pool was changed.

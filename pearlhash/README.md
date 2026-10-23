@@ -3,8 +3,8 @@
 Version: **0.0.4-gpu-noise-check**. This remains **not a miner**.
 
 The user confirmed all seven v0.0.3 matrix/transcript checks pass on the RTX
-5060. New native sm_120 noise-generation and final keyed BLAKE3 kernels compile;
-their GPU execution is pending. Host checks match the independent Python
+5060. All five v0.0.4 noise/product/transcript/digest checks also pass on that GPU.
+Native sm_120 noise-generation and final keyed BLAKE3 kernels are compiled. Host checks match the independent Python
 reference and official-generated V2/V3 noise/transcript/digest outputs.
 No pool client, accepted custom-miner share or measured speed/power gains exist.
 The Pearlhash pool encoding remains unresolved.
@@ -99,4 +99,7 @@ Compiled binaries belong to release archives rather than Git history.
 - v0.0.4: native sm_120 noise/digest kernels compile. Twelve CPU math cases and
   13 malformed-input cases pass, including sanitized host checks with leak
   detection disabled due to process-inspection restrictions.
-- New GPU noise/digest execution is pending; no custom pool share or benchmark.
+- v0.0.4: all five new GPU noise/product/transcript/digest checks pass on the
+  user's RTX 5060. Across v0.0.3/v0.0.4, all 12 offline GPU tests have passed.
+- No custom pool share or benchmark. The offline transport analyzer reproduces
+  capture framing; the pool codec and field semantics remain unresolved.

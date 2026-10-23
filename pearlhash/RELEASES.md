@@ -9,7 +9,7 @@ SHA-256: `07a714d4888de665aba3686d0c9e1d60049e32fd3d701f15806d943467532df7`.
 Adds independent fixed-length keyed BLAKE3, deterministic noise generation and
 final digest kernels. Native sm_120 compilation succeeds. All 12 CPU inputs
 and 13 invalid-input cases pass, including host sanitizer checks. Five new
-GPU noise/digest tests are **pending**; the user has already confirmed seven
+GPU noise/digest tests **passed on the user's RTX 5060**; the user also confirmed seven
 v0.0.3 GPU matrix/transcript checks on the RTX 5060. Supplied seeds/indices;
 no seed derivation, commitments, proofs, pool client, accepted shares or gains.
 No compiler installation on the rig; no service or clock changes. See

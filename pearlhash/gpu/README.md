@@ -2,7 +2,7 @@
 
 This is an offline correctness test, **not a miner**. Native sm_120 kernels
 compile. The user confirmed all seven v0.0.3 matrix/transcript tests pass on
-an RTX 5060. The new v0.0.4 GPU noise/digest execution is **pending**.
+an RTX 5060. All five new v0.0.4 GPU noise/digest tests also **passed** on that GPU.
 No custom pool shares or measured speed/power improvements exist.
 Pearlhash pool encoding remains unresolved.
 
@@ -91,5 +91,6 @@ v0.0.4: native sm_120 compilation succeeded; 12 CPU inputs and malformed-input
 rejections pass. AddressSanitizer and UndefinedBehaviorSanitizer host checks
 pass with LeakSanitizer disabled because host process inspection is restricted.
 The existing seven Python reference tests also pass. No NVIDIA GPU or driver
-is available on the development host. New GPU noise/digest execution is pending.
+is available on the development host. The user subsequently confirmed all five new GPU noise/digest checks pass
+on the RTX 5060; archive and internal checksums also passed.
 No live pool submissions, accepted shares or performance measurements.
