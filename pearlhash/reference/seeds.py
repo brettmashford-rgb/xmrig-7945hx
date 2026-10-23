@@ -7,7 +7,10 @@ noise generation, GEMM, jackpot calculation, Merkle proofs and target checks.
 
 import struct
 
-from blake3 import blake3
+try:
+    from blake3 import blake3
+except ImportError:
+    from reference.native_hash import blake3
 
 
 def _hash32(value: bytes) -> None:

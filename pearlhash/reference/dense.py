@@ -7,7 +7,10 @@ Use the pinned Rust oracle for complete PlainProof verification.
 """
 import base64
 import struct
-from blake3 import blake3
+try:
+    from blake3 import blake3
+except ImportError:
+    from reference.native_hash import blake3
 from reference.seeds import dense_noise_seeds
 
 

@@ -1,5 +1,24 @@
 # PearlHash development checkpoints
 
+## v0.0.5-independent-proof
+
+Download: [Linux x86_64 independent proof pipeline](releases/pearlhash-dev-v0.0.5-linux-x86_64.tar.gz).
+
+SHA-256: `eb6161a69665c83edc7ff3cab5e158e6e1990ad972e4967e4f0f1419db13adb6`.
+
+Adds independent native CPU commitment hashing, Merkle opening construction/
+authentication, dense bincode proof encoding, and a fresh-candidate GPU-to-proof
+runner. Newly constructed V2/V3 proofs pass the pinned official verifier on the
+development host; ten official negative cases reject. Five proof tests pass;
+original seed/math tests also pass with Python packages disabled. No pip/CUDA/
+Rust installation on the rig. Reuses the already-validated v0.0.4 GPU checker
+and cubin unchanged, plus the rig's existing v0.0.2 official CPU oracle.
+
+The fresh **GPU-to-proof run is pending**; all 12 previous GPU math cases passed.
+Synthetic easy-target fixed small jobs only. No live job decoder, production
+search, pool client, submitted/accepted share or measured gain. See
+[independent proof scope and build instructions](proof/README.md).
+
 ## v0.0.4-gpu-noise-check
 
 Download: [Linux x86_64 sm_120 noise/digest test](releases/pearlhash-dev-v0.0.4-linux-x86_64.tar.gz).

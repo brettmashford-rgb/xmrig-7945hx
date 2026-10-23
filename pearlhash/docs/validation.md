@@ -79,3 +79,22 @@ No new benchmark or speed/power gain is established by these tests.
 The offline PCAP framing analyzer has four synthetic tests and reproduces both
 preserved captures without TCP gaps or conflicting retransmissions. It is not
 a codec or a source of job/target/proof/verdict semantics; see pool findings.
+
+## v0.0.5 independent construction
+
+Independent CPU commitment trees, Merkle opening generation/authentication and
+explicit dense PlainProof bytes are now implemented. New signals use SHAKE256
+rejection sampling; official try_mine_one is not used. Fresh V2/V3 proofs pass
+the pinned external verifier, which rejects ten corresponding altered-leaf,
+root, missing-sibling, changed-header and tiny-target cases. Original proof
+bytes round-trip and openings authenticate. Five proof test methods pass;
+seven old math/seed tests also pass through the new native hash fallback with
+site packages disabled. Native hash sanitizer checks pass with leak detection
+disabled due to host restrictions. Source/limits are in proof/README.md.
+
+The v0.0.4 GPU checker/cubin are reused unchanged. The new runner asks them to
+check a fresh candidate's complete selected math, then constructs its proof
+and requires official verification. That two-version GPU-to-proof path is
+pending on the rig. CPU-only tests are explicitly labeled. The jobs are
+synthetic/easy-target/fixed small dimensions, not current pool jobs. Pool codec,
+live protocol/version context, submitted shares and performance remain open.

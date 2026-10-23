@@ -1,15 +1,16 @@
 # Independent PearlHash miner development
 
-Version: **0.0.4-gpu-noise-check**. This remains **not a miner**.
+Version: **0.0.5-independent-proof**. This remains **not a miner**.
 
-The user confirmed all seven v0.0.3 matrix/transcript checks pass on the RTX
-5060. All five v0.0.4 noise/product/transcript/digest checks also pass on that GPU.
-Native sm_120 noise-generation and final keyed BLAKE3 kernels are compiled. Host checks match the independent Python
-reference and official-generated V2/V3 noise/transcript/digest outputs.
-No pool client, accepted custom-miner share or measured speed/power gains exist.
-The Pearlhash pool encoding remains unresolved.
+All 12 offline GPU math checks from v0.0.3/v0.0.4 passed on the user's RTX 5060.
+The new independent code constructs fresh matrix commitments, authenticates
+Merkle openings and serializes dense PlainProofs; new V2/V3 proofs pass the
+pinned official verifier on the CPU. The fresh GPU-candidate-to-proof run is
+pending on the rig. No pool client, submitted/accepted custom share or measured
+speed/power gain exists. Pearlhash pool encoding remains unresolved.
 
-See [GPU correctness checkpoint](gpu/README.md) and [downloads](RELEASES.md).
+See [independent proof pipeline](proof/README.md),
+[GPU math scope](gpu/README.md), and [downloads](RELEASES.md).
 
 ## Source and implemented components
 
@@ -103,3 +104,7 @@ Compiled binaries belong to release archives rather than Git history.
   user's RTX 5060. Across v0.0.3/v0.0.4, all 12 offline GPU tests have passed.
 - No custom pool share or benchmark. The offline transport analyzer reproduces
   capture framing; the pool codec and field semantics remain unresolved.
+
+- v0.0.5: fresh independent V2/V3 PlainProof construction passes the official
+  verifier on the development host; ten official negative cases reject, and
+  Merkle/encoding/native hash checks pass. The fresh GPU-to-proof run is pending.
