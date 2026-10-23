@@ -40,3 +40,12 @@ boundaries, malformed data/gaps and large proof-size frames. Alongside the
 existing framing and login tests, fourteen transport tests pass. Reconstructed
 streams from the eleven preserved old messages decode with zero submissions.
 These are CPU-only protocol tests, not GPU or pool acceptance tests.
+
+
+## Rig result (2026-10-24)
+
+The bounded capture completed with 24 packets, zero kernel drops and ten decoded
+messages. One existing-miner submit (id 866) had a unique matched response with
+status=1 and result=true. Three outbound report_info requests were distinguished
+from that submit. Both directions correctly report unverified initial boundaries.
+See pool findings for the observed parameter shape and unresolved semantics.

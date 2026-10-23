@@ -183,3 +183,35 @@ m, n, k, tail_mode, rank, tile_h, tile_w, a_rows and b_cols. These names alone
 are not proof of the current pool's accepted submission format or field
 semantics. The next evidence needed is an actual existing-miner submit and its
 correlated response; see [bounded capture decoding](share-capture.md).
+
+
+## Capture 04: existing-miner submit/response observed on rig
+
+The user's 2026-10-24 Termius screenshots report all three source checksums OK,
+24 captured packets, zero kernel-dropped packets, ten decoded messages, three
+outbound report_info requests and one outbound submit. Both directional streams
+start mid-session, so their initial boundaries remain unverified. Decoder ran
+to normal shell return. Reported PCAP SHA-256:
+`7505454a4f614b530b8bfaca7bdba69784ef5129daff3f4a3c8724af8e90500f`.
+The complete capture has not yet been transferred to the development host.
+
+The submit id=866 has a unique matched response status=1,id=866,result=true.
+This is a correlated successful existing-WildRig submission; it does not validate
+a custom share. Actual params contain a_rows, b_cols, k, m, miner_nonce, n,
+nonce, rank, sb, sb_p, tail_mode, tile_h, tile_w and worker_nonce.
+Observed scalar values: m=5121,n=262144,k=32768,rank=128,tile_h=10,tile_w=16,
+tail_mode=1,sb=1,sb_p=[]. The three named nonce fields are 16 hex characters
+each. Their generation, byte order, job association and the sb/sb_p/tail_mode
+semantics remain unresolved. This sample does not carry a serialized PlainProof
+field; reproducing this pool's compact reconstruction contract is distinct from
+sending arbitrary nonce/hash data or our offline PlainProof JSON.
+
+Relative submitted rows expand as two contiguous entries at stride eight over
+five groups; relative columns as two entries at stride eight in groups at
+stride 32. The independent canonical PeriodicPattern implementation maps these
+to 000103040000 and 000103010103 respectively, using the pinned upstream list/
+byte rules. Tests use synthetic offsets; raw captured rows/nonces are not
+published. The old offline runner now derives its existing eight-entry pattern
+through this helper, producing the same six bytes as before. Three new CPU
+pattern tests pass. No new GPU test, full job reconstruction or custom pool
+submission is claimed by this change.

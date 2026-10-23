@@ -18,6 +18,7 @@ from reference.dense import noise_rows,jackpot
 from reference.seeds import dense_noise_seeds
 from reference.native_hash import small_hash
 from reference.plain_proof import PlainProof,Tree
+from reference.patterns import PeriodicPattern
 
 BASE=Path(__file__).resolve().parents[1]
 ROWS=[0,1,8,9,64,65,72,73]
@@ -42,7 +43,7 @@ def candidate(seed,version):
     # Synthetic header with deliberately easy offline nBits; never a pool job.
     header=(struct.pack('<I',0)+hashlib.sha256(seed+b'prev').digest()
             +hashlib.sha256(seed+b'merkle').digest()+struct.pack('<II',0x66666666,0x207fffff))
-    pattern=bytes.fromhex('000103010301')
+    pattern=PeriodicPattern.from_list(ROWS).encoded
     config=struct.pack('<IHH',k,rank,0)+pattern+pattern+bytes(32)
     job_key=small_hash(header+config)
     raw_a=signal_bytes(seed,b'A',m*k);raw_b=signal_bytes(seed,b'BT',n*k)

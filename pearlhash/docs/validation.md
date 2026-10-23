@@ -127,3 +127,20 @@ transport tests pass. It does not generate shares or open a pool connection.
 The preserved old messages decode with zero submissions. Header research has
 produced structurally plausible candidate bytes; the general inner codec,
 job configuration/version semantics and independent submission remain open.
+
+
+## Capture 04 rig result and pattern support
+
+The user's screenshots confirm the capture decoder ran on 24 packets / ten
+messages with verified sources, zero kernel-dropped packets, one existing-miner
+submit and a matching true/status=1 response for id 866. This confirms an
+observed successful WildRig submission, not custom-miner acceptance. Initial
+mid-session boundaries are explicitly unverified. Full byte transfer is pending.
+
+Independent PeriodicPattern byte parsing, canonical list reconstruction and
+offset rules now cover the observed 10x16 tile shape, with a bounded expansion.
+Three CPU test methods cover the existing fixture golden, the new relative
+patterns at synthetic offsets, and invalid/noncanonical/oversized inputs.
+The offline proof runner uses this helper for its existing unchanged pattern.
+No new GPU or official-verifier execution was performed for this pattern-only
+change. Full pool nonce/signal generation and current job binding remain open.
