@@ -1,6 +1,6 @@
 # Independent PearlHash miner development
 
-Version: **0.0.15-periodic-range-scheduler**. This remains **not a working miner**.
+Version: **0.0.16-fresh-nonce-proof**. This remains **not a working miner**.
 
 The user's RTX 5060 has passed the offline GPU math checks, 263 nonce-tail
 comparisons, 141 keyed commitment-leaf comparisons and the empty launch. Fresh
@@ -154,7 +154,23 @@ without enumerating all matrix indices. The observed 10x16 production-shaped
 domain contains 8388608 tiles. A resumable in-memory cursor, generation gates
 and complete-result overflow retry are implemented around the validated backend.
 57 CPU tests pass / two prior oracle/vector cases skip. GPU integration of the
-new scheduler is pending; the unchanged cubin is the rig-validated v0.0.14 binary.
+new scheduler now passes all rig checks, including cancellation/resume and all
+21 tested tiles. The cubin remains the validated v0.0.14 binary.
 The harness checks 15 small-domain tiles plus six production-domain tiles at
 start/middle/end; it does not scan an entire nonce or submit anything to a pool.
 Seed derivation/commitments and live job integration remain separate work.
+
+## Fresh nonce-to-proof integration
+
+A new synthetic offline pipeline binds header/config and nonce-dependent full
+matrix commitments to explicit V2/V3 seeds, searches for an actual non-maximal
+target-meeting range candidate, builds its independent PlainProof and invokes
+the existing official CPU oracle. Commitments/seed derivation/proof work remain
+on CPU; noise and candidate scanning use the unchanged validated CUDA binary.
+60 development CPU tests pass / two prior oracle/vector cases skip. New roots
+and proof openings match separate materialized CPU trees; stale nonce/job/target
+bindings reject. CPU preparation finds V2/V3 candidates and builds proofs.
+Combined GPU and official CPU verification of this new integration are pending
+on the rig; the development host has no Rust compiler or oracle executable.
+No live pool connection, submitted share, production nonce completion or speed/
+power improvement is claimed. This remains development, not a working miner.

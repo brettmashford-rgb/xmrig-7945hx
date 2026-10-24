@@ -1,5 +1,37 @@
 # PearlHash development checkpoints
 
+## v0.0.16-fresh-nonce-proof
+
+Download: [Linux x86_64 / sm_120 fresh synthetic nonce-to-proof pipeline](releases/pearlhash-dev-v0.0.16-linux-x86_64.tar.gz).
+
+SHA-256: `85d3944824e61b619793a93abb69fb81fa31d328304f3268cdf8cd020bf8602d`.
+
+Connects synthetic header/config -> job key -> nonce tail -> streamed full
+commitments -> explicit V2/V3 seeds -> GPU range candidate -> independent
+PlainProof -> existing official CPU verifier. Seeds are derived from the actual
+nonce-dependent commitments rather than supplied arbitrarily. B commitment
+cache is keyed to the job; A commitment changes with the nonce. Generation,
+nonce, math, target, root, seed and pattern bindings are checked before encoding.
+Local synthetic context is saved for reproducibility; no captured data is used.
+
+The fixed synthetic m=n=128/k=4096/rank=128/8x8 profile uses nBits0x1e100000:
+base2^236 scaled by2^18 gives2^254, without saturation. This is actual target
+filtering, not maximum-bound all-hit testing. Search stops after the first
+completed batch with a candidate; at most three nonce attempts per explicit
+V2/V3 context. It is not a general pool configuration/target/version decoder.
+
+60 CPU tests pass / two prior oracle/vector tests skip. Roots and selected
+proof encodings match full materialized CPU trees; stale/cache/nonce/target
+bindings reject. CPU-only preparation finds both V2/V3 candidates and builds
+proofs. New GPU/oracle integration is pending on the rig: the development host
+has no Rust compiler or official oracle executable. The existing rig oracle
+will verify newly generated proofs; its old fixtures are not rerun/downloaded.
+
+No new native compilation: unchanged v0.0.14 sm_120 cubin and v0.0.11 CPU library.
+The v0.0.15 range scheduler passed its rig checks. No full production nonce loop,
+pool client/share submission, performance result or working-miner claim.
+
+
 ## v0.0.15-periodic-range-scheduler
 
 Download: [Linux x86_64 / sm_120 periodic range scheduler](releases/pearlhash-dev-v0.0.15-linux-x86_64.tar.gz).
@@ -24,7 +56,8 @@ force candidate and overflow paths. This is not a performance benchmark.
 brute-force checks; batching, coverage, stale cancellation, retry, delivery failure
 and signal/tail bounds pass. Reuses the unchanged v0.0.14 native sm_120 cubin,
 which passed five hardware batches /200 tile-target-queue checks on RTX 5060.
-No new CUDA compilation. The new scheduler-to-GPU integration is pending.
+No new CUDA compilation. The subsequent rig run passes cancellation/resume,
+all 15 small-domain tiles and all six production-domain window tiles.
 No pool listener, externally atomic submission gate, persistent miner state,
 full nonce search or custom share acceptance. Existing miners/clocks unchanged.
 

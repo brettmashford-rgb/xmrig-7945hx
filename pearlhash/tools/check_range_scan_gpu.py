@@ -58,7 +58,9 @@ class RangeBackend:
     Device signal/noise inputs are held across an overflow retry, then released
     at the next batch. At most32 selected rows/columns are resident per side.
     """
-    def __init__(self,profile,device=None):
+    def __init__(self,profile,device=None,*,bound=MAX_BOUND):
+        if type(bound)is not int or not 0<=bound<=MAX_BOUND:raise ValueError('invalid already-scaled bound')
+        self.bound=bound
         self.profile=profile;self.device=device;self.batch=None;self.launches=0
         self.mark=len(device.allocations)if device else 0
 
@@ -78,9 +80,11 @@ class RangeBackend:
             self.batch=batch
         self.launches+=1;n=len(batch.maps)
         if not self.device:
-            return ScanResult(n,n>capacity,{i:self.reference[i][1]for i in range(min(n,capacity))})
+            hits={i:digest for i,(_,digest)in enumerate(self.reference)
+                  if int.from_bytes(digest,'little')<=self.bound}
+            return ScanResult(len(hits),len(hits)>capacity,dict(list(hits.items())[:capacity]))
         return self.device.scan(self.matrix,self.queries,self.reference,self.a,self.b,self.key,
-                                [MAX_BOUND]*n,capacity,generation,audit=True)
+                                [self.bound]*n,capacity,generation,audit=True)
 
 
 def plans():

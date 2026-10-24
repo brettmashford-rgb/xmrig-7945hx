@@ -218,4 +218,22 @@ start/middle/end of an 8388608-tile production-shaped domain. Six production til
 are tested, not the whole domain or an entire nonce. Synthetic seeds/maximum
 scaled bounds and full CPU references make this a correctness harness. It has
 no pool I/O and does not measure comparable throughput/power. Existing kernel
-hardware validation passed; new scheduler integration is pending.
+hardware validation and new scheduler integration now pass on RTX 5060,
+including cancellation/resume and all 21 tested tiles.
+
+## v0.0.16 fresh nonce/range/proof integration
+
+No CUDA source/binary change or compilation. The existing noise/tile scanner
+now receives CPU-derived seeds bound to fresh synthetic header/config and
+nonce-dependent full commitments. `RangeBackend` accepts an explicit already-
+scaled bound instead of forcing all-hit tests; its default remains unchanged.
+The new `tools/offline_nonce_search.py` stops at a completed target-meeting
+batch, independently constructs the selected PlainProof and invokes the rig's
+existing official CPU oracle. CPU references still check every tested tile.
+This correctness path is not an efficient production worker or benchmark.
+
+CPU commitments, nonce-tail mapping, seed derivation and proof encoding remain
+CPU operations. GPU deterministic noise, integer tile scan, transcript/digest,
+target comparison and queue operations use the validated v0.0.14 cubin. New
+nonce-to-proof GPU/oracle integration is pending. The v0.0.15 scheduler already
+passed its rig checks. No live job source, pool client or submitted share.

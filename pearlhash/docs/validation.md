@@ -401,10 +401,43 @@ small-range coverage, first/middle/last maps of the large domain, overflow retry
 cancel/resume, stale-result discard, failed delivery and constant-profile limits.
 The unchanged rig-validated v0.0.14 cubin is reused, with no new CUDA compilation.
 CPU-only integration passes 15 small-domain and 6 production-domain tiles. Actual
-GPU scheduler integration remains pending. The range is not fully scanned.
+GPU scheduler integration subsequently passes on RTX 5060, including cancellation/
+resume and all 21 tested tiles. The full production range is not scanned.
 
 The next rig harness uses synthetic supplied seeds and maximum already-scaled
 bounds for all tested candidates. It compares all tested digests/transcripts
 with CPU references and retains device inputs across retries. It neither loads
 private capture data nor regenerates commitments/proofs. No full nonce loop,
 header-bound seed builder, live job client, submitted share or measured gain.
+
+## v0.0.16 fresh synthetic nonce/range/proof binding
+
+The new runner creates a fresh synthetic incomplete header and fixed52-byte
+configuration, hashes the job key, streams complete constant B and nonce-tailed
+A commitments, derives explicit V2/V3 seeds, and feeds the existing GPU range
+backend with an actual non-maximal scaled target. B commitment cache is tagged
+by job key and reused across same-job nonce attempts. This is a fixed synthetic
+profile, not inferred live pool rules. Header nBits0x1e100000 ->2^236; rank128
+is neutral and 8*8*4096=2^18, so the bound is2^254 without saturation, matching
+the pinned proof_utils/sanity_checks arithmetic. It is not general target logic.
+
+A target-meeting candidate must match generation, selected scalar math, nonce
+tail, recomputed commitment roots, explicit derived seeds and job patterns.
+Independent streamed openings form a dense PlainProof that round-trips and
+authenticates locally. The rig runner invokes the existing official CPU verifier
+with the synthetic header target and saves completion only after both V2/V3
+positive checks succeed. It does not rerun old fixtures or contact a pool.
+
+60 CPU tests pass / two prior oracle/vector cases skip. New streamed roots and
+selected openings match separate full materialized trees; changed nonces alter
+A roots/seeds, same-job B root is stable, V3 seed salt differs, stale caches and
+candidate bindings reject. Non-maximal bound filtering, misses and queue retry
+work in the CPU backend. CPU-only V2/V3 search/proof preparation succeeds and
+marks GPU unchecked / official verifier not run. No development-host Rust/oracle
+executable is available; actual new GPU/oracle integration is pending on rig.
+The old CUDA binary/CPU library bytes are unchanged. The full upstream ZK suite
+has not been run, and this Python path is not a complete consensus validator.
+
+Full efficient production nonce search, live job/cancellation/submission logic
+and real custom pool acceptance remain unimplemented/unproven. No hashrate,
+power, speed improvement or working-miner claim. Existing services/clocks stay.
