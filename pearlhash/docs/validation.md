@@ -184,7 +184,9 @@ or live independent share is claimed for this build.
 - GCC 13.3.0 builds the Linux CPU kernel-body checker. All 263 inputs match the
   separate native CPU hash implementation, with output guards unchanged.
 - NVRTC 12.9.86 compiles a separate native sm_120 nonce-tail cubin. GPU execution
-  is pending; neither the old GPU math kernel nor its completed rig tests change.
+  passed on the user's RTX 5060: all 263 comparisons match the independent CPU
+  calculation and output guards remain unchanged. Archive and internal checksums
+  verified on the rig. Neither the old GPU math kernel nor its completed rig tests change.
 - The small archive includes component source, binaries, test vectors, build
   provenance and internal SHA-256 checksums. Extracted package CPU checks pass.
 - Complete captured-share CPU reconstruction hypotheses still do not meet the

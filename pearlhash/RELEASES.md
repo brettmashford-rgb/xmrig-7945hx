@@ -12,7 +12,8 @@ protocol/nonce tests pass; 263 kernel-body CPU comparisons and output guards
 pass. 32 synthetic cases agree with private arithmetic tracing; three trace
 outputs are included as synthetic goldens. NVRTC/GCC compilation succeeds.
 
-Actual GPU execution is pending on the rig. This component makes no network
+All 263 GPU comparisons passed on the user's RTX 5060 (sm_120), with output
+guards unchanged and archive/internal checksums verified. This component makes no network
 connection and changes no service or clock. Existing GPU math kernels are
 unchanged. Complete captured-share reconstruction still does not meet the
 target; this is not a working pool miner or accepted custom share. No gain claim.

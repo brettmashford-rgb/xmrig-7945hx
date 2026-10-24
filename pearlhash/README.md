@@ -19,7 +19,8 @@ No submitted/accepted custom share or measured speed/power gain exists.
 
 The new independent nonce-tail arithmetic primitive has a native sm_120 kernel
 and a small GPU comparison runner. Its kernel body passes 263 CPU comparisons;
-GPU execution is pending on the rig. The complete captured-share reconstruction
+All 263 GPU comparisons passed on the user's RTX 5060, with output guards
+unchanged and archive/internal checksums verified. The complete captured-share reconstruction
 still fails its target, so full pool compatibility remains unresolved.
 
 See [independent proof pipeline](proof/README.md),
