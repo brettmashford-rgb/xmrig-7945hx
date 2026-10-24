@@ -1,6 +1,6 @@
 # Independent PearlHash miner development
 
-Version: **0.0.16-fresh-nonce-proof**. This remains **not a working miner**.
+Version: **0.0.17-virtual-fragment-cache**. This remains **not a working miner**.
 
 The user's RTX 5060 has passed the offline GPU math checks, 263 nonce-tail
 comparisons, 141 keyed commitment-leaf comparisons and the empty launch. Fresh
@@ -170,7 +170,27 @@ on CPU; noise and candidate scanning use the unchanged validated CUDA binary.
 60 development CPU tests pass / two prior oracle/vector cases skip. New roots
 and proof openings match separate materialized CPU trees; stale nonce/job/target
 bindings reject. CPU preparation finds V2/V3 candidates and builds proofs.
-Combined GPU and official CPU verification of this new integration are pending
-on the rig; the development host has no Rust compiler or oracle executable.
+Combined GPU and official CPU verification now pass on the rig for both fresh
+V2/V3 proofs. The development host has no Rust compiler or oracle executable.
 No live pool connection, submitted share, production nonce completion or speed/
 power improvement is claimed. This remains development, not a working miner.
+
+## Virtual fragment/noise cache checkpoint
+
+A new sm_120 virtual-input module caches full global uniform/permutation noise tables
+and forms constant-signal/noise signed bytes as MMA fragments load. The virtual
+scan does not allocate/upload signal or noised matrices. The final A-row nonce
+tail is preserved. Its table payload is capped at 64 MiB; the production-shaped
+synthetic profile uses 34472080 payload bytes, plus small keys/guards/dispatch data.
+The original materialized wrapper and virtual wrapper share one MMA/fold/queue
+body. 63 CPU tests pass / two prior oracle/vector cases skip. Native uniform/
+loader code matches CPU references, including counter limits and signed bytes.
+New GPU execution, the wrapper regression and fresh virtual-path V3 proof check
+are pending on rig. This is a correctness harness, not a measured speed/power
+result or a complete production nonce worker. No custom-miner pool submission has occurred.
+
+The v0.0.17 distribution is plain source plus readable compiler-generated PTX,
+loaded/JIT-compiled by the existing NVIDIA driver. The existing verified v0.0.16
+CPU library is reused. No compressed archive or new native binary is distributed
+for this version. The source-file manifest in releases/ binds paths/sizes/hashes.
+No toolkit installation is required. The driver-JIT hardware check is pending.

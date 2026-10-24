@@ -1,5 +1,41 @@
 # PearlHash development checkpoints
 
+## v0.0.17-virtual-fragment-cache
+
+Distribution: [source-file manifest](releases/pearlhash-dev-v0.0.17-files.json) and
+[readable sm_120 PTX](releases/pearlhash-dev-v0.0.17-sm120.ptx).
+
+Manifest SHA-256: `2ab175ecf311bb7ab7aa35fbe31fbae547740dac8b6069602957cd8c2b10a183`.
+PTX SHA-256: `1265a107fc0d98250179ab3c8097c7811f857a3d29ca3f0e296cda01cf62d704`.
+
+This release distributes ordinary UTF-8 source files and actual compiler-generated
+GPU PTX assembly. The NVIDIA driver loads/compiles PTX for sm_120; no CUDA/Rust
+kit is installed on the rig. Reuse the existing verified v0.0.16 CPU hash library.
+No compressed archive or new opaque native binary is distributed for this version.
+The manifest binds every download path, size and SHA-256. Total file downloads
+are 402320 bytes across 37 text files, including the 249357-byte PTX module.
+
+Global uniform/permutation tables feed exact signed-byte MMA fragments without
+materializing/uploading signal/noised matrices in the virtual scan. Constant fill
+and final A-row nonce tail are retained. Table payload is capped at 64 MiB; the
+production-shaped synthetic profile uses 34472080 payload bytes, plus keys,
+guards/dispatch/driver resources. Byte accounting is not a memory benchmark.
+
+One shared body implements virtual/materialized MMA, transcript, digest, target
+comparison and tagged queue. New tests cover virtual bytes, global rows,
+rank32/128/1024, signed fills, padding, repeats, eight warps, counter limits,
+equality/overflow/tags/guards and a fresh virtual-path V3 proof. Seven production
+tile queries are checked, not a full nonce. Primitive shapes are math tests,
+not assertions of consensus-valid configurations. One original-wrapper regression
+checks the shared-body refactor. CPU references make this a correctness harness.
+
+63 development CPU tests pass / two prior oracle/vector cases skip. Source/PTX
+standalone CPU-only preparation passes; it explicitly reports GPU unchecked and
+official verification not run. Driver-JIT GPU checks and the fresh V3 oracle
+verdict remain pending on rig. Prior v0.0.16 V2/V3 nonce proofs passed there.
+No full production search, pool submission, measured gain or working-miner claim.
+
+
 ## v0.0.16-fresh-nonce-proof
 
 Download: [Linux x86_64 / sm_120 fresh synthetic nonce-to-proof pipeline](releases/pearlhash-dev-v0.0.16-linux-x86_64.tar.gz).
@@ -23,8 +59,8 @@ V2/V3 context. It is not a general pool configuration/target/version decoder.
 60 CPU tests pass / two prior oracle/vector tests skip. Roots and selected
 proof encodings match full materialized CPU trees; stale/cache/nonce/target
 bindings reject. CPU-only preparation finds both V2/V3 candidates and builds
-proofs. New GPU/oracle integration is pending on the rig: the development host
-has no Rust compiler or official oracle executable. The existing rig oracle
+proofs. The subsequent rig run passes GPU search and official CPU verification
+for both fresh V2/V3 proofs. The development host has no Rust compiler or oracle. The existing rig oracle
 will verify newly generated proofs; its old fixtures are not rerun/downloaded.
 
 No new native compilation: unchanged v0.0.14 sm_120 cubin and v0.0.11 CPU library.

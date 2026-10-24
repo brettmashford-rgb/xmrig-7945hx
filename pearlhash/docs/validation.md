@@ -412,7 +412,7 @@ header-bound seed builder, live job client, submitted share or measured gain.
 
 ## v0.0.16 fresh synthetic nonce/range/proof binding
 
-The new runner creates a fresh synthetic incomplete header and fixed52-byte
+The new runner creates a fresh synthetic incomplete header and fixed 52-byte
 configuration, hashes the job key, streams complete constant B and nonce-tailed
 A commitments, derives explicit V2/V3 seeds, and feeds the existing GPU range
 backend with an actual non-maximal scaled target. B commitment cache is tagged
@@ -434,10 +434,62 @@ A roots/seeds, same-job B root is stable, V3 seed salt differs, stale caches and
 candidate bindings reject. Non-maximal bound filtering, misses and queue retry
 work in the CPU backend. CPU-only V2/V3 search/proof preparation succeeds and
 marks GPU unchecked / official verifier not run. No development-host Rust/oracle
-executable is available; actual new GPU/oracle integration is pending on rig.
+executable is available. The subsequent rig run passes the new GPU/oracle
+integration for both fresh V2/V3 proofs (8 and 4 tiles scanned respectively).
 The old CUDA binary/CPU library bytes are unchanged. The full upstream ZK suite
 has not been run, and this Python path is not a complete consensus validator.
 
 Full efficient production nonce search, live job/cancellation/submission logic
 and real custom pool acceptance remain unimplemented/unproven. No hashrate,
 power, speed improvement or working-miner claim. Existing services/clocks stay.
+
+## v0.0.17 virtual signed-byte fragment cache
+
+The new input representation stores complete global uniform/permutation noise
+tables and the 16-byte A tail, then builds exact signed-byte fragment words on
+demand. No signal/noised matrix is allocated or uploaded by the virtual scan.
+A shared device template preserves the existing MMA/fold/target/tagged-queue
+body for both original and virtual inputs. Global descriptors are bounded at
+32 rows/columns per tile and 64 queries per launch; total table payload <=64MiB.
+The production-shaped synthetic profile has 34472080 table payload bytes. Keys,
+guards/descriptors and driver resources are additional; no memory benchmark.
+
+CPU tests execute the actual uniform-generation kernel body and virtual loader,
+not GPU ISA/scheduling. Counter carries/upper bound and guards match independent
+CPU hashes; every selected signed byte matches scalar noise for positive/zero/
+negative fills, repeated/reversed rows, rank32/128/1024, padding and final A tail.
+Global descriptors beyond32, cache cap and fresh V3 nonce/proof preparation pass.
+65 tests run: 63 pass / two prior oracle/vector cases skip. Native NVRTC 12.9.86
+sm_120 compilation succeeds and own-code disassembly contains integer IMMA.
+New virtual GPU execution remains pending; CPU preparation is explicitly flagged
+GPU unchecked / official verifier not run on this host.
+
+The rig harness will compare all small-domain virtual input bytes, sample the
+large domain's first/middle/last rows, compare all used global uniform rows and
+every permutation pair, then compare tile transcript/digest/candidate queues with
+CPU references. Three cache profiles cover 14 tile queries across six target/
+queue scenarios each, including overflow zero/one and equality. Only seven
+production-domain queries are checked, including the final nonce row. No full
+production nonce is searched. Debug probe output and one materialized-wrapper
+regression are diagnostic allocations; they are not the virtual scan's input
+representation. Each cache owns/releases only its own buffers, including across
+errors; the harness checks that all allocations are released.
+
+A fresh synthetic V3 nonce/proof then uses the virtual backend and existing
+pinned official CPU oracle. CPU commitments, tail, seeds, references and proof
+encoding remain CPU work. This new GPU/oracle combination is pending on rig;
+the previous v0.0.16 fresh V2/V3 proofs already passed. No pool connection or
+custom share, no throughput/power comparison and no working-miner claim.
+
+### v0.0.17 source/PTX delivery
+
+The distributed module is readable UTF-8 PTX 8.8 targeting sm_120, generated with
+NVRTC 12.9.86 compute_120 from the same virtual-input CUDA source. The native
+cubin build exists on the development host, but is not part of this distribution.
+No opaque compressed package or new native binary is published. All 37 source/
+PTX downloads are individually listed with byte sizes and SHA-256 in a public
+manifest. The existing verified v0.0.16 CPU library is reused on the rig. No
+CUDA/Rust toolkit is installed there. cuModuleLoad accepts a PTX file and the
+driver compiles it for the GPU; actual driver-JIT execution is pending on rig.
+Standalone source/PTX CPU-only preparation passes with GPU unchecked and official
+verification not run. That is not a GPU result or a pool verdict.

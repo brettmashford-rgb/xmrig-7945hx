@@ -1,0 +1,234 @@
+{
+  "version": "0.0.17-source-ptx",
+  "distribution": "UTF-8 source and readable PTX; no compressed archive or new opaque native binary",
+  "ptx_target": "sm_120",
+  "ptx_version": "8.8",
+  "jit": "existing NVIDIA driver on rig; no toolkit installation",
+  "required_existing_cpu_library_sha256": "1b0127307179b124178bdbd50c86b587984b42cc04390cdc73bf8fcb8cf284a9",
+  "source_cpu_library": "reuse existing v0.0.16/bin/libpearlhash.so",
+  "files": [
+    {
+      "repository_path": "pearlhash/LICENSE",
+      "path": "LICENSE",
+      "bytes": 858,
+      "sha256": "19682b78f2a0920b7c22dfe88102701d57868fa268de88734f741fd642078b62"
+    },
+    {
+      "repository_path": "pearlhash/gpu/keyed64.h",
+      "path": "gpu/keyed64.h",
+      "bytes": 2385,
+      "sha256": "83e9c85660360a752a9d2e399f18620496fa2859f8e0575a4e09a27ee223adb6"
+    },
+    {
+      "repository_path": "pearlhash/gpu/mma_correctness.cu",
+      "path": "gpu/mma_correctness.cu",
+      "bytes": 3287,
+      "sha256": "cc97950a9c1a65b81407ff0115434c123d8526b7741c0073f250185563a75fef"
+    },
+    {
+      "repository_path": "pearlhash/gpu/noise_mma.cu",
+      "path": "gpu/noise_mma.cu",
+      "bytes": 2113,
+      "sha256": "d946fd10f2a6aeae347b3c52bfa81ded7b45ee85eba374e952f7efcf624e532f"
+    },
+    {
+      "repository_path": "pearlhash/gpu/scan_target.h",
+      "path": "gpu/scan_target.h",
+      "bytes": 580,
+      "sha256": "881f89f88c220818e207833093b2285c9eb3d0cffed8ac177a95292a1b601095"
+    },
+    {
+      "repository_path": "pearlhash/gpu/tile_scan.cu",
+      "path": "gpu/tile_scan.cu",
+      "bytes": 1523,
+      "sha256": "ebd5c9b5604f2564fa6df113968122cfe4129286c6514cd8cb241a7b1b372438"
+    },
+    {
+      "repository_path": "pearlhash/gpu/tile_scan_core.cuh",
+      "path": "gpu/tile_scan_core.cuh",
+      "bytes": 3402,
+      "sha256": "6f8bfe17db620102add64c9e89f98d198dd98ca04836d7ec1f76685f4491a7d0"
+    },
+    {
+      "repository_path": "pearlhash/gpu/virtual_input.h",
+      "path": "gpu/virtual_input.h",
+      "bytes": 1815,
+      "sha256": "f09cc193877737cb0e441c97c70b17bd4050af2608cdd21551b8d1b05bf65256"
+    },
+    {
+      "repository_path": "pearlhash/gpu/virtual_tile_scan.cu",
+      "path": "gpu/virtual_tile_scan.cu",
+      "bytes": 2190,
+      "sha256": "26df912b38afc8ee261eb03dc88c65d6a6f2cf5a9a6769b6dc7f1cfba053586c"
+    },
+    {
+      "repository_path": "pearlhash/proof/blake3_cpu.cpp",
+      "path": "proof/blake3_cpu.cpp",
+      "bytes": 6334,
+      "sha256": "ad6c08092b842d9de807ed0ddcc6dfed57d98a7089971e38cfe33e567ff29682"
+    },
+    {
+      "repository_path": "pearlhash/reference/__init__.py",
+      "path": "reference/__init__.py",
+      "bytes": 57,
+      "sha256": "49afb72214ba92c09ae8d041e6837d102fcfe9db301e50d38d83fce386f38f49"
+    },
+    {
+      "repository_path": "pearlhash/reference/native_hash.py",
+      "path": "reference/native_hash.py",
+      "bytes": 3014,
+      "sha256": "ed18caad37c700b9412484c826ae710f5ca258202dd4b10fcdd86933b232c833"
+    },
+    {
+      "repository_path": "pearlhash/reference/dense.py",
+      "path": "reference/dense.py",
+      "bytes": 5264,
+      "sha256": "9ce055e9412e60004a11309799983a6e958e319fb1eed90412fc8deff112c82e"
+    },
+    {
+      "repository_path": "pearlhash/reference/seeds.py",
+      "path": "reference/seeds.py",
+      "bytes": 1825,
+      "sha256": "302268767ad31e2c71fb6dcaf11a8e3d3c829a33bce101059d7379b54e2f378b"
+    },
+    {
+      "repository_path": "pearlhash/reference/patterns.py",
+      "path": "reference/patterns.py",
+      "bytes": 4379,
+      "sha256": "99d3a0b15eec5ee2ca32fc981b04354f2c6ed79ddeafa501535cf51e550b38c5"
+    },
+    {
+      "repository_path": "pearlhash/reference/pool_nonce.py",
+      "path": "reference/pool_nonce.py",
+      "bytes": 621,
+      "sha256": "f9cc5017d6b207ee360b0f4114b453cf1d7c8be85dad820fc31bc591e3826e34"
+    },
+    {
+      "repository_path": "pearlhash/reference/tile_ranges.py",
+      "path": "reference/tile_ranges.py",
+      "bytes": 5877,
+      "sha256": "c83505788db96462ada2180fe8b019c62234128086778ef84972fa7fd1add880"
+    },
+    {
+      "repository_path": "pearlhash/reference/constant_merkle.py",
+      "path": "reference/constant_merkle.py",
+      "bytes": 1867,
+      "sha256": "772bfb91cd09931cebfc21b4f9a9592ee461243144761fb590f099b93ca9f37e"
+    },
+    {
+      "repository_path": "pearlhash/reference/plain_proof.py",
+      "path": "reference/plain_proof.py",
+      "bytes": 6072,
+      "sha256": "c816674259ccd4f08ce524a249d16c8fe44dcf98d1955596f1e16d87ce13af8f"
+    },
+    {
+      "repository_path": "pearlhash/tools/cuda_driver.py",
+      "path": "tools/cuda_driver.py",
+      "bytes": 2499,
+      "sha256": "9ea8063c068f2b64867a4148685f6f49285c8f1277bed74d5a178a669072ae9e"
+    },
+    {
+      "repository_path": "pearlhash/tools/check_mma_gpu.py",
+      "path": "tools/check_mma_gpu.py",
+      "bytes": 8977,
+      "sha256": "e73e61fd605e7632a3568166636fd03d7c882189716b45cd5714f75a73c18ffc"
+    },
+    {
+      "repository_path": "pearlhash/tools/check_noise_mma_gpu.py",
+      "path": "tools/check_noise_mma_gpu.py",
+      "bytes": 8539,
+      "sha256": "967de0e2e3d1544edddc32fb055bbc1206edf34e11e1fad738b83ff8999c16c1"
+    },
+    {
+      "repository_path": "pearlhash/tools/check_tile_scan_gpu.py",
+      "path": "tools/check_tile_scan_gpu.py",
+      "bytes": 10237,
+      "sha256": "78bb8755ad01e29e0b351286a9fd5637cf12f3d324cb101c5fb5734fcb243026"
+    },
+    {
+      "repository_path": "pearlhash/tools/check_range_scan_gpu.py",
+      "path": "tools/check_range_scan_gpu.py",
+      "bytes": 8561,
+      "sha256": "2331386253e6b9595f4944fe41ba05f5add48419fbee39d90ff4da8ec0fb8e93"
+    },
+    {
+      "repository_path": "pearlhash/tools/offline_nonce_search.py",
+      "path": "tools/offline_nonce_search.py",
+      "bytes": 11276,
+      "sha256": "8b9887a06452adb534d561343e9bef898b5a4fbdda9520704c71e8bec235a8ab"
+    },
+    {
+      "repository_path": "pearlhash/tools/compile_correctness.py",
+      "path": "tools/compile_correctness.py",
+      "bytes": 3565,
+      "sha256": "922bceaac1ca7faf8d14dea8766af5d41a87994a481ccc333b03e6012d5b6aa5"
+    },
+    {
+      "repository_path": "pearlhash/tools/virtual_scan.py",
+      "path": "tools/virtual_scan.py",
+      "bytes": 10239,
+      "sha256": "02f989af820a2a8f18704ad0a13d5e140a88d1bc6fb56443f024284b64ccb153"
+    },
+    {
+      "repository_path": "pearlhash/tools/check_virtual_gpu.py",
+      "path": "tools/check_virtual_gpu.py",
+      "bytes": 8245,
+      "sha256": "0b0d88cd5bce41f2c4a014a449fb0984569a188aeb45ea35a0347cc01b306ea1"
+    },
+    {
+      "repository_path": "pearlhash/tests/test_mma_gpu.py",
+      "path": "tests/test_mma_gpu.py",
+      "bytes": 2855,
+      "sha256": "3450d777a15616867a57ccb47d97f50cc7135cb1c7b86942dd0b0b35bcc6fe31"
+    },
+    {
+      "repository_path": "pearlhash/tests/test_noise_mma_gpu.py",
+      "path": "tests/test_noise_mma_gpu.py",
+      "bytes": 4289,
+      "sha256": "8583662ec83b721b5cc66b2833f3a87160ff7e35b0020f4a0cf8ac9770c09d48"
+    },
+    {
+      "repository_path": "pearlhash/tests/noise_tables_cpu.cpp",
+      "path": "tests/noise_tables_cpu.cpp",
+      "bytes": 1336,
+      "sha256": "64ff2f38f420996a89c081e90b214b0e3d75decd2506ef4df9df89f1fdb741f9"
+    },
+    {
+      "repository_path": "pearlhash/tests/test_tile_scan_gpu.py",
+      "path": "tests/test_tile_scan_gpu.py",
+      "bytes": 4071,
+      "sha256": "5a5e4f370d6d400cd8352f6ad2e7f49088811bec8976307287de6cd6b7ac7627"
+    },
+    {
+      "repository_path": "pearlhash/tests/test_tile_ranges.py",
+      "path": "tests/test_tile_ranges.py",
+      "bytes": 5203,
+      "sha256": "eacf4529800f180abd985414f87f9f655c2054d6ca1f7d8a6d2c90c7d223a00c"
+    },
+    {
+      "repository_path": "pearlhash/tests/test_nonce_search.py",
+      "path": "tests/test_nonce_search.py",
+      "bytes": 4211,
+      "sha256": "1d72b93d8b75b93143cac7b7bf94d7a86eacbd37c867eef7cc14f155db4d41c7"
+    },
+    {
+      "repository_path": "pearlhash/tests/virtual_input_cpu.cpp",
+      "path": "tests/virtual_input_cpu.cpp",
+      "bytes": 1003,
+      "sha256": "e372d0efee13089a8ec097061466692c72e6340eaff9c4d74b338fa38edafd7e"
+    },
+    {
+      "repository_path": "pearlhash/tests/test_virtual_scan.py",
+      "path": "tests/test_virtual_scan.py",
+      "bytes": 4394,
+      "sha256": "2c8866899b7888636d7b11059a918cf6db29c6f32cb7135b25ba172648be3e06"
+    },
+    {
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.17-sm120.ptx",
+      "path": "gpu/tile-scan-sm120.ptx",
+      "bytes": 249357,
+      "sha256": "1265a107fc0d98250179ab3c8097c7811f857a3d29ca3f0e296cda01cf62d704"
+    }
+  ],
+  "scope": "offline virtual-cache tests and fresh V3 proof; GPU driver-JIT/oracle check pending; no pool submission or performance claim"
+}

@@ -235,5 +235,52 @@ This correctness path is not an efficient production worker or benchmark.
 CPU commitments, nonce-tail mapping, seed derivation and proof encoding remain
 CPU operations. GPU deterministic noise, integer tile scan, transcript/digest,
 target comparison and queue operations use the validated v0.0.14 cubin. New
-nonce-to-proof GPU/oracle integration is pending. The v0.0.15 scheduler already
+nonce-to-proof GPU/oracle integration now passes on RTX 5060 for both fresh
+V2/V3 proofs. The v0.0.15 scheduler already
 passed its rig checks. No live job source, pool client or submitted share.
+
+## v0.0.17 global noise cache and virtual fragments
+
+`tile_scan_core.cuh` is the shared collective/target/queue template. The original
+`tile_scan.cu` materialized wrapper and new `virtual_tile_scan.cu` invoke that
+same body with different fragment loaders. `virtual_input.h` constructs exact
+int8 words from global uniform tables, per-side permutation pairs, constant
+fill and the final A-row nonce tail. No virtual signal/noised matrix allocation.
+`noise_uniform_range` generates complete global table spans without an uploaded
+row-index vector. The existing permutation kernel is reused. All integer rules
+and the <= target predicate remain unchanged; no FP8 conversion or saturation.
+
+`tools/virtual_scan.py` owns bounded full-profile caches, validates global query
+descriptors, checks sampled/used table rows and queues, and supplies the existing
+nonce/range/proof pipeline through a backend factory. Payload cap64MiB excludes
+keys/guards/dispatch/driver overhead. The synthetic production-shaped payload is
+34472080 bytes; no complete logical8GiB matrix is allocated.
+
+`tools/check_virtual_gpu.py` checks three cache profiles, all small-domain bytes,
+first/middle/last large-domain row probes, seven production-shaped tile queries,
+boundaries/overflow/tags/guards, one materialized-wrapper regression, then a
+fresh virtual-path V3 proof with the rig's existing official CPU oracle. This
+is a CPU-reference-heavy correctness harness, not a production benchmark.
+Native sm_120 compilation and 63 CPU tests pass; actual new GPU/oracle execution
+is pending. Earlier v0.0.16 nonce/proof hardware verification passed for V2/V3.
+
+```sh
+python3 tools/compile_correctness.py /path/to/libnvrtc.so.12 gpu/tile-scan-sm120.cubin virtual_tile_scan.cu
+```
+
+### v0.0.17 readable module distribution
+
+Published GPU artifact: releases/pearlhash-dev-v0.0.17-sm120.ptx, readable PTX 8.8
+for sm_120. Its source-file manifest downloads it locally as gpu/tile-scan-sm120.ptx.
+The existing NVIDIA driver JIT-compiles it via cuModuleLoad; no toolkit install.
+Use check_virtual_gpu.py --module gpu/tile-scan-sm120.ptx (the old --cubin flag
+is retained as an alias). Reuse the existing verified CPU library via
+PEARL_HASH_LIBRARY. No compressed archive/native binary is published for this
+version. The GPU JIT execution/official V3 check remains pending on the rig.
+
+```sh
+python3 tools/compile_correctness.py /path/to/libnvrtc.so.12 releases/pearlhash-dev-v0.0.17-sm120.ptx virtual_tile_scan.cu ptx
+```
+
+Module-loading authority:
+https://docs.nvidia.com/cuda/cuda-driver-api/group__CUDA__MODULE.html

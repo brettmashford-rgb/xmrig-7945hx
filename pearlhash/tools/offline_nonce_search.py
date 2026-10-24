@@ -107,7 +107,7 @@ class FoundTile:
     digest:bytes
 
 
-def find_candidate(context,device=None):
+def find_candidate(context,device=None,*,backend_factory=RangeBackend):
     """Stop at first completed batch containing a target-meeting candidate."""
     plan=context.job.plan();cursor=RangeCursor(context.generation,0,plan.count)
     current=[context.generation];found=[]
@@ -116,7 +116,7 @@ def find_candidate(context,device=None):
             tile,digest,generation=records[0]
             found.append(FoundTile(generation,tile,digest))
             current[0]=context.generation^1 # Internal bounded-search stop, not a pool job change.
-    backend=RangeBackend(context.profile,device,bound=BOUND)
+    backend=backend_factory(context.profile,device,bound=BOUND)
     try:
         run_range(plan,cursor,backend,lambda:current[0],deliver)
     finally:backend.close()
