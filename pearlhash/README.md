@@ -1,6 +1,6 @@
 # Independent PearlHash miner development
 
-Version: **0.0.12-integer-mma-check**. This remains **not a working miner**.
+Version: **0.0.13-noise-to-mma**. This remains **not a working miner**.
 
 The user's RTX 5060 has passed the offline GPU math checks, 263 nonce-tail
 comparisons, 141 keyed commitment-leaf comparisons and the empty launch. Fresh
@@ -25,9 +25,17 @@ accepted, and no speed or power improvement has been measured.
 A new independent integer tensor-core matrix kernel compiles natively for
 sm_120; disassembly confirms IMMA.16832.S8.S8. It compares every cumulative
 rank-boundary product, transcript word and digest with a scalar CPU calculation.
-CPU reference/parser tests pass; the new MMA kernel's GPU execution is pending.
+All four synthetic cases and the saved 10x16 / k=32768 / rank=128 input now pass
+on the RTX 5060: every prefix product, transcript, digest and output guard matches.
 It consumes already-noised selected inputs and is not yet a mining search loop.
 No performance improvement is claimed before measurement.
+
+The next compiled component generates reusable uniform/permutation noise tables
+and signed noised bytes on the GPU, then feeds the same device buffers directly
+into the tensor-core path. Seeds, selected indices and signal bytes remain
+supplied inputs. Independent CPU noise/math and actual noise-kernel-body CPU
+checks pass; the combined path's GPU validation is pending. No production search
+loop or pool submission has been added.
 
 See [independent proof pipeline](proof/README.md),
 [GPU math scope](gpu/README.md), [login-only pool probe](docs/pool-probe.md),

@@ -24,10 +24,13 @@ def build(library, output, source_name='correctness.cu'):
     print(f'NVRTC {major.value}.{minor.value}; native sm_120; GPU not used')
     program = C.c_void_p()
     source = (Path(__file__).parents[1] / 'gpu' / source_name).read_bytes()
-    header = (Path(__file__).parents[1] / 'gpu/keyed64.h').read_bytes()
-    headers = (C.c_char_p * 1)(header)
-    names = (C.c_char_p * 1)(b'keyed64.h')
-    rc = lib.nvrtcCreateProgram(C.byref(program), source, source_name.encode(), 1, headers, names)
+    # The noise/table pipeline includes the existing validated MMA implementation.
+    # Supply explicit repository headers; no host CUDA headers/toolkit required.
+    include_names = ('keyed64.h', 'mma_correctness.cu')
+    headers = (C.c_char_p * len(include_names))(*(
+        (Path(__file__).parents[1] / 'gpu' / name).read_bytes() for name in include_names))
+    names = (C.c_char_p * len(include_names))(*(name.encode() for name in include_names))
+    rc = lib.nvrtcCreateProgram(C.byref(program), source, source_name.encode(), len(include_names), headers, names)
     if rc:
         raise RuntimeError(f'nvrtcCreateProgram: {rc}')
     try:

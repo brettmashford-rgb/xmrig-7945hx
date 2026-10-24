@@ -121,19 +121,23 @@ class MmaDevice(CudaDevice):
         try:
             a=self.allocate(bytes(v&255 for v in case.a));bt=self.allocate(bytes(v&255 for v in case.bt))
             key=self.allocate(case.key)
-            outputs=[self.allocate(b'\xa5'*(len(value)+32))for value in expected]
-            interiors=[C.c_ulonglong(value.value+16)for value in outputs]
-            rows,cols,k,rank=(C.c_uint(value)for value in (case.rows,case.cols,case.k,case.rank))
-            tiles=((case.rows+15)//16)*((case.cols+7)//8)
-            self.launch(b'mma_cumulative',(a,bt,interiors[0],rows,cols,k,rank),(tiles+3)//4,128)
-            self.launch(b'mma_fold_digest',(interiors[0],key,interiors[1],interiors[2],
-                                          C.c_uint(case.rows*case.cols),C.c_uint(case.k//case.rank)),1,32)
-            self.api('cuCtxSynchronize',[])
-            for label,pointer,value in zip(('prefix products','transcript','digest'),outputs,expected):
-                if self.checked_download(pointer,len(value))!=value:
-                    raise RuntimeError(f'tensor-core {label} differs from independent CPU reference')
+            self.check_products(case,expected,a,bt,key)
         finally:
             for pointer in reversed(self.allocations[mark:]):self.release(pointer)
+
+    def check_products(self,case,expected,a,bt,key):
+        """Use existing device input buffers; caller retains allocation ownership."""
+        outputs=[self.allocate(b'\xa5'*(len(value)+32))for value in expected]
+        interiors=[C.c_ulonglong(value.value+16)for value in outputs]
+        rows,cols,k,rank=(C.c_uint(value)for value in (case.rows,case.cols,case.k,case.rank))
+        tiles=((case.rows+15)//16)*((case.cols+7)//8)
+        self.launch(b'mma_cumulative',(a,bt,interiors[0],rows,cols,k,rank),(tiles+3)//4,128)
+        self.launch(b'mma_fold_digest',(interiors[0],key,interiors[1],interiors[2],
+                                      C.c_uint(case.rows*case.cols),C.c_uint(case.k//case.rank)),1,32)
+        self.api('cuCtxSynchronize',[])
+        for label,pointer,value in zip(('prefix products','transcript','digest'),outputs,expected):
+            if self.checked_download(pointer,len(value))!=value:
+                raise RuntimeError(f'tensor-core {label} differs from independent CPU reference')
 
 
 def main():

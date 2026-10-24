@@ -1,5 +1,32 @@
 # PearlHash development checkpoints
 
+## v0.0.13-noise-to-mma
+
+Download: [Linux x86_64 / sm_120 GPU noise-to-MMA component](releases/pearlhash-dev-v0.0.13-linux-x86_64.tar.gz).
+
+SHA-256: `2d36c470f9ff22a8a0620279c939aec6bbe3cd6918a5d468cf53a661f935ce3e`.
+
+Generates per-side reusable uniform/permutation tables and signed noised bytes
+on the GPU, then feeds those device buffers directly to the exact integer MMA
+kernel. Noise seeds, selected indices and signal bytes remain supplied inputs.
+Each table hash produces 32 uniform bytes or eight permutation pairs. CPU
+noised matrices are used for comparison only, never uploaded to this path.
+
+Checks every table entry, noised byte, rank-boundary product, transcript word
+and digest, with output guards. Three synthetic cases cover ranks32/128/1024,
+selected-index limits, repeated indices, padded tiles and transcript-slot reuse.
+An optional existing local PHGPU02 file reuses completed replay inputs without
+rebuilding matrix roots or repeating the official verifier.
+
+Native sm_120 compilation succeeds. Actual noise kernel bodies pass CPU
+reference/guard checks; official-generated V2/V3 fixture noise/digests match.
+50 development tests pass / two prior oracle/vector tests skip. The earlier
+v0.0.12 MMA component passed all five cases on the RTX 5060. GPU execution of
+this combined noise-to-MMA path is pending. No private session input is bundled.
+No search loop, custom share, pool verdict, benchmark or speed/power gain claim.
+Existing miners/services/clocks remain unchanged.
+
+
 ## v0.0.12-integer-mma-check
 
 Download: [Linux x86_64 / sm_120 integer tensor-core correctness component](releases/pearlhash-dev-v0.0.12-linux-x86_64.tar.gz).
@@ -20,7 +47,9 @@ old verifier. No private session fixture/fingerprints/results are included.
 A successful GPU run writes a local completion report. Three new CPU tests pass;
 47 development tests pass / two prior oracle/vector tests skip.
 
-New tensor-core GPU execution is pending. No search loop, custom share, pool
+All five tensor-core GPU cases now pass on the RTX 5060, including the local
+10x16 / k=32768 / rank=128 input; all output guards remain unchanged.
+No search loop, custom share, pool
 verdict, hashrate/power measurement or speed improvement is claimed. The rig's
 existing miner/services/clocks are left running and unchanged.
 

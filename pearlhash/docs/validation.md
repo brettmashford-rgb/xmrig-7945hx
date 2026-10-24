@@ -309,6 +309,35 @@ poison guards, and allocations are freed per case. Packaged tests/checksums and
 CPU-only completion-report behavior pass. No private fixture or results are
 bundled. A report marks GPU checked only after all actual GPU checks pass.
 
-The new MMA GPU execution remains pending. There is no scalar GPU fallback,
+The MMA GPU execution subsequently passed all five cases below. There is no scalar GPU fallback,
 new noise/seed/commitment implementation, production search or benchmark here.
 No working independent pool miner or measured speed/power gain is claimed.
+
+The v0.0.12 tensor-core check now passes on the RTX 5060 for all four synthetic
+cases and the local saved 10x16 / k=32768 / rank=128 input. Every prefix product,
+transcript word and digest matches the CPU reference, and guards are unchanged.
+This validates the integer MMA component; no search, custom share or measured gain.
+
+## v0.0.13 GPU noise tables into integer MMA
+
+The new component generates uniform rows, per-side permutation pairs and signed
+noised matrices with separate ordered GPU launches. The resulting device
+buffers feed the existing tensor-core kernel directly. Each table element and
+noised byte is checked with independent scalar noise; all rank-boundary products,
+transcript and digest are checked with the scalar matrix reference. Output
+guards cover uniform, permutation, noised, product, transcript and digest buffers.
+
+The new source compiles natively for sm_120; own-code disassembly includes the
+same dense integer MMA instruction. CPU execution of unchanged noise kernel
+bodies matches the CPU reference with guards intact for rank32/128/1024,
+repeated/near-limit row indices and partial launch blocks. This is not GPU
+execution or GPU scheduling emulation. Official-generated V2/V3 fixture inputs
+reproduce their saved matrices, transcript and digest. Corrupted local fixture
+seeds, signals, indices and digests reject. 50 tests pass / two prior
+oracle/vector tests skip. The CLI prepares three synthetic cases and the local
+completed replay input successfully in CPU-only mode; that report correctly
+marks GPU unchecked. The combined path's GPU test is pending.
+
+The earlier standalone MMA path passed on the rig. No GPU seed derivation,
+commitments, production search, target filtering or pool submission is added
+here, and no performance result is claimed. Private inputs stay local.

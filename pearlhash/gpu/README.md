@@ -134,7 +134,8 @@ Register layout authority:
 https://docs.nvidia.com/cuda/parallel-thread-execution/#warp-level-matrix-fragment-mma-16832
 
 NVRTC 12.9.86 native sm_120 compilation succeeds; own-code disassembly contains
-IMMA.16832.S8.S8. The new GPU execution is pending. CPU scalar/parser tests pass;
+IMMA.16832.S8.S8. All five GPU cases now pass on the RTX 5060, including
+the saved 10x16 / k=32768 / rank=128 input. CPU scalar/parser tests pass;
 these are not execution of the hardware MMA instruction. The runner uses four
 synthetic cases and optionally a LOCAL PHGPU02 fixture; it saves completion
 status locally and never sends fixture contents anywhere. No search loop or
@@ -142,4 +143,27 @@ performance claim is made. Existing completed proof/replay checks need not rerun
 
 ```sh
 python3 tools/compile_correctness.py /path/to/libnvrtc.so.12 gpu/mma-sm120.cubin mma_correctness.cu
+```
+
+## v0.0.13 GPU noise tables to MMA
+
+`noise_mma.cu` includes the same `mma_correctness.cu` implementation and adds
+three kernels: `noise_uniform`, `noise_permutation`, and `noise_apply`.
+Uniform rows use one keyed hash per 32 bytes; a shared per-side permutation
+uses one hash per eight pairs. Selected indices may repeat. Signed signal
+bytes plus bounded uniform differences produce exact int8 inputs, without
+FP8 conversion. Input seeds remain caller-supplied; no derivation or nonce search.
+
+`tools/check_noise_mma_gpu.py` checks every table byte/pair, every noised byte,
+every integer prefix, transcript and digest with poison guards. GPU-produced
+noised buffers feed MMA directly; the checker does not upload CPU noised data.
+Rows/columns are bounded to 32, k<=65536, ranks32/128/1024 (power-of-two values
+through1024 supported). CPU kernel-body checks and independent scalar reference
+comparisons pass, including official-generated V2/V3 inputs. New combined GPU
+execution is pending; the prior standalone MMA path has passed on RTX 5060.
+This correctness harness includes CPU comparisons and device downloads and
+makes no throughput or efficiency claim. It is not a production search loop.
+
+```sh
+python3 tools/compile_correctness.py /path/to/libnvrtc.so.12 gpu/noise-mma-sm120.cubin noise_mma.cu
 ```
