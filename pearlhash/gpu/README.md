@@ -94,3 +94,29 @@ The existing seven Python reference tests also pass. No NVIDIA GPU or driver
 is available on the development host. The user subsequently confirmed all five new GPU noise/digest checks pass
 on the RTX 5060; archive and internal checksums also passed.
 No live pool submissions, accepted shares or performance measurements.
+
+
+## v0.0.9 keyed chunk commitments
+
+`chunk_commitment.cu` independently hashes complete 1024-byte chunks with a
+32-byte key and explicit u64 first-chunk index. Each thread emits a 32-byte
+chaining value, with KEYED_HASH / START / END flags and no ROOT flag. Parent
+folding must preserve that distinction. A two-chunk root golden checks it.
+The host bounds input batches and counter addition before launching; the
+kernel ignores out-of-range threads. GPU execution is pending on the RTX 5060.
+
+The supplied 141 synthetic cases include the chunk-index boundary of an 8-GiB
+matrix, not a complete 8-GiB computation. No assumption about the pool's signal
+matrix layout is established by this component. It supplies a commitment leaf
+operation needed for a later independently constructed full GPU proof pipeline.
+
+Build on the development host (no compiler install required on the rig):
+
+```sh
+python3 tools/compile_correctness.py /path/to/libnvrtc.so.12 gpu/chunk-commitment-sm120.cubin chunk_commitment.cu
+```
+
+The package includes the native CPU hash library, source, CPU kernel-body
+checker, synthetic official-compressor CV goldens, fixture and stdlib GPU runner.
+`tools/cuda_driver.py` now owns the common driver lifecycle used by the nonce
+and commitment checks; each releases only its own context and allocations.

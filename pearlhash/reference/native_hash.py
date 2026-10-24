@@ -72,7 +72,8 @@ def parents(children,key,*,root=False):
 
 def chunk_value(data,index,key):
     key_check(key)
-    if len(data)!=1024 or not 0<=index<65536:raise ValueError('invalid chunk/index')
+    if len(data)!=1024 or type(index) is not int or not 0<=index<=0xffffffffffffffff:
+        raise ValueError('expected a 1024-byte chunk and u64 index')
     out=C.create_string_buffer(32)
     if library().ph_chunk_value(data,index,key,out):raise ValueError('native chunk hash failed')
     return out.raw

@@ -57,7 +57,7 @@ API int ph_chunk_cvs(const unsigned char *data,size_t count,const unsigned char 
  return 0;
 }
 API int ph_chunk_value(const unsigned char *data,uint64_t index,const unsigned char *key,unsigned char *out){
- if(!data || !key || !out || index>=65536)return 1;
+ if(!data || !key || !out)return 1;
  chunk(data,1024,key,index,false,out);return 0;
 }
 API int ph_parent_cvs(const unsigned char *children,size_t pairs,const unsigned char *key,

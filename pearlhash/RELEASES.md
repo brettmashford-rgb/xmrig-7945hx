@@ -1,5 +1,30 @@
 # PearlHash development checkpoints
 
+## v0.0.9-commitment-leaf-check
+
+Download: [Linux x86_64 / sm_120 keyed chunk-CV component](releases/pearlhash-dev-v0.0.9-linux-x86_64.tar.gz).
+
+SHA-256: `95e444aaba0f8805b4e7a85fa7eb15d94fd37f3a3bf8bc8c301b0897e3b8ce4a`.
+
+New independent keyed BLAKE3 full-chunk chaining-value kernel, compiled with
+NVRTC 12.9.86 for native sm_120. 141 synthetic CPU CVs match the official BLAKE3
+portable compressor at commit `f55849f89cd85083c1c9daa2c5de20766f309c00`.
+CPU evaluation of the kernel body passes all comparisons, an empty launch and
+output guards, including address/undefined sanitizers. Zero/FF data, nonaligned
+launches, 64-MiB/8-GiB chunk-index boundaries, 32-bit carry and u64 maximum are
+covered. These sparse indices do not hash a complete 8-GiB matrix.
+
+CPU single-chunk CV hashing now accepts the full u64 counter; proof tree size
+limits stay unchanged. Offline CUDA checks share one driver lifecycle helper.
+The nonce kernel is unchanged. 38 Python CPU tests pass, two prior oracle/vector
+tests skip; packaged three new tests and the CPU checker pass independently.
+
+GPU execution remains pending. No full GPU matrix tree, resolved pool compact
+reconstruction, accepted custom share or performance improvement is claimed.
+This package makes no connection and changes no service or clock. Run the
+included `tools/check_commitment_gpu.py` with the included CPU hash library.
+
+
 ## v0.0.8-nonce-tail-check
 
 Download: [Linux x86_64 / sm_120 nonce-tail correctness component](releases/pearlhash-dev-v0.0.8-linux-x86_64.tar.gz).

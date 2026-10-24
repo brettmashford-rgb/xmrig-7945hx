@@ -191,3 +191,33 @@ or live independent share is claimed for this build.
   provenance and internal SHA-256 checksums. Extracted package CPU checks pass.
 - Complete captured-share CPU reconstruction hypotheses still do not meet the
   target. No working pool miner, custom share acceptance or efficiency claim.
+
+
+### v0.0.9 commitment leaf component
+
+- Rig screenshot verifies all 263 v0.0.8 nonce-tail GPU cases and output guards;
+  source archive/internal checksums match. This remains isolated arithmetic.
+- Two more preceding captured headers (packets 15 and 35) transcribe exactly:
+  their SHA-256 values match rig output. All four retained candidate headers
+  still fail the current CPU compact-reconstruction hypotheses. No candidate is
+  identified as the share's actual job; no extra capture was requested.
+- New keyed full-chunk BLAKE3 CV kernel compiles with NVRTC 12.9.86, sm_120.
+  141 synthetic native CPU CVs match official BLAKE3 portable C compression at
+  f55849f89cd85083c1c9daa2c5de20766f309c00. This is a hashing oracle only, not
+  the official Pearl verifier or a pool verdict. Official oracle source/binary
+  stays on the development host; the distributed implementation is independent.
+- Ordinary CPU evaluation of the kernel body matches all 141 CVs and preserves
+  guards, including empty-launch behavior, zero/FF blocks, nonaligned thread
+  counts, index 65535/65536, the 8-GiB chunk boundary, 32-bit counter carry and
+  the u64 maximum. Address/undefined sanitizer checks pass (leak checks off).
+- A standard BLAKE3 two-chunk root golden independently checks the CV/root flag
+  distinction. Three new Python tests pass without Python extensions.
+- Development Python suite: 38 pass / two skip (prior official verifier and
+  unavailable original JSON vectors). The independent Python BLAKE3 dependency
+  is supplied on the development host for the old hash/tree comparison test.
+- Native CPU single-chunk counter support expands to u64; existing tree-size
+  and proof-size bounds remain. The old nonce kernel is unchanged; its runner
+  shares an extracted CUDA lifecycle helper. CPU nonce comparisons still pass.
+- Actual new GPU execution remains pending. No complete large matrix root,
+  current-pool reconstruction, custom share submission/acceptance or measured
+  speed/power claim. Existing rig mining is left in place.
