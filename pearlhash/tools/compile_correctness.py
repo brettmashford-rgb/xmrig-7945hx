@@ -26,7 +26,7 @@ def build(library, output, source_name='correctness.cu'):
     source = (Path(__file__).parents[1] / 'gpu' / source_name).read_bytes()
     # The noise/table pipeline includes the existing validated MMA implementation.
     # Supply explicit repository headers; no host CUDA headers/toolkit required.
-    include_names = ('keyed64.h', 'mma_correctness.cu')
+    include_names = ('keyed64.h', 'mma_correctness.cu', 'noise_mma.cu', 'scan_target.h')
     headers = (C.c_char_p * len(include_names))(*(
         (Path(__file__).parents[1] / 'gpu' / name).read_bytes() for name in include_names))
     names = (C.c_char_p * len(include_names))(*(name.encode() for name in include_names))

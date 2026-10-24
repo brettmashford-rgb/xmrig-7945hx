@@ -1,5 +1,34 @@
 # PearlHash development checkpoints
 
+## v0.0.14-bounded-tile-scan
+
+Download: [Linux x86_64 / sm_120 bounded GPU tile scan](releases/pearlhash-dev-v0.0.14-linux-x86_64.tar.gz).
+
+SHA-256: `ff7f8b17770516e413f6df839a70dbdbfe94d467344bc3274ba7e929704790b8`.
+
+Adds batched selected-tile evaluation over shared GPU-generated signed matrices.
+MMA accumulators remain in registers; warp/block reduction folds rank prefixes
+inside the kernel. Keyed digest and caller-supplied already-scaled u256 bound
+comparison also run there. Normal output is a compact, generation-tagged
+candidate queue, without global prefix-product arrays or prefix downloads.
+A correctness-only optional audit saves 16 transcript words per tile.
+
+The atomic queue counts every hit, flags overflow (including zero capacity),
+and refuses to treat partial results as complete. CPU decode rejects duplicate,
+unknown, stale or digest-mismatched records. The runner tests four synthetic
+input batches plus an optional local saved replay input. Each uses five maps
+and eight target/queue scenarios, including equality, adjacent bounds, misses,
+mixed hits, zero/one-slot overflow, padding, repeated slots and eight warps.
+These general math cases do not imply consensus-valid tile configurations.
+
+Native sm_120 compilation succeeds; 53 CPU tests pass / two prior oracle/vector
+tests skip. The unchanged native comparator matches Python integers for 1144
+boundary/random pairs. The earlier v0.0.13 combined noise-to-MMA component
+passed all four GPU cases on RTX 5060. The new scanner's GPU test is pending.
+No full nonce/job search, inferred target scaling, pool submission, measured
+performance or working-miner claim. Private session values are not bundled.
+
+
 ## v0.0.13-noise-to-mma
 
 Download: [Linux x86_64 / sm_120 GPU noise-to-MMA component](releases/pearlhash-dev-v0.0.13-linux-x86_64.tar.gz).
@@ -22,7 +51,8 @@ Native sm_120 compilation succeeds. Actual noise kernel bodies pass CPU
 reference/guard checks; official-generated V2/V3 fixture noise/digests match.
 50 development tests pass / two prior oracle/vector tests skip. The earlier
 v0.0.12 MMA component passed all five cases on the RTX 5060. GPU execution of
-this combined noise-to-MMA path is pending. No private session input is bundled.
+this combined noise-to-MMA path now passes all four cases on the RTX 5060,
+including the saved replay input. No private session input is bundled.
 No search loop, custom share, pool verdict, benchmark or speed/power gain claim.
 Existing miners/services/clocks remain unchanged.
 

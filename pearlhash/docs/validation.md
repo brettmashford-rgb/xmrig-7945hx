@@ -336,8 +336,43 @@ reproduce their saved matrices, transcript and digest. Corrupted local fixture
 seeds, signals, indices and digests reject. 50 tests pass / two prior
 oracle/vector tests skip. The CLI prepares three synthetic cases and the local
 completed replay input successfully in CPU-only mode; that report correctly
-marks GPU unchecked. The combined path's GPU test is pending.
+marks GPU unchecked. The subsequent RTX 5060 run passes all four combined
+noise-to-MMA cases: all tables, bytes, prefixes, transcript, digest and guards
+match, including the saved 10x16 / k=32768 / rank=128 input.
 
 The earlier standalone MMA path passed on the rig. No GPU seed derivation,
 commitments, production search, target filtering or pool submission is added
 here, and no performance result is claimed. Private inputs stay local.
+
+## v0.0.14 bounded GPU tile scanner
+
+The scanner evaluates caller-selected row/column maps from the same device
+noised buffers. All eight warps participate in block barriers; inactive and
+padded lanes contribute zero. At each rank boundary, lane/warp folds update
+the shared 16-word transcript. The keyed digest and little-endian u256 <= test
+run in the same kernel; the bound must already include caller-established
+configuration/rank scaling. The pinned official sanity checks use <=; this
+primitive does not implement the remaining consensus rules or infer scaling.
+
+Only hits enter a bounded atomic queue with tile ID, u64 caller generation and
+digest. The total includes hits beyond capacity, and an explicit overflow flag
+causes the host's completeness check to reject partial results. The decoder
+checks unordered hit sets, digests and generation tags. Optional audit output
+contains transcript words only; no prefix arrays are allocated or downloaded.
+
+New CPU tests cover 1144 actual-comparator comparisons against Python integers,
+known scalar tile results, duplicate/reversed maps, stale/unknown/corrupt records,
+invalid descriptors/bounds and zero/one-capacity overflow. The 55-test development
+run passes 53 / skips two prior oracle/vector cases. CPU-only preparation succeeds
+for all four synthetic batches and the existing local replay fixture. This does
+not execute GPU barriers, shuffles, MMA or atomics. Native sm_120 compilation and
+own-code disassembly succeed; actual scanner execution remains pending on rig.
+
+The rig runner will compare five tile maps across eight target/queue scenarios
+per input batch, including a 32x32 eight-warp math case. Synthetic tile shapes
+and duplicate indices are general math tests, not assertions of consensus validity.
+No new capture, root rebuild, proof regeneration or pool operation is needed.
+Earlier v0.0.13 GPU noise-to-MMA checks already passed and are not rerun as a
+separate milestone. No full nonce/job range scheduler or live cancellation is
+implemented; generation tags alone are not job cancellation. No custom pool
+share or throughput/power improvement is claimed. Private inputs stay local.

@@ -4,6 +4,17 @@
 // Inputs are already-noised selected A rows / transposed B columns. No pool IO.
 #include "keyed64.h"
 
+// Shared fragment operation for the prefix checker and compact tile scanner.
+__device__ __forceinline__ void mma_accumulate(unsigned a0,unsigned a1,
+    unsigned a2,unsigned a3,unsigned b0,unsigned b1,
+    int &d0,int &d1,int &d2,int &d3) {
+    asm volatile(
+        "mma.sync.aligned.m16n8k32.row.col.s32.s8.s8.s32 "
+        "{%0,%1,%2,%3}, {%4,%5,%6,%7}, {%8,%9}, {%0,%1,%2,%3};"
+        : "+r"(d0),"+r"(d1),"+r"(d2),"+r"(d3)
+        : "r"(a0),"r"(a1),"r"(a2),"r"(a3),"r"(b0),"r"(b1));
+}
+
 __device__ unsigned mma_pack4(const signed char *data,unsigned row,unsigned rows,
                              unsigned k,unsigned offset) {
     if(row>=rows)return 0;
@@ -31,11 +42,7 @@ extern "C" __global__ void mma_cumulative(const signed char *a,const signed char
         unsigned a3=mma_pack4(a,r1,rows,k,offset+thread*4+16);
         unsigned b0=mma_pack4(bt,col_base+group,cols,k,offset+thread*4);
         unsigned b1=mma_pack4(bt,col_base+group,cols,k,offset+thread*4+16);
-        asm volatile(
-            "mma.sync.aligned.m16n8k32.row.col.s32.s8.s8.s32 "
-            "{%0,%1,%2,%3}, {%4,%5,%6,%7}, {%8,%9}, {%0,%1,%2,%3};"
-            : "+r"(d0),"+r"(d1),"+r"(d2),"+r"(d3)
-            : "r"(a0),"r"(a1),"r"(a2),"r"(a3),"r"(b0),"r"(b1));
+        mma_accumulate(a0,a1,a2,a3,b0,b1,d0,d1,d2,d3);
         if((offset+32)%rank==0) {
             unsigned step=(offset+32)/rank-1,base=step*rows*cols;
             if(r0<rows&&c0<cols)products[base+r0*cols+c0]=d0;

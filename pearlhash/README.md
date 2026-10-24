@@ -1,6 +1,6 @@
 # Independent PearlHash miner development
 
-Version: **0.0.13-noise-to-mma**. This remains **not a working miner**.
+Version: **0.0.14-bounded-tile-scan**. This remains **not a working miner**.
 
 The user's RTX 5060 has passed the offline GPU math checks, 263 nonce-tail
 comparisons, 141 keyed commitment-leaf comparisons and the empty launch. Fresh
@@ -34,8 +34,16 @@ The next compiled component generates reusable uniform/permutation noise tables
 and signed noised bytes on the GPU, then feeds the same device buffers directly
 into the tensor-core path. Seeds, selected indices and signal bytes remain
 supplied inputs. Independent CPU noise/math and actual noise-kernel-body CPU
-checks pass; the combined path's GPU validation is pending. No production search
+checks pass. All four combined-path cases now pass on the RTX 5060, including
+the saved 10x16 / k=32768 / rank=128 input. No production search
 loop or pool submission has been added.
+
+A compiled bounded tile scanner now reuses GPU-generated inputs across selected
+tiles, folds transcripts and hashes on the GPU, and compares caller-supplied
+scaled u256 bounds. It returns generation-tagged candidate records with explicit
+overflow detection instead of copying every prefix product to the CPU. CPU
+target/queue/schema checks pass; the new scan's hardware test is pending. This
+is not yet a full nonce/job search or a custom pool-submitting miner.
 
 See [independent proof pipeline](proof/README.md),
 [GPU math scope](gpu/README.md), [login-only pool probe](docs/pool-probe.md),

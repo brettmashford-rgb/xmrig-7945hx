@@ -160,10 +160,44 @@ noised buffers feed MMA directly; the checker does not upload CPU noised data.
 Rows/columns are bounded to 32, k<=65536, ranks32/128/1024 (power-of-two values
 through1024 supported). CPU kernel-body checks and independent scalar reference
 comparisons pass, including official-generated V2/V3 inputs. New combined GPU
-execution is pending; the prior standalone MMA path has passed on RTX 5060.
+execution now passes all four cases on RTX 5060, including the saved
+10x16 / k=32768 / rank=128 input. The standalone MMA path passed earlier.
 This correctness harness includes CPU comparisons and device downloads and
 makes no throughput or efficiency claim. It is not a production search loop.
 
 ```sh
 python3 tools/compile_correctness.py /path/to/libnvrtc.so.12 gpu/noise-mma-sm120.cubin noise_mma.cu
+```
+
+## v0.0.14 bounded tile scan with compact candidates
+
+`tile_scan.cu` includes the noise/table kernels and the existing MMA implementation.
+The fragment operation is now a shared force-inlined helper, used by both the
+prefix checker and scanner. A 256-thread CTA evaluates one tile, with up to eight
+16x8 MMA subtiles. All warps join unconditional rank-boundary barriers, including
+inactive subtiles. Padding is excluded from the XOR fold. Warp shuffle reduction,
+block fold, transcript update, keyed digest and target comparison stay on device.
+
+Descriptors map up to 32 selected A/B rows from an existing pool of up to32 per
+side. A batch contains at most64 tile queries, sharing seeds and generated inputs.
+Bounds are caller-supplied already-scaled u256 values. `scan_target.h` implements
+an inclusive little-endian integer comparison, checked on CPU against Python at
+word/equality boundaries and randomized values. It is not pool difficulty logic.
+
+The atomic queue stores tile index, u64 generation and digest. Total hit count
+and overflow flag are separate; even zero-capacity overflow is explicit. The
+host requires complete results and validates candidates with scalar references.
+Generation tags detect stale records; this is not yet live-job cancellation.
+An optional audit saves transcript words only. No prefix products are written
+to global memory by this scan. Normal candidate output is compact.
+
+The CLI checks four synthetic batches and optionally a LOCAL completed PHGPU02
+replay input, five maps and eight target/queue scenarios each. All outputs have
+guards. Earlier noise-to-MMA hardware checks passed on RTX 5060. The new scan
+compiles for sm_120 and its CPU checks pass; its hardware execution is pending.
+This is a bounded selected-tile search component, not full nonce/job mining or a
+pool client. No comparable speed/power measurement has been made.
+
+```sh
+python3 tools/compile_correctness.py /path/to/libnvrtc.so.12 gpu/tile-scan-sm120.cubin tile_scan.cu
 ```
