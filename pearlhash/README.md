@@ -1,6 +1,6 @@
 # Independent PearlHash miner development
 
-Version: **0.0.14-bounded-tile-scan**. This remains **not a working miner**.
+Version: **0.0.15-periodic-range-scheduler**. This remains **not a working miner**.
 
 The user's RTX 5060 has passed the offline GPU math checks, 263 nonce-tail
 comparisons, 141 keyed commitment-leaf comparisons and the empty launch. Fresh
@@ -42,7 +42,8 @@ A compiled bounded tile scanner now reuses GPU-generated inputs across selected
 tiles, folds transcripts and hashes on the GPU, and compares caller-supplied
 scaled u256 bounds. It returns generation-tagged candidate records with explicit
 overflow detection instead of copying every prefix product to the CPU. CPU
-target/queue/schema checks pass; the new scan's hardware test is pending. This
+target/queue/schema checks pass. All five scan batches now pass on RTX 5060,
+covering 200 tile/target/queue checks, including the saved replay input. This
 is not yet a full nonce/job search or a custom pool-submitting miner.
 
 See [independent proof pipeline](proof/README.md),
@@ -145,3 +146,15 @@ Compiled binaries belong to release archives rather than Git history.
 - v0.0.5: fresh independent V2/V3 PlainProof construction passes the official
   verifier on the development host; ten official negative cases reject, and
   Merkle/encoding/native hash checks pass. The fresh GPU-to-proof run also passed on the rig.
+
+## Periodic range scheduling checkpoint
+
+Random-access domain planning now maps global tile IDs into bounded GPU batches
+without enumerating all matrix indices. The observed 10x16 production-shaped
+domain contains 8388608 tiles. A resumable in-memory cursor, generation gates
+and complete-result overflow retry are implemented around the validated backend.
+57 CPU tests pass / two prior oracle/vector cases skip. GPU integration of the
+new scheduler is pending; the unchanged cubin is the rig-validated v0.0.14 binary.
+The harness checks 15 small-domain tiles plus six production-domain tiles at
+start/middle/end; it does not scan an entire nonce or submit anything to a pool.
+Seed derivation/commitments and live job integration remain separate work.

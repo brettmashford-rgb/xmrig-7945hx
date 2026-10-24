@@ -366,7 +366,9 @@ invalid descriptors/bounds and zero/one-capacity overflow. The 55-test developme
 run passes 53 / skips two prior oracle/vector cases. CPU-only preparation succeeds
 for all four synthetic batches and the existing local replay fixture. This does
 not execute GPU barriers, shuffles, MMA or atomics. Native sm_120 compilation and
-own-code disassembly succeed; actual scanner execution remains pending on rig.
+own-code disassembly succeed. The subsequent RTX 5060 run passes all five
+batches /200 tile-target-queue checks, including the saved replay input.
+Digests, transcript audit, generation tags and guards match.
 
 The rig runner will compare five tile maps across eight target/queue scenarios
 per input batch, including a 32x32 eight-warp math case. Synthetic tile shapes
@@ -376,3 +378,33 @@ Earlier v0.0.13 GPU noise-to-MMA checks already passed and are not rerun as a
 separate milestone. No full nonce/job range scheduler or live cancellation is
 implemented; generation tags alone are not job cancellation. No custom pool
 share or throughput/power improvement is claimed. Private inputs stay local.
+
+## v0.0.15 periodic range scheduler
+
+Mixed-radix valid-offset indexing matches brute-force periodic offset checks for
+single, two/three-dimensional, non-unit-gap and large-gap patterns. Domain
+construction is constant-size and random access logarithmic/constant in pattern
+digits; no matrix-wide index list is built. The observed 10x16 shaped domain at
+m=5121/n=262144 contains 512 x 16384=8388608 tiles. The planner maps row-major global
+IDs into local pools bounded at 32 selected rows/columns and 64 queries per batch.
+
+A resumable in-memory cursor advances only after complete validated results and
+synchronous candidate callback delivery. Generation is checked before launches,
+retries and delivery. Partial queues are discarded and retried at full batch
+capacity. Controlled cancellation discards the current uncommitted batch and
+allows resume without duplicate committed tiles. Delivery/backend failures leave
+that cursor unadvanced; callbacks must be idempotent if they fail after effects.
+These are scheduling hooks, not a live pool listener or atomic submission gate.
+
+57 CPU tests pass / two prior oracle/vector tests skip. New tests cover exact
+small-range coverage, first/middle/last maps of the large domain, overflow retry,
+cancel/resume, stale-result discard, failed delivery and constant-profile limits.
+The unchanged rig-validated v0.0.14 cubin is reused, with no new CUDA compilation.
+CPU-only integration passes 15 small-domain and 6 production-domain tiles. Actual
+GPU scheduler integration remains pending. The range is not fully scanned.
+
+The next rig harness uses synthetic supplied seeds and maximum already-scaled
+bounds for all tested candidates. It compares all tested digests/transcripts
+with CPU references and retains device inputs across retries. It neither loads
+private capture data nor regenerates commitments/proofs. No full nonce loop,
+header-bound seed builder, live job client, submitted share or measured gain.

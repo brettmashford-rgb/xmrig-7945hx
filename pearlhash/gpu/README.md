@@ -194,10 +194,28 @@ to global memory by this scan. Normal candidate output is compact.
 The CLI checks four synthetic batches and optionally a LOCAL completed PHGPU02
 replay input, five maps and eight target/queue scenarios each. All outputs have
 guards. Earlier noise-to-MMA hardware checks passed on RTX 5060. The new scan
-compiles for sm_120 and its CPU checks pass; its hardware execution is pending.
+compiles for sm_120 and now passes all five hardware batches /200 tile-target-queue
+checks on RTX 5060, including the saved replay input.
 This is a bounded selected-tile search component, not full nonce/job mining or a
 pool client. No comparable speed/power measurement has been made.
 
 ```sh
 python3 tools/compile_correctness.py /path/to/libnvrtc.so.12 gpu/tile-scan-sm120.cubin tile_scan.cu
 ```
+
+## v0.0.15 range scheduler around the validated backend
+
+No new CUDA code or compilation. The exact v0.0.14 cubin is reused.
+`reference/tile_ranges.py` supplies random-access canonical periodic domains,
+bounded global-to-local batches, cursor advancement, generation gates and complete
+queue retry. `tools/check_range_scan_gpu.py` constructs selected constant signals
+and feeds batches to the existing GPU noise/tile scanner. Inputs stay bounded
+and are retained over overflow retries, then released at the next batch.
+
+The new rig harness checks all 15 tiles of a small synthetic domain with a
+nonce-derived last A-row tail and cancellation/resume, plus two tiles each at
+start/middle/end of an 8388608-tile production-shaped domain. Six production tiles
+are tested, not the whole domain or an entire nonce. Synthetic seeds/maximum
+scaled bounds and full CPU references make this a correctness harness. It has
+no pool I/O and does not measure comparable throughput/power. Existing kernel
+hardware validation passed; new scheduler integration is pending.

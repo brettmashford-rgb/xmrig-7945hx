@@ -1,5 +1,34 @@
 # PearlHash development checkpoints
 
+## v0.0.15-periodic-range-scheduler
+
+Download: [Linux x86_64 / sm_120 periodic range scheduler](releases/pearlhash-dev-v0.0.15-linux-x86_64.tar.gz).
+
+SHA-256: `9265a7b1ad2bff70f22f948ddb22d7c936b78b41d2bb1698f3de8b5e5a5de433`.
+
+Adds random-access periodic tile domains, global-to-local bounded batch mapping,
+a resumable in-memory cursor, generation checks before launches/retries/delivery,
+and overflow retry before committing results. No full matrix is allocated or
+full index list enumerated. Signal/noise inputs are retained across retries and
+released at the next batch. Callback failure leaves the batch cursor unadvanced.
+
+The harness uses synthetic constant-signal profiles and supplied seeds. It
+checks 15 small-domain tiles, including a nonce-derived tail and cancel/resume,
+then two tiles each at the start/middle/end of an 8388608-tile domain with
+m=5121/n=262144/k=32768/rank=128 and 10x16 patterns. Only six production-domain
+tiles are tested: no full-domain or nonce completion claim. All tested GPU
+digests/transcripts are compared with CPU references; maximum synthetic bounds
+force candidate and overflow paths. This is not a performance benchmark.
+
+57 CPU tests pass / two prior oracle/vector tests skip. Domain offsets match
+brute-force checks; batching, coverage, stale cancellation, retry, delivery failure
+and signal/tail bounds pass. Reuses the unchanged v0.0.14 native sm_120 cubin,
+which passed five hardware batches /200 tile-target-queue checks on RTX 5060.
+No new CUDA compilation. The new scheduler-to-GPU integration is pending.
+No pool listener, externally atomic submission gate, persistent miner state,
+full nonce search or custom share acceptance. Existing miners/clocks unchanged.
+
+
 ## v0.0.14-bounded-tile-scan
 
 Download: [Linux x86_64 / sm_120 bounded GPU tile scan](releases/pearlhash-dev-v0.0.14-linux-x86_64.tar.gz).
@@ -24,7 +53,8 @@ These general math cases do not imply consensus-valid tile configurations.
 Native sm_120 compilation succeeds; 53 CPU tests pass / two prior oracle/vector
 tests skip. The unchanged native comparator matches Python integers for 1144
 boundary/random pairs. The earlier v0.0.13 combined noise-to-MMA component
-passed all four GPU cases on RTX 5060. The new scanner's GPU test is pending.
+passed all four GPU cases on RTX 5060. The subsequent scanner test passes
+all five batches / 200 tile-target-queue checks, including the saved replay input.
 No full nonce/job search, inferred target scaling, pool submission, measured
 performance or working-miner claim. Private session values are not bundled.
 
