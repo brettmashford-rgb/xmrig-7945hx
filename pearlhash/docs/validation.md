@@ -171,3 +171,21 @@ capture-process lifecycle test stops its own process group and emits the
 expected preceding-notify/accepted-submit context, without a network connection.
 Archive and internal checksums verify after extraction. No new GPU execution
 or live independent share is claimed for this build.
+
+### v0.0.8 nonce-tail primitive
+
+- Rig capture retained accepted existing-WildRig request 1161 and two preceding
+  notify candidates. Rig SHA-256 comparisons confirm the transcribed decoded
+  headers and canonical submission, without establishing header association.
+- 32 synthetic input pairs match a private arithmetic trace of the inspected
+  device nonce-tail primitive. Three public synthetic outputs are pinned in
+  tests; these are not official published consensus full-proof goldens.
+- 25 CPU protocol/nonce tests pass with Python site packages disabled.
+- GCC 13.3.0 builds the Linux CPU kernel-body checker. All 263 inputs match the
+  separate native CPU hash implementation, with output guards unchanged.
+- NVRTC 12.9.86 compiles a separate native sm_120 nonce-tail cubin. GPU execution
+  is pending; neither the old GPU math kernel nor its completed rig tests change.
+- The small archive includes component source, binaries, test vectors, build
+  provenance and internal SHA-256 checksums. Extracted package CPU checks pass.
+- Complete captured-share CPU reconstruction hypotheses still do not meet the
+  target. No working pool miner, custom share acceptance or efficiency claim.

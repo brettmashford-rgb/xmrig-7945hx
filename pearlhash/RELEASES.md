@@ -1,5 +1,23 @@
 # PearlHash development checkpoints
 
+## v0.0.8-nonce-tail-check
+
+Download: [Linux x86_64 / sm_120 nonce-tail correctness component](releases/pearlhash-dev-v0.0.8-linux-x86_64.tar.gz).
+
+SHA-256: `e27990499982940efe034f9bfdf7923d2802bb1d4c75c2696235d5d059d6ab2e`.
+
+New independent nonce-tail arithmetic primitive, separate native sm_120 cubin,
+Linux CPU kernel-body checker and stdlib-only GPU comparison runner. 25 CPU
+protocol/nonce tests pass; 263 kernel-body CPU comparisons and output guards
+pass. 32 synthetic cases agree with private arithmetic tracing; three trace
+outputs are included as synthetic goldens. NVRTC/GCC compilation succeeds.
+
+Actual GPU execution is pending on the rig. This component makes no network
+connection and changes no service or clock. Existing GPU math kernels are
+unchanged. Complete captured-share reconstruction still does not meet the
+target; this is not a working pool miner or accepted custom share. No gain claim.
+
+
 ## v0.0.7-protocol-development
 
 Download: [Linux x86_64 / native sm_120 development package](releases/pearlhash-dev-v0.0.7-linux-x86_64.tar.gz).

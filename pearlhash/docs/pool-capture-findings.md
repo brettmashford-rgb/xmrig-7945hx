@@ -263,3 +263,39 @@ Notify field 3 is deliberately not equated with submitted worker_nonce.
 No miner, service, clock, disk mount or pool selection is changed. Only the
 newly created tcpdump process group is stopped. The capture and JSON are private
 local files, never automatically uploaded.
+
+## Capture 05 context and nonce-tail component
+
+The first 600-second rig capture decoded 38 packets and 15 messages: five
+notifies and five report_info/true-response pairs, with no submit. A subsequent
+bounded window retained accepted existing-miner submit id 1161 at packet 41
+and its unique status=1/id=1161/result=true response at packet 43. Preceding
+notify candidates are at packets 37 and 39. The user's rig SHA-256 checks
+confirm exact transcription of both decoded 76-byte headers and the canonical
+submission JSON. This is component-level transfer verification, not a claim
+that the entire new PCAP/JSON was transferred to the development host. Header
+association remains unproved by timing alone. No new capture is needed now.
+
+Independent CPU replay hypotheses for constant fills and nonce tails have not
+met the captured target. There is no complete validated reconstruction contract
+or custom accepted share. The failed hypotheses are private research, not a
+production mode exposed to users.
+
+The inspected device arithmetic contains an unkeyed 16-byte BLAKE3 operation,
+with worker bytes followed by miner bytes, then maps the first 16 digest bytes
+through `(value % 129) - 64`. A private straight-line arithmetic trace matches
+the independent implementation on 32 synthetic input pairs. This is tracing of
+inspected code, not execution on a vendor GPU or an official protocol golden.
+Three synthetic trace outputs are checked into the tests. Full association of
+wire fields with the actual kernel state/matrix layout still needs validation.
+No private nonces, captures, vendor instructions or binary dependencies ship.
+
+`reference/pool_nonce.py` implements that isolated arithmetic using the existing
+independent CPU hash library. `gpu/nonce_tail.cu` independently implements the
+same primitive with the project's own BLAKE3 mix helper. The old noise/product/
+transcript/digest kernel is unchanged. The new kernel compiles to native sm_120;
+its source body, compiled as an ordinary CPU function, matches the separate CPU
+hash implementation on 263 synthetic inputs with intact output guards. These
+are CPU results. `tools/check_nonce_gpu.py` performs the actual GPU comparison
+on the rig and checks both output guards. No pool connection or submission is
+made by either runner; no service/clock/autostart change is included.

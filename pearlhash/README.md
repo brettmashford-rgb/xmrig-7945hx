@@ -1,6 +1,6 @@
 # Independent PearlHash miner development
 
-Version: **0.0.7-protocol-development**. This remains **not a working miner**.
+Version: **0.0.8-nonce-tail-check**. This remains **not a working miner**.
 
 All 12 offline GPU math checks from v0.0.3/v0.0.4 passed on the user's RTX 5060.
 The new independent code constructs fresh matrix commitments, authenticates
@@ -16,6 +16,11 @@ corresponding earlier job notification is absent. The new passive context
 collector retains preceding notifications and a later accepted submission for
 reconstruction testing; it does not itself assign a job based on timing.
 No submitted/accepted custom share or measured speed/power gain exists.
+
+The new independent nonce-tail arithmetic primitive has a native sm_120 kernel
+and a small GPU comparison runner. Its kernel body passes 263 CPU comparisons;
+GPU execution is pending on the rig. The complete captured-share reconstruction
+still fails its target, so full pool compatibility remains unresolved.
 
 See [independent proof pipeline](proof/README.md),
 [GPU math scope](gpu/README.md), [login-only pool probe](docs/pool-probe.md),
