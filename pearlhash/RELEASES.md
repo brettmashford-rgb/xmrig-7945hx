@@ -1,5 +1,33 @@
 # PearlHash development checkpoints
 
+## v0.0.11-captured-share-replay
+
+Download: [Linux x86_64 offline captured-share reconstruction](releases/pearlhash-dev-v0.0.11-linux-x86_64.tar.gz).
+
+SHA-256: `6dd2cb196856df8e1f53f19e5de609d01fa4ed3b58f5db7c6cffdc5bafa675f4`.
+
+Corrects the recorded profile's `sb` interpretation: wire value 1 is an enabled
+flag, not literal matrix byte 1; the reconstructed signal fill is 64. A saved
+existing-miner request matches its selected notification with V3 seeds and clears
+the observed target under rank-128 scaling. This is one recorded profile, not
+a general deployed-version rule or a new custom share.
+
+New independent C++ streaming sparse Merkle construction hashes the complete
+full constant-matrix commitments within the 8-GiB cap without full matrix/tree
+allocation. Roots match a separate streaming BLAKE3 reference. Selected math
+matches the independent C++ checker at 10x16, k=32768, rank=128. The independent
+proof authenticates independently. Sparse opening serialization matches materialized CPU
+trees for 16 odd/even/tail cases; native sanitizer bounds pass. 44 development
+Python tests pass / two prior oracle/vector tests skip; three packaged tests pass.
+
+New Linux CPU library/source included; no new CUDA compilation. The runner reads
+the existing local capture with exact fingerprints, reconstructs the proof,
+compares the existing GPU checker and invokes the rig's existing official CPU
+verifier using the exactly representable recorded share target. Those two new
+rig stages are pending. No pool connection, retransmission, custom share verdict,
+working-miner or measured gain claim. Leave the working miners running.
+
+
 ## v0.0.10-gpu-leaves-to-proof
 
 Download: [Linux x86_64 / sm_120 offline proof integration](releases/pearlhash-dev-v0.0.10-linux-x86_64.tar.gz).
@@ -19,7 +47,8 @@ using an explicitly CPU-emulated leaf backend, odd trees/batch offsets and
 corrupt-output rejection. Development suite: 41 pass / two prior tests skip.
 No new development-host official-verifier execution or GPU run is claimed.
 
-Integrated GPU-to-proof execution remains pending on the rig. This is not a
+Both fresh V2/V3 integrated runs passed on the user's RTX 5060, including
+GPU leaves, CPU parent comparison, GPU math and official CPU verification. This is not a
 pool miner, production matrix reconstruction or accepted custom share, and no
 speed/power claim is made. The runner makes no pool connection and changes no
 service, clock or autostart setting.

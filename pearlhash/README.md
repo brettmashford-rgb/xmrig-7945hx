@@ -1,40 +1,26 @@
 # Independent PearlHash miner development
 
-Version: **0.0.10-gpu-leaves-to-proof**. This remains **not a working miner**.
+Version: **0.0.11-captured-share-replay**. This remains **not a working miner**.
 
-All 12 offline GPU math checks from v0.0.3/v0.0.4 passed on the user's RTX 5060.
-The new independent code constructs fresh matrix commitments, authenticates
-Merkle openings and serializes dense PlainProofs; new V2/V3 proofs pass the
-pinned official verifier. Both fresh V2/V3 GPU-candidate-to-proof runs also
-passed on the user's RTX 5060, with archive/internal checksums verified.
-An independent outer transport codec and login-only diagnostic are now available;
-the user has confirmed live login, extranonce and notify decoding on the rig.
-An independent 76-byte header conversion now matches controlled client-decoder
-experiments. The pool's compact matrix reconstruction and target scaling remain
-unvalidated. Capture 04 contains a correlated accepted WildRig share, but its
-corresponding earlier job notification is absent. The new passive context
-collector retains preceding notifications and a later accepted submission for
-reconstruction testing; it does not itself assign a job based on timing.
-No submitted/accepted custom share or measured speed/power gain exists.
+The user's RTX 5060 has passed the offline GPU math checks, 263 nonce-tail
+comparisons, 141 keyed commitment-leaf comparisons and the empty launch. Fresh
+V2/V3 proofs built with GPU commitment leaves, CPU parent folds and GPU math
+also pass the pinned official CPU verifier on the rig. Checksums verified.
+Seed derivation, parent folding and Merkle opening construction remain CPU work.
 
-The new independent nonce-tail arithmetic primitive has a native sm_120 kernel
-and a small GPU comparison runner. Its kernel body passes 263 CPU comparisons;
-All 263 GPU comparisons passed on the user's RTX 5060, with output guards
-unchanged and archive/internal checksums verified. The complete captured-share reconstruction
-still fails its target, so full pool compatibility remains unresolved.
+Independent pool transport/login and header decoding are implemented. The
+saved existing-miner share now has a CPU mathematical reconstruction:
+for this observed profile, `sb: 1` enables fill byte 64. A matching saved notification with
+explicit V3 derivation yields the recorded nonces' target-meeting digest. New
+streaming CPU code builds both complete matrix roots and sparse openings,
+including the logical 8-GiB B matrix, without allocating a full matrix/tree.
+Its roots match a separate streaming BLAKE3 reference, and its selected math
+matches the separate C++ checker at 10x16 / k=32768 / rank=128.
 
-A separate keyed BLAKE3 chunk-CV kernel now compiles natively for sm_120.
-141 synthetic CPU comparisons match the official BLAKE3 portable compressor,
-including counters beyond the old 64-MiB cap and 32-bit carry. The CPU kernel
-body and guard checks pass. All 141 commitment-leaf GPU cases and the empty
-launch now pass on the user's RTX 5060, with guards and checksums verified.
-These are sparse boundary checks, not a full production matrix commitment.
-
-The new opt-in proof pipeline uses GPU leaf CVs, folds parents on the CPU,
-compares every node against an independent CPU tree, then derives seeds and
-runs the existing GPU math / CPU Merkle proof / official verification stages.
-Its source integration passes CPU tests; this integrated GPU run remains pending.
-The commitment cubin and native hash library are unchanged from validated v0.0.9.
+The captured-share replay's GPU and official-verifier confirmation remains
+pending. General job/version/target compatibility and production search are
+not established by one recorded share. No custom share has been submitted or
+accepted, and no speed or power improvement has been measured.
 
 See [independent proof pipeline](proof/README.md),
 [GPU math scope](gpu/README.md), [login-only pool probe](docs/pool-probe.md),

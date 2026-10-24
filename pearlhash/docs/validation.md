@@ -250,3 +250,37 @@ commitment cubin/library are unchanged from v0.0.9; the rig's existing v0.0.5
 GPU math binary/cubin and v0.0.2 pinned verifier are reused. Full current-pool
 compact reconstruction remains unresolved. No custom share, accepted pool
 verdict, speed/power result or working-miner claim.
+
+
+### Rig-confirmed v0.0.10 and local captured-share reconstruction
+
+The user's screenshots confirm fresh V2 and V3 GPU-leaf-to-proof integration on
+RTX 5060, checksum verification, all 256/512 leaves per synthetic matrix matching
+CPU trees, GPU math/digests passing, and both proofs accepted by the official
+CPU verifier. Seed derivation, parent folds and openings are CPU work.
+
+The observed supported signal mode uses the `sb` field as an enabled flag,
+with constant fill 64, rather than a literal fill byte. This corrected model
+reconstructs a saved existing-miner case below its selected share target with
+explicit V3 seeds. It is evidence for that supported case, not a general rule
+for future deployed pool versions. Private record selectors, fingerprints,
+nonces and derived values are read/generated locally; none are bundled here.
+
+Independent C++ sparse Merkle construction streams both complete commitments
+without allocating the full matrix or CV tree. Development roots agree with a
+separate streaming BLAKE3 implementation; selected math agrees with the separate
+C++ CPU checker. Constructed sparse openings authenticate independently. The
+user-local share target is converted to nBits only if exactly representable;
+the original header is not modified. GPU and official verification of the
+saved production case are pending on the rig.
+
+Small sparse opening bytes match materialized CPU trees in 16 odd/even/tail
+cases, including the one-chunk ROOT distinction. Corrupt openings, malformed
+requests, profile misuse and inexact share targets reject. Native output guards
+and address/undefined sanitizers pass (leak checks disabled). 44 development
+Python tests pass / two old oracle/vector tests skip; three packaged tests pass.
+
+Materialized trees retain the 64-MiB bound. Constant sparse openings support at
+most 8388608 chunks, 4096 selected leaves and 65536 siblings; proof parsing stays
+capped at 8 MiB. The generic replay has no network or share-submission code.
+No custom share, production search, new pool verdict or measured gain is claimed.

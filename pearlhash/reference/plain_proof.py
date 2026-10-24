@@ -2,7 +2,8 @@
 
 Pinned specification: pearl-blake3/src/{hasher,merkle}.rs and
 zk-pow/src/ffi/plain_proof.rs at 82e6eee7076aafe10123e08db78f100d270c0582.
-Prototype caps commitments at 64 MiB; does not implement every consensus rule.
+Materialized trees are capped at 64 MiB. A separate constant streaming backend
+supports larger sparse openings. This does not implement every consensus rule.
 """
 from dataclasses import dataclass
 import struct
@@ -34,7 +35,7 @@ class Opening:
 
     def verify(self,key):
         key_check(key)
-        if (not 1<=self.total_leaves<=65536 or len(self.leaves)!=len(self.leaf_indices)
+        if (not 1<=self.total_leaves<=8388608 or len(self.leaves)!=len(self.leaf_indices)
             or not self.leaf_indices or self.leaf_indices!=sorted(set(self.leaf_indices))
             or self.leaf_indices[0]<0 or self.leaf_indices[-1]>=self.total_leaves
             or any(len(v)!=1024 for v in self.leaves) or len(self.root)!=32

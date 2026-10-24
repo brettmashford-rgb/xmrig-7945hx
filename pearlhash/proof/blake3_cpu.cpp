@@ -70,3 +70,63 @@ API int ph_parent_cvs(const unsigned char *children,size_t pairs,const unsigned 
  }
  return 0;
 }
+
+// Streaming sparse openings for constant full-chunk matrices, optionally with
+// a final 16-byte nonce tail. No full matrix or complete CV tree is allocated.
+#include <algorithm>
+#include <array>
+#include <vector>
+namespace {
+struct SparseNode { std::array<unsigned char,32> cv; bool opened; };
+struct Sibling { unsigned level; uint64_t index; std::array<unsigned char,32> cv; };
+struct ConstantMerkle {
+ const unsigned char *key,*tail;unsigned char fill;uint64_t total;
+ size_t tail_len;const uint64_t *selected;size_t selected_count,capacity;
+ std::vector<Sibling> siblings;
+ bool contains(uint64_t start,uint64_t count)const{
+  auto p=std::lower_bound(selected,selected+selected_count,start);
+  return p!=selected+selected_count&&*p<start+count;
+ }
+ SparseNode node(uint64_t start,uint64_t count,unsigned level,bool root){
+  if(count==1){
+   unsigned char data[1024];std::memset(data,fill,sizeof(data));
+   if(start+1==total&&tail_len)std::memcpy(data+1024-tail_len,tail,tail_len);
+   SparseNode out{};chunk(data,1024,key,start,root,out.cv.data());
+   out.opened=contains(start,1);return out;
+  }
+  uint64_t half=uint64_t(1)<<(level-1);
+  if(count<=half)return node(start,count,level-1,root);
+  SparseNode left=node(start,half,level-1,false);
+  SparseNode right=node(start+half,count-half,level-1,false);
+  if(left.opened!=right.opened){
+   if(siblings.size()>=capacity)throw 2;
+   siblings.push_back({level-1,(left.opened?start+half:start)>>(level-1),left.opened?right.cv:left.cv});
+  }
+  unsigned char children[64];std::memcpy(children,left.cv.data(),32);
+  std::memcpy(children+32,right.cv.data(),32);W words[8],result[8];init(key,words);
+  compress(words,children,0,64,20|(root?8:0),result);
+  SparseNode out{};for(int i=0;i<8;++i)store(out.cv.data()+4*i,result[i]);
+  out.opened=left.opened||right.opened;return out;
+ }
+};
+}
+API int ph_constant_merkle(const unsigned char *key,unsigned char fill,uint64_t total,
+ const unsigned char *tail,size_t tail_len,const uint64_t *selected,size_t selected_count,
+ unsigned char *siblings,size_t capacity,size_t *sibling_count,unsigned char *root){
+ if(!key||!root||!sibling_count||!selected||!selected_count||selected_count>4096
+    ||!total||total>8388608||(tail_len!=0&&tail_len!=16)||(tail_len&&!tail)
+    ||!siblings||capacity>65536)return 1;
+ for(size_t i=0;i<selected_count;++i)
+  if(selected[i]>=total||(i&&selected[i-1]>=selected[i]))return 1;
+ try{
+  ConstantMerkle tree{key,tail,fill,total,tail_len,selected,selected_count,capacity,{}};
+  unsigned level=0;while((uint64_t(1)<<level)<total)++level;
+  SparseNode value=tree.node(0,total,level,true);
+  std::sort(tree.siblings.begin(),tree.siblings.end(),[](const Sibling&a,const Sibling&b){
+   return a.level!=b.level?a.level<b.level:a.index<b.index;
+  });
+  std::memcpy(root,value.cv.data(),32);*sibling_count=tree.siblings.size();
+  for(size_t i=0;i<tree.siblings.size();++i)std::memcpy(siblings+32*i,tree.siblings[i].cv.data(),32);
+  return 0;
+ }catch(...){return 2;}
+}
