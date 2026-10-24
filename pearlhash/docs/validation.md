@@ -271,8 +271,8 @@ without allocating the full matrix or CV tree. Development roots agree with a
 separate streaming BLAKE3 implementation; selected math agrees with the separate
 C++ CPU checker. Constructed sparse openings authenticate independently. The
 user-local share target is converted to nBits only if exactly representable;
-the original header is not modified. GPU and official verification of the
-saved production case are pending on the rig.
+the original header is not modified. The saved replay has now passed GPU math and official CPU proof verification
+on the rig, with package checksums verified and a completed local manifest.
 
 Small sparse opening bytes match materialized CPU trees in 16 odd/even/tail
 cases, including the one-chunk ROOT distinction. Corrupt openings, malformed
@@ -284,3 +284,31 @@ Materialized trees retain the 64-MiB bound. Constant sparse openings support at
 most 8388608 chunks, 4096 selected leaves and 65536 siblings; proof parsing stays
 capped at 8 MiB. The generic replay has no network or share-submission code.
 No custom share, production search, new pool verdict or measured gain is claimed.
+
+
+### v0.0.12 independent integer MMA kernel
+
+The rig's completed v0.0.11 local manifest reports GPU math checked and official
+CPU verification passed for the saved existing-miner replay. No replay process
+remains running. This confirms offline reconstruction; it is not a new submitted
+or accepted custom share. No root/proof stage needs repeating for this milestone.
+
+New dense integer MMA code uses the NVIDIA-documented m16n8k32 register layout,
+signed byte inputs and int32 accumulators, preserving every rank-boundary prefix.
+Zero padding handles incomplete 16x8 subtile edges. A separate launch folds the
+transcript and computes the keyed BLAKE3 digest. NVRTC 12.9.86 compiles native
+sm_120; inspection of the project's own binary confirms IMMA.16832.S8.S8.
+
+Three new CPU tests validate known signed-prefix values, cumulative persistence,
+one-hot edge cases, slot reuse and bounded/corrupt local-file rejection. The
+49-test development run passes 47 / skips two prior oracle/vector tests. The
+new CLI prepares four synthetic scalar comparisons and optionally the LOCAL
+completed PHGPU02 replay fixture. Every prefix product is checked, so XOR-only
+permutations cannot hide a layout bug. Product/transcript/digest outputs carry
+poison guards, and allocations are freed per case. Packaged tests/checksums and
+CPU-only completion-report behavior pass. No private fixture or results are
+bundled. A report marks GPU checked only after all actual GPU checks pass.
+
+The new MMA GPU execution remains pending. There is no scalar GPU fallback,
+new noise/seed/commitment implementation, production search or benchmark here.
+No working independent pool miner or measured speed/power gain is claimed.

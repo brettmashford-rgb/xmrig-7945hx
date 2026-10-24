@@ -1,5 +1,30 @@
 # PearlHash development checkpoints
 
+## v0.0.12-integer-mma-check
+
+Download: [Linux x86_64 / sm_120 integer tensor-core correctness component](releases/pearlhash-dev-v0.0.12-linux-x86_64.tar.gz).
+
+SHA-256: `06a6a0b5261e4228dc6c3ee081f98d8b888148cc15dc4e39b170f3fd8f503853`.
+
+Adds an independent exact int8-to-int32 cumulative matrix-product kernel using
+NVIDIA's documented dense warp-level integer MMA layout. NVRTC 12.9.86 native
+sm_120 compilation succeeds; own-code disassembly confirms IMMA.16832.S8.S8.
+No FP8 conversion or saturation is introduced. Inputs are already-noised tiles.
+Every rank-boundary product, transcript word and keyed digest is compared with
+an independent scalar CPU reference, with guards around all output buffers.
+
+Four synthetic cases cover signed extremes, one-hot/padded edges, multiple warps
+and transcript-slot reuse. A bounded optional user-local PHGPU02 fixture reuses
+the completed replay input, without rebuilding commitments or rerunning the
+old verifier. No private session fixture/fingerprints/results are included.
+A successful GPU run writes a local completion report. Three new CPU tests pass;
+47 development tests pass / two prior oracle/vector tests skip.
+
+New tensor-core GPU execution is pending. No search loop, custom share, pool
+verdict, hashrate/power measurement or speed improvement is claimed. The rig's
+existing miner/services/clocks are left running and unchanged.
+
+
 ## v0.0.11-captured-share-replay
 
 Download: [Linux x86_64 offline captured-share reconstruction](releases/pearlhash-dev-v0.0.11-linux-x86_64.tar.gz).
@@ -23,8 +48,8 @@ Python tests pass / two prior oracle/vector tests skip; three packaged tests pas
 New Linux CPU library/source included; no new CUDA compilation. The runner reads
 the existing local capture with exact fingerprints, reconstructs the proof,
 compares the existing GPU checker and invokes the rig's existing official CPU
-verifier using the exactly representable recorded share target. Those two new
-rig stages are pending. No pool connection, retransmission, custom share verdict,
+verifier using the exactly representable recorded share target. Both GPU math and official CPU proof verification now
+pass on the rig for the saved existing-miner replay. No pool connection, retransmission, custom share verdict,
 working-miner or measured gain claim. Leave the working miners running.
 
 

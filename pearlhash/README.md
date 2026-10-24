@@ -1,6 +1,6 @@
 # Independent PearlHash miner development
 
-Version: **0.0.11-captured-share-replay**. This remains **not a working miner**.
+Version: **0.0.12-integer-mma-check**. This remains **not a working miner**.
 
 The user's RTX 5060 has passed the offline GPU math checks, 263 nonce-tail
 comparisons, 141 keyed commitment-leaf comparisons and the empty launch. Fresh
@@ -17,10 +17,17 @@ including the logical 8-GiB B matrix, without allocating a full matrix/tree.
 Its roots match a separate streaming BLAKE3 reference, and its selected math
 matches the separate C++ checker at 10x16 / k=32768 / rank=128.
 
-The captured-share replay's GPU and official-verifier confirmation remains
-pending. General job/version/target compatibility and production search are
+The saved existing-miner replay has now passed GPU math and official CPU
+proof verification on the rig. General job/version/target compatibility and production search are
 not established by one recorded share. No custom share has been submitted or
 accepted, and no speed or power improvement has been measured.
+
+A new independent integer tensor-core matrix kernel compiles natively for
+sm_120; disassembly confirms IMMA.16832.S8.S8. It compares every cumulative
+rank-boundary product, transcript word and digest with a scalar CPU calculation.
+CPU reference/parser tests pass; the new MMA kernel's GPU execution is pending.
+It consumes already-noised selected inputs and is not yet a mining search loop.
+No performance improvement is claimed before measurement.
 
 See [independent proof pipeline](proof/README.md),
 [GPU math scope](gpu/README.md), [login-only pool probe](docs/pool-probe.md),
@@ -121,4 +128,4 @@ Compiled binaries belong to release archives rather than Git history.
 
 - v0.0.5: fresh independent V2/V3 PlainProof construction passes the official
   verifier on the development host; ten official negative cases reject, and
-  Merkle/encoding/native hash checks pass. The fresh GPU-to-proof run is pending.
+  Merkle/encoding/native hash checks pass. The fresh GPU-to-proof run also passed on the rig.

@@ -36,7 +36,8 @@ fail explicitly. No FP8 algorithm change is inferred.
 A saved existing-miner case now reconstructs below its selected target using
 explicit V3 seeds. Full commitments and sparse openings authenticate with the
 independent CPU implementation, and selected math matches the independent C++
-checker. The new replay's GPU and official-verifier stages remain pending.
+checker. The saved replay's GPU math and official CPU proof verification now pass on
+the rig, confirmed by its completed local manifest.
 This does not establish every live job/version/target rule or custom acceptance.
 
 ## Local evidence and replay

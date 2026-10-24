@@ -120,3 +120,26 @@ The package includes the native CPU hash library, source, CPU kernel-body
 checker, synthetic official-compressor CV goldens, fixture and stdlib GPU runner.
 `tools/cuda_driver.py` now owns the common driver lifecycle used by the nonce
 and commitment checks; each releases only its own context and allocations.
+
+
+## v0.0.12 exact integer tensor-core prefix check
+
+`mma_correctness.cu` consumes already-noised signed-byte selected matrices. Dense
+warp-level `mma.sync.aligned.m16n8k32.row.col.s32.s8.s8.s32` operations keep exact
+int32 prefix accumulators. A separate fold/digest launch preserves the Pearl
+transcript rule. All rank-boundary products are compared, as well as words and
+digest, with bounded inputs and poison output guards. No FP8 algorithm change.
+
+Register layout authority:
+https://docs.nvidia.com/cuda/parallel-thread-execution/#warp-level-matrix-fragment-mma-16832
+
+NVRTC 12.9.86 native sm_120 compilation succeeds; own-code disassembly contains
+IMMA.16832.S8.S8. The new GPU execution is pending. CPU scalar/parser tests pass;
+these are not execution of the hardware MMA instruction. The runner uses four
+synthetic cases and optionally a LOCAL PHGPU02 fixture; it saves completion
+status locally and never sends fixture contents anywhere. No search loop or
+performance claim is made. Existing completed proof/replay checks need not rerun.
+
+```sh
+python3 tools/compile_correctness.py /path/to/libnvrtc.so.12 gpu/mma-sm120.cubin mma_correctness.cu
+```
