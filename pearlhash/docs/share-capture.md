@@ -49,3 +49,28 @@ messages. One existing-miner submit (id 866) had a unique matched response with
 status=1 and result=true. Three outbound report_info requests were distinguished
 from that submit. Both directions correctly report unverified initial boundaries.
 See pool findings for the observed parameter shape and unresolved semantics.
+
+## Capture a preceding notification and an accepted submission
+
+Capture 04 is now transferred and both whole-file hashes match. Its accepted
+submit precedes both captured notifies, leaving the accepted share's header
+unavailable. Do not replay it or assign one of those later notifies to it.
+
+The new `capture_share_context.py --captures DIRECTORY` uses the same three
+stdlib transport modules. It watches the already running miner for up to 600
+seconds/1,024 packets, stopping early on an accepted submit with preceding
+notify candidates on the same TCP connection. It prints those candidates and
+the submit/reply, rather than requiring screenshots of a base64 PCAP. It saves
+all decoded records locally, so earlier candidate notifications are retained.
+It does not assert that the latest preceding notify is the share's job.
+
+The new decoder schema `pearlhash-decoded-capture-2` adds packet/time/stream-line
+metadata and sorts records in capture completion order. The old statement that
+records are grouped by direction is superseded. Duplicate request ids remain
+ambiguous; a response before the request is not selected as its verdict.
+
+22 CPU tests cover transport/login, capture parsing, chronological correlation,
+header conversion/schema and context selection. These include late TCP gap
+fills, retransmissions, sequence wrap, nanosecond timestamps, a response preceding
+its request, notification/token confusion and actively written PCAP snapshots.
+These changes neither run a GPU test nor establish custom-miner acceptance.

@@ -1,6 +1,6 @@
 # Independent PearlHash miner development
 
-Version: **0.0.5-independent-proof**. This remains **not a miner**.
+Version: **0.0.7-protocol-development**. This remains **not a working miner**.
 
 All 12 offline GPU math checks from v0.0.3/v0.0.4 passed on the user's RTX 5060.
 The new independent code constructs fresh matrix commitments, authenticates
@@ -9,7 +9,12 @@ pinned official verifier. Both fresh V2/V3 GPU-candidate-to-proof runs also
 passed on the user's RTX 5060, with archive/internal checksums verified.
 An independent outer transport codec and login-only diagnostic are now available;
 the user has confirmed live login, extranonce and notify decoding on the rig.
-The scrambled inner job payload and submission remain unvalidated.
+An independent 76-byte header conversion now matches controlled client-decoder
+experiments. The pool's compact matrix reconstruction and target scaling remain
+unvalidated. Capture 04 contains a correlated accepted WildRig share, but its
+corresponding earlier job notification is absent. The new passive context
+collector retains preceding notifications and a later accepted submission for
+reconstruction testing; it does not itself assign a job based on timing.
 No submitted/accepted custom share or measured speed/power gain exists.
 
 See [independent proof pipeline](proof/README.md),

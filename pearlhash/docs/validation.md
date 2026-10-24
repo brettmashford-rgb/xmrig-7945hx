@@ -144,3 +144,30 @@ patterns at synthetic offsets, and invalid/noncanonical/oversized inputs.
 The offline proof runner uses this helper for its existing unchanged pattern.
 No new GPU or official-verifier execution was performed for this pattern-only
 change. Full pool nonce/signal generation and current job binding remain open.
+
+### Pool protocol continuation after capture 04 transfer
+
+- Reconstructed complete capture 04: both rig-reported PCAP and gzip SHA-256
+  match; independently reproduced submit id 866 and its true response.
+- Ordered decoder confirms accepted submit before any notify in this capture;
+  no share/header association is inferred.
+- Independent first-stage notify header conversion matches 32 controlled
+  pseudorandom complete-payload cases against the isolated legacy decoder.
+  Target bytes copy exactly in these cases; comparison/scaling remains open.
+- 22 CPU protocol tests pass, including ordered TCP availability, strict notify
+  parsing and selection of preceding notify candidates with an accepted submit.
+- No new GPU binary/test, live independent share or efficiency result in this
+  change. Full pool compact matrix reconstruction remains to be validated.
+
+### v0.0.7 Linux development package build
+
+GCC 13.3.0 rebuilt the independent CPU hash library and GPU math harness;
+NVRTC 12.9.86 compiled native sm_120 successfully without a GPU. Cubin and
+CPU hash library SHA-256 match v0.0.5 exactly; rebuilt math harness differs
+and passes all twelve existing CPU fixtures. 22 protocol/header/context tests
+pass with Python site packages disabled, both before and after packaging.
+The strict final decoder runs on verified capture 04. A synthetic local
+capture-process lifecycle test stops its own process group and emits the
+expected preceding-notify/accepted-submit context, without a network connection.
+Archive and internal checksums verify after extraction. No new GPU execution
+or live independent share is claimed for this build.

@@ -25,7 +25,11 @@ def payloads(data, port):
     while pos < len(data):
         if pos+16 > len(data):
             raise ValueError('truncated packet record')
-        _, _, size, wire_size = struct.unpack_from(endian+'4I', data, pos)
+        seconds, fraction, size, wire_size = struct.unpack_from(endian+'4I', data, pos)
+        nanos = data[:4] in (b'\x4d\x3c\xb2\xa1', b'\xa1\xb2\x3c\x4d')
+        if fraction >= (1000000000 if nanos else 1000000):
+            raise ValueError('invalid PCAP timestamp fraction')
+        timestamp_ns = seconds * 1000000000 + fraction * (1 if nanos else 1000)
         pos += 16
         if pos+size > len(data) or size != wire_size:
             raise ValueError('truncated packet')
@@ -58,7 +62,7 @@ def payloads(data, port):
         body = pkt[tcp+th:offset+total]
         syn = bool(pkt[tcp+13]&2)
         key = (pkt[offset+12:offset+20],src,dst)
-        group = groups.setdefault(key, {'syn':False,'start':None,'parts':[]})
+        group = groups.setdefault(key, {'syn':False,'start':None,'parts':[], 'events':[]})
         if syn:
             if group['syn'] or group['parts']:
                 raise ValueError('multiple sessions on one tuple unsupported')
@@ -66,6 +70,7 @@ def payloads(data, port):
             group['start'] = (seq+1)&0xffffffff
         if body:
             group['parts'].append(((seq+int(syn))&0xffffffff,body))
+            group['events'].append(((seq+int(syn))&0xffffffff, body, count, timestamp_ns))
     return count, groups
 
 

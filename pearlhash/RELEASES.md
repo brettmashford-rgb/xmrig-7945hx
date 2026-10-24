@@ -1,5 +1,26 @@
 # PearlHash development checkpoints
 
+## v0.0.7-protocol-development
+
+Download: [Linux x86_64 / native sm_120 development package](releases/pearlhash-dev-v0.0.7-linux-x86_64.tar.gz).
+
+SHA-256: `0cd95971e0964b628d5a4dafbbf4a2e69e506747c7e5dbf4414ad148eb97952a`.
+
+Rebuilt independent CPU hash library, Linux GPU math checker and native sm_120
+cubin. The library/cubin match v0.0.5 bytes; the rebuilt checker passes all
+twelve CPU math inputs. New independent notify/header conversion, chronological
+capture decoder and passive accepted-share-context collector are included with
+source. 22 CPU protocol/header/context tests pass; 32 controlled inner-decoder
+cases match. Extracted archive checksums and packaged CPU tests pass.
+
+This is a development package, not a working pool miner. No new GPU run,
+production matrix reconstruction, custom pool-accepted share or measured gain.
+Existing completed rig checks need not be repeated for this protocol step.
+The next necessary evidence is preceding notify candidate(s) and a later
+accepted existing-miner submission. The included collector watches passively;
+it sends no pool messages and changes no service or clock settings.
+
+
 ## v0.0.5-independent-proof
 
 Download: [Linux x86_64 independent proof pipeline](releases/pearlhash-dev-v0.0.5-linux-x86_64.tar.gz).

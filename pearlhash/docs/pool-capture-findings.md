@@ -215,3 +215,51 @@ published. The old offline runner now derives its existing eight-entry pattern
 through this helper, producing the same six bytes as before. Three new CPU
 pattern tests pass. No new GPU test, full job reconstruction or custom pool
 submission is claimed by this change.
+
+## Capture 04 verified transfer and ordered decoding
+
+The complete 6,104-byte capture was subsequently reconstructed on the development
+host. Both full SHA-256 values match the rig: raw PCAP
+`7505454a4f614b530b8bfaca7bdba69784ef5129daff3f4a3c8724af8e90500f`, gzip
+`f4a99536adde79e0efa9c56884f4a39862ea3161e6e65f0b65bbcbec85d84f77`.
+The independent decoder reproduces 24 packets, ten messages and the unique
+submit-866/status-1/true exchange. The submit becomes available at packet 5,
+its response at packet 7, and the first captured notify at packet 15 (one-based
+capture ordinals). Neither captured notify establishes the header for that share.
+
+The decoder now retains nanosecond-normalized PCAP timestamps, packet ordinals
+and per-stream line positions. Frames are ordered by the packet first making
+all their TCP prefix bytes available. Identical retransmissions do not retime
+frames; out-of-order gap filling can release multiple frames at once. Request
+correlation rejects a reply observed before its request, independently of clock
+values. This replaces the former direction-grouped report order.
+
+## Independent notify/header component
+
+`pool/job.py` implements the observed fixed-width notify schema and the first
+76 bytes' two XOR stages, with no vendor runtime dependency. The first-stage
+mapping was checked against 32 independent pseudorandom 200-byte payloads using
+an isolated legacy decoder, in addition to earlier input-bit experiments. All
+32 outputs match, including variation of the opaque trailing 124 bytes. The
+same experiment confirms that the target field is copied as 32 decoded bytes;
+it does not establish little/big-endian target comparison or pool scaling.
+The second stage is the repeating 32-byte key step observed in the host path.
+Experiments intercept startup, never enter vendor mining main, and deny network
+syscalls. Neither vendor code nor research harnesses are shipped.
+
+Header parsing follows pinned upstream's 76-byte serialization. The final
+notify marker is retained as a marker, not silently converted into a consensus
+version. Opaque trailing bytes and token are retained without guessed meanings.
+This code reproduces a client header conversion; it is not authentication of a
+pool header, a full pool job configuration or an accepted custom share.
+
+`tools/capture_share_context.py` passively collects up to ten minutes/1,024
+packets by default, stopping early after a unique accepted existing-miner submit
+with preceding notification(s) on the same connection. All decoded records stay
+local. Console prints only the last two preceding notify candidates plus that
+submission/response. Timing does not establish which candidate supplied the
+header; that requires reconstruction and mathematical/difficulty verification.
+Notify field 3 is deliberately not equated with submitted worker_nonce.
+No miner, service, clock, disk mount or pool selection is changed. Only the
+newly created tcpdump process group is stopped. The capture and JSON are private
+local files, never automatically uploaded.
