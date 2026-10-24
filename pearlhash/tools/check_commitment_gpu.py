@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Offline keyed chunk-CV check. No pool connection, service or clock changes."""
 import argparse
-import ctypes as C
 import hashlib
 import json
 from pathlib import Path
@@ -10,7 +9,6 @@ import sys
 BASE=Path(__file__).resolve().parents[1]
 if str(BASE) not in sys.path:sys.path.insert(0,str(BASE))
 from reference.native_hash import chunk_value, parents
-from tools.cuda_driver import CudaDevice
 
 
 TWO_CHUNK_ROOT=bytes.fromhex('1130f45cc4c1f26bd6b06c2737e3795ca5d1827ae6cd8d670fac6dc3095db2e1')
@@ -39,30 +37,16 @@ def validate_case(first,count,key,data,expected):
         raise ValueError('invalid bounded chunk test case')
 
 
-class ChunkDevice(CudaDevice):
+from tools.gpu_commitment import GpuCommitments
+
+
+class ChunkDevice(GpuCommitments):
     def run(self,first,count,key,data,expected):
         validate_case(first,count,key,data,expected)
-        key_ptr=self.allocate(key)
-        source=self.allocate(data or bytes(4))
-        destination=self.allocate(b'\xa5'*(len(expected)+32))
-        interior=C.c_ulonglong(destination.value+16)
-        first_arg=C.c_ulonglong(first);count_arg=C.c_uint(count)
-        function=C.c_void_p()
-        self.api('cuModuleGetFunction',[C.POINTER(C.c_void_p),C.c_void_p,C.c_char_p],
-                 C.byref(function),self.module,b'keyed_chunk_cvs')
-        args=(C.c_void_p*5)(*(C.cast(C.byref(v),C.c_void_p)
-                             for v in (source,key_ptr,first_arg,count_arg,interior)))
-        self.api('cuLaunchKernel',[C.c_void_p]+[C.c_uint]*7+[C.c_void_p]*3,
-                 function,max(1,(count+127)//128),1,1,128,1,1,0,None,args,None)
-        self.api('cuCtxSynchronize',[])
-        result=C.create_string_buffer(len(expected)+32)
-        self.api('cuMemcpyDtoH_v2',[C.c_void_p,C.c_ulonglong,C.c_size_t],
-                 result,destination,len(result))
-        if result.raw[:16]!=b'\xa5'*16 or result.raw[-16:]!=b'\xa5'*16:
-            raise RuntimeError('chunk kernel output guard changed')
-        if result.raw[16:-16]!=expected:
+        actual=self.compute(first,key,data)
+        if actual!=expected:
             raise RuntimeError(f'chunk chaining values differ at first={first}')
-        return result.raw[16:-16]
+        return actual
 
 
 def main():

@@ -45,6 +45,12 @@ class CudaDevice:
                  pointer, buffer, len(data))
         return pointer
 
+    def release(self, pointer):
+        if not any(pointer is owned for owned in self.allocations):
+            raise ValueError('allocation does not belong to this context')
+        self.api('cuMemFree_v2', [C.c_ulonglong], pointer)
+        self.allocations = [owned for owned in self.allocations if owned is not pointer]
+
     def close(self):
         # Always release only this test's own allocations/context.
         for pointer in self.allocations:

@@ -95,3 +95,19 @@ proofs pass official verification. Native hashing also passes address/undefined
 sanitizers (leak detection disabled due to host process-inspection restrictions).
 No full upstream ZK/circuit suite, new GPU run, pool verdict or benchmark is
 claimed. The earlier 12 offline GPU cases remain confirmed on the rig.
+
+
+## v0.0.10 optional GPU commitment leaves
+
+Add `--gpu-commitments` to the offline runner. `--commitment-cubin PATH`
+selects the separate v0.0.9 keyed chunk-CV kernel; `--cubin PATH` still selects
+the existing GPU math kernel. The commitment kernel is unchanged and its
+standalone 141 GPU cases passed on the user's RTX 5060. Integrated execution
+remains pending. Use the v0.0.10 archive for the complete current runner source.
+
+GPU leaf CVs are processed in 128-chunk batches, checked for output bounds and
+folded on the CPU. A complete independent CPU tree comparison gates the seed
+and proof stages. Per-batch device buffers are released immediately. The
+resulting proof still authenticates independently on CPU before the mandatory
+pinned official verifier. CPU-only mode cannot be combined with GPU commitments.
+Synthetic small matrices only; this does not establish pool reconstruction.

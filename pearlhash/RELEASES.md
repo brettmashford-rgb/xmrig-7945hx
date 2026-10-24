@@ -1,5 +1,30 @@
 # PearlHash development checkpoints
 
+## v0.0.10-gpu-leaves-to-proof
+
+Download: [Linux x86_64 / sm_120 offline proof integration](releases/pearlhash-dev-v0.0.10-linux-x86_64.tar.gz).
+
+SHA-256: `8b3a51967ea10cf4ecc0e694daf7406c2287358f3d0d38331f7cc908629cff50`.
+
+Connects the rig-validated commitment kernel to fresh V2/V3 proof construction.
+Leaf chunks run in bounded GPU batches; per-batch buffers are released. Parent
+folds, seed derivation and Merkle openings use CPU code. All leaf/parent nodes
+must match an independent CPU tree before proceeding to the existing GPU math
+check and pinned official CPU verifier. Synthetic 128-row matrices only.
+
+The commitment cubin and CPU hash library are byte-for-byte v0.0.9. The rig's
+existing v0.0.5 math checker/cubin and v0.0.2 official verifier are reused.
+Six packaged CPU tests pass, including proof-byte equality with the CPU pipeline
+using an explicitly CPU-emulated leaf backend, odd trees/batch offsets and
+corrupt-output rejection. Development suite: 41 pass / two prior tests skip.
+No new development-host official-verifier execution or GPU run is claimed.
+
+Integrated GPU-to-proof execution remains pending on the rig. This is not a
+pool miner, production matrix reconstruction or accepted custom share, and no
+speed/power claim is made. The runner makes no pool connection and changes no
+service, clock or autostart setting.
+
+
 ## v0.0.9-commitment-leaf-check
 
 Download: [Linux x86_64 / sm_120 keyed chunk-CV component](releases/pearlhash-dev-v0.0.9-linux-x86_64.tar.gz).
@@ -19,7 +44,9 @@ limits stay unchanged. Offline CUDA checks share one driver lifecycle helper.
 The nonce kernel is unchanged. 38 Python CPU tests pass, two prior oracle/vector
 tests skip; packaged three new tests and the CPU checker pass independently.
 
-GPU execution remains pending. No full GPU matrix tree, resolved pool compact
+The user's RTX 5060 passed all 141 GPU CV comparisons and the empty launch,
+with output guards and archive/internal checksums verified. No full GPU matrix
+tree, resolved pool compact
 reconstruction, accepted custom share or performance improvement is claimed.
 This package makes no connection and changes no service or clock. Run the
 included `tools/check_commitment_gpu.py` with the included CPU hash library.

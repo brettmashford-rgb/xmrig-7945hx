@@ -36,7 +36,7 @@ def selected_rows(raw,rows,k):
     return [[v if v<128 else v-256 for v in raw[i*k:(i+1)*k]] for i in rows]
 
 
-def candidate(seed,version):
+def candidate(seed,version,*,tree_factory=Tree):
     if version not in (2,3):raise ValueError('explicit V2/V3 required')
     seed=hashlib.sha256(seed+struct.pack('<I',version)).digest()
     m=n=128;k=4096 if version==3 else 2048;rank=128
@@ -47,7 +47,7 @@ def candidate(seed,version):
     config=struct.pack('<IHH',k,rank,0)+pattern+pattern+bytes(32)
     job_key=small_hash(header+config)
     raw_a=signal_bytes(seed,b'A',m*k);raw_b=signal_bytes(seed,b'BT',n*k)
-    tree_a=Tree(raw_a,job_key);tree_b=Tree(raw_b,job_key)
+    tree_a=tree_factory(raw_a,job_key);tree_b=tree_factory(raw_b,job_key)
     b_seed,a_seed=dense_noise_seeds(job_key,tree_a.root,tree_b.root,m,n,cert_version=version)
     sa=selected_rows(raw_a,ROWS,k);sb=selected_rows(raw_b,ROWS,k)
     na=noise_rows(k,rank,ROWS,b'A_tensor',a_seed)
@@ -78,8 +78,13 @@ def main():
     parser.add_argument('--output-dir',type=Path,required=True)
     parser.add_argument('--versions',type=int,nargs='+',choices=(2,3),default=[2,3])
     parser.add_argument('--seed',help='optional 64 hex digits, for reproducible offline tests')
+    parser.add_argument('--gpu-commitments',action='store_true',
+                        help='GPU chunk CVs, checked against a complete independent CPU tree')
+    parser.add_argument('--commitment-cubin',type=Path,default=BASE/'gpu/chunk-commitment-sm120.cubin')
     parser.add_argument('--cpu-only',action='store_true',help='development-host mode; no GPU validation')
     args=parser.parse_args()
+    if args.cpu_only and args.gpu_commitments:
+        raise ValueError('--cpu-only cannot enable GPU commitments')
     seed=bytes.fromhex(args.seed) if args.seed else secrets.token_bytes(32)
     if len(seed)!=32:raise ValueError('seed must be 32 bytes')
     oracle=args.oracle.resolve()
@@ -87,31 +92,50 @@ def main():
     args.output_dir.mkdir(parents=True,exist_ok=False)
     out=args.output_dir.resolve();env=dict(os.environ,RAYON_NUM_THREADS='2')
     manifest={'scope':'synthetic offline; no pool verdict','seed_hex':seed.hex(),
-              'gpu_math_checked':not args.cpu_only,'python':sys.version,'versions':[]}
-    for version in args.versions:
-        print(f'V{version}: building fresh independent matrices and commitments...',flush=True)
-        c=candidate(seed,version);gpu=out/f'candidate-v{version}.bin';gpu.write_bytes(c['gpu_input'])
-        if args.cpu_only:
-            print('CPU-ONLY: GPU stage skipped on development host',flush=True)
-        else:
-            subprocess.run([str(args.gpu_check.resolve()),str(args.cubin.resolve()),str(gpu)],
-                           check=True,timeout=120)
-        # Only build/emit the PlainProof after the requested GPU math stage passes.
-        proof=build_proof(c)
-        value={'cert_version':version,'header_base64':base64.b64encode(c['header']).decode(),
-               'plain_proof_base64':base64.b64encode(proof).decode(),'share_nbits':None,
-               'provenance':{'generator':'independent SHAKE256 signals + BLAKE3 commitments + Merkle openings',
-                             'scope':'synthetic offline; not official try_mine_one; not pool acceptance'}}
-        path=out/f'independent-proof-v{version}.json';path.write_text(json.dumps(value,indent=2)+'\n')
-        subprocess.run([str(oracle),'verify',str(path)],check=True,timeout=120,env=env)
-        manifest['versions'].append({'version':version,'proof_bytes':len(proof),
-                                    'proof_sha256':hashlib.sha256(proof).hexdigest(),
-                                    'gpu_input_sha256':hashlib.sha256(c['gpu_input']).hexdigest(),
-                                    'root_a':c['tree_a'].root.hex(),'root_bt':c['tree_b'].root.hex(),
-                                    'jackpot_digest':c['digest'].hex(),'official_verifier':'passed'})
-        print(f'PASS: independently constructed V{version} PlainProof accepted by official offline verifier',flush=True)
+              'gpu_math_checked':not args.cpu_only,
+              'gpu_commitment_leaves_checked':args.gpu_commitments,
+              'commitment_parents':'cpu','seed_derivation':'cpu','merkle_openings':'cpu','python':sys.version,'versions':[]}
+    device=None
+    tree_factory=Tree
+    if args.gpu_commitments:
+        from tools.gpu_commitment import GpuCommitments,checked_tree
+        device=GpuCommitments()
+        def tree_factory(data,key):
+            tree=checked_tree(data,key,device.chunk_cvs)
+            if device.allocations:
+                raise RuntimeError('GPU commitment batch allocations were not released')
+            print(f'PASS: {len(tree.layers[0])} GPU leaf CVs and all CPU parent nodes match the independent CPU tree',flush=True)
+            return tree
+    try:
+        if device is not None:
+            device.start(args.commitment_cubin)
+        for version in args.versions:
+            print(f'V{version}: building fresh independent matrices and commitments...',flush=True)
+            c=candidate(seed,version,tree_factory=tree_factory);gpu=out/f'candidate-v{version}.bin';gpu.write_bytes(c['gpu_input'])
+            if args.cpu_only:
+                print('CPU-ONLY: GPU stage skipped on development host',flush=True)
+            else:
+                subprocess.run([str(args.gpu_check.resolve()),str(args.cubin.resolve()),str(gpu)],
+                               check=True,timeout=120)
+            # Only build/emit the PlainProof after the requested GPU math stage passes.
+            proof=build_proof(c)
+            value={'cert_version':version,'header_base64':base64.b64encode(c['header']).decode(),
+                   'plain_proof_base64':base64.b64encode(proof).decode(),'share_nbits':None,
+                   'provenance':{'generator':'independent SHAKE256 signals + BLAKE3 commitments + Merkle openings',
+                                 'scope':'synthetic offline; not official try_mine_one; not pool acceptance'}}
+            path=out/f'independent-proof-v{version}.json';path.write_text(json.dumps(value,indent=2)+'\n')
+            subprocess.run([str(oracle),'verify',str(path)],check=True,timeout=120,env=env)
+            manifest['versions'].append({'version':version,'proof_bytes':len(proof),
+                                        'proof_sha256':hashlib.sha256(proof).hexdigest(),
+                                        'gpu_input_sha256':hashlib.sha256(c['gpu_input']).hexdigest(),
+                                        'root_a':c['tree_a'].root.hex(),'root_bt':c['tree_b'].root.hex(),
+                                        'jackpot_digest':c['digest'].hex(),'official_verifier':'passed'})
+            print(f'PASS: independently constructed V{version} PlainProof accepted by official offline verifier',flush=True)
+    finally:
+        if device is not None:
+            device.close()
     (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
-    print('OFFLINE COMPLETE: '+('CPU only' if args.cpu_only else 'GPU math + independent proof + official verification'),flush=True)
+    print('OFFLINE COMPLETE: '+('CPU only' if args.cpu_only else ('GPU commitment leaves + CPU parents + ' if args.gpu_commitments else '')+'GPU math + independent proof + official verification'),flush=True)
     print('No pool connection, submitted share, pool verdict or performance claim.',flush=True)
 
 

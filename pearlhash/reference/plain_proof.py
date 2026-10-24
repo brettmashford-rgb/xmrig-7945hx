@@ -63,14 +63,17 @@ class Opening:
 
 
 class Tree:
-    def __init__(self,data,key):
+    def __init__(self,data,key,*,leaf_hasher=None):
         key_check(key)
         if not isinstance(data,bytes) or not data or len(data)>64*1024*1024:
             raise ValueError('commitment input must contain 1 byte..64 MiB')
         self.data=data+bytes((-len(data))%1024);self.key=key
         if len(self.data)==1024:self.layers=[[small_hash(self.data,key)]]
         else:
-            self.layers=[chunk_cvs(self.data,key)]
+            leaves=list((leaf_hasher or chunk_cvs)(self.data,key))
+            if len(leaves)!=len(self.data)//1024 or any(type(v) is not bytes or len(v)!=32 for v in leaves):
+                raise ValueError('leaf backend returned invalid chaining values')
+            self.layers=[leaves]
             while len(self.layers[-1])>2:
                 layer=self.layers[-1];paired=len(layer)//2*2
                 self.layers.append(parents(layer[:paired],key)+(layer[-1:] if len(layer)%2 else []))

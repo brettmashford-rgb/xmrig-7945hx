@@ -221,3 +221,32 @@ or live independent share is claimed for this build.
 - Actual new GPU execution remains pending. No complete large matrix root,
   current-pool reconstruction, custom share submission/acceptance or measured
   speed/power claim. Existing rig mining is left in place.
+
+
+### Rig-confirmed v0.0.9 and v0.0.10 proof integration
+
+The user's screenshot 1792834907985.jpeg confirms archive/internal checksums,
+all 141 keyed chunk CV comparisons, the empty-launch case and unchanged output
+guards on sm_120. The runner also passed the two-chunk root-domain golden gate.
+This is isolated commitment-leaf GPU evidence, not a complete matrix-tree proof.
+
+The v0.0.10 source connects those leaves to bounded commitment trees. Each batch
+is at most 128 KiB by default; device buffers are released after every batch.
+Every tree node must match a complete CPU reference tree before seed derivation.
+GPU noise/products/transcript/digest, independent CPU openings/serialization and
+the pinned official CPU verifier then run on freshly generated V2/V3 candidates.
+Parent folds and seeds remain CPU work; matrix inputs retain the 64-MiB cap.
+
+Six packaged CPU tests pass. Three new integration tests cover uneven batches,
+odd trees, padding and one-chunk root distinction; reject malformed/corrupt CVs;
+and compare complete V2/V3 proof bytes and math inputs with the existing CPU
+pipeline using an explicitly CPU-emulated leaf backend. They do not execute a
+GPU or the official verifier. The development suite passes 41 tests and skips
+two prior tests (missing local official verifier and original JSON vectors).
+The extracted package verifies and repeats its six CPU tests successfully.
+
+New integrated GPU execution/official verification is pending on the rig. The
+commitment cubin/library are unchanged from v0.0.9; the rig's existing v0.0.5
+GPU math binary/cubin and v0.0.2 pinned verifier are reused. Full current-pool
+compact reconstruction remains unresolved. No custom share, accepted pool
+verdict, speed/power result or working-miner claim.

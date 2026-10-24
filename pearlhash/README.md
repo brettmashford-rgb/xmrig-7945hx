@@ -1,6 +1,6 @@
 # Independent PearlHash miner development
 
-Version: **0.0.9-commitment-leaf-check**. This remains **not a working miner**.
+Version: **0.0.10-gpu-leaves-to-proof**. This remains **not a working miner**.
 
 All 12 offline GPU math checks from v0.0.3/v0.0.4 passed on the user's RTX 5060.
 The new independent code constructs fresh matrix commitments, authenticates
@@ -26,8 +26,15 @@ still fails its target, so full pool compatibility remains unresolved.
 A separate keyed BLAKE3 chunk-CV kernel now compiles natively for sm_120.
 141 synthetic CPU comparisons match the official BLAKE3 portable compressor,
 including counters beyond the old 64-MiB cap and 32-bit carry. The CPU kernel
-body and guard checks pass. Actual GPU commitment-leaf execution is pending.
+body and guard checks pass. All 141 commitment-leaf GPU cases and the empty
+launch now pass on the user's RTX 5060, with guards and checksums verified.
 These are sparse boundary checks, not a full production matrix commitment.
+
+The new opt-in proof pipeline uses GPU leaf CVs, folds parents on the CPU,
+compares every node against an independent CPU tree, then derives seeds and
+runs the existing GPU math / CPU Merkle proof / official verification stages.
+Its source integration passes CPU tests; this integrated GPU run remains pending.
+The commitment cubin and native hash library are unchanged from validated v0.0.9.
 
 See [independent proof pipeline](proof/README.md),
 [GPU math scope](gpu/README.md), [login-only pool probe](docs/pool-probe.md),
