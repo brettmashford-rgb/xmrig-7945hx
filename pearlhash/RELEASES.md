@@ -1,5 +1,19 @@
 # PearlHash development checkpoints
 
+## v0.0.27-production-shared-cache
+
+Specialised 10x16/K32768/rank128/fill64 kernel, 26KiB warp-owned transposed
+uniform cache per block, A-fragment reuse for both MMA subtiles. Same target/
+queue ABI and exact integer transcript. Source and real NVRTC12.9.86 PTX,
+byte-identical rebuild; no rig compiler installation.
+
+Three new CPU guard/selector tests, two prior warp host tests, isolated package
+and mocked correctness/comparison CLIs pass. Next rig check covers fifteen
+independent CPU transcript/digest/queue cases including first/last production
+indices and extreme tails, then a same-nonce warp-vs-specialised comparison.
+Actual GPU correctness/performance pending; no share or service/clock changes.
+
+
 ## v0.0.26-fix1-transcript-checker
 
 The rig stopped before a live connection on a checker representation bug:
@@ -10,7 +24,8 @@ all transcript words, digests, guards and queue checks. Kernel/PTX unchanged.
 Two regression tests using real CPU output and full-width words pass; corrected
 twenty-case CLI mock uses the actual GPU audit format. Isolated patch tests pass.
 The patch manifest contains two source files and requires the original verified
-v026 package/PTX. Actual corrected GPU correctness/comparison remain pending.
+v026 package/PTX. Corrected GPU execution now passes all20 correctness cases and same-nonce
+comparison: 0.407870s block versus 0.234011s warp, cache excluded.
 
 
 ## v0.0.26-per-warp-kernel
@@ -23,8 +38,8 @@ metadata are included. No new compiler/toolkit required on the rig.
 Two CPU host-contract tests and five prior wide-dispatch tests pass. Mocked
 correctness/report and same-nonce comparison CLIs pass. The rig will check 20
 independent transcript/digest/queue cases over four layouts before a live old-
-versus-new kernel comparison on the same production nonce. GPU result/speedup
-is pending. No share submission or service/clock change.
+versus-new kernel comparison on the same production nonce. The corrected GPU diagnostic now passes all20 cases and the same-nonce
+comparison (block 0.407870s, warp 0.234011s, cache excluded). No share submission or service/clock change.
 
 
 ## v0.0.25-wide-dispatch

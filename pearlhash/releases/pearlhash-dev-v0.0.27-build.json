@@ -1,0 +1,57 @@
+{
+  "compiler": "NVRTC 12.9.86",
+  "options": [
+    "--gpu-architecture=compute_120",
+    "--std=c++17"
+  ],
+  "source": "gpu/production_tile_scan.cu",
+  "entry": "production_virtual_tile_scan",
+  "ptx_bytes": 510191,
+  "ptx_sha256": "33905b5f2ab3068b559a7c40bf022b424669489fb97f90aae8860970733fd8fc",
+  "independent_rebuild_byte_identical": true,
+  "entry_block_barriers": 0,
+  "shared_cache_bytes_per_block": 26624,
+  "compiler_library_sha256": "7c67c6b51ea0e0279634cebd676ff7efda1674806444520c84430ad5c35fe625",
+  "sources": [
+    {
+      "path": "gpu/keyed64.h",
+      "sha256": "83e9c85660360a752a9d2e399f18620496fa2859f8e0575a4e09a27ee223adb6"
+    },
+    {
+      "path": "gpu/mma_correctness.cu",
+      "sha256": "cc97950a9c1a65b81407ff0115434c123d8526b7741c0073f250185563a75fef"
+    },
+    {
+      "path": "gpu/noise_mma.cu",
+      "sha256": "d946fd10f2a6aeae347b3c52bfa81ded7b45ee85eba374e952f7efcf624e532f"
+    },
+    {
+      "path": "gpu/production_tile_scan.cu",
+      "sha256": "493e260683d7222c9f3c7b77bb69965520460449308eb1e174e0885bc68bdb8c"
+    },
+    {
+      "path": "gpu/scan_target.h",
+      "sha256": "881f89f88c220818e207833093b2285c9eb3d0cffed8ac177a95292a1b601095"
+    },
+    {
+      "path": "gpu/tile_scan.cu",
+      "sha256": "ebd5c9b5604f2564fa6df113968122cfe4129286c6514cd8cb241a7b1b372438"
+    },
+    {
+      "path": "gpu/tile_scan_core.cuh",
+      "sha256": "6f8bfe17db620102add64c9e89f98d198dd98ca04836d7ec1f76685f4491a7d0"
+    },
+    {
+      "path": "gpu/virtual_input.h",
+      "sha256": "f09cc193877737cb0e441c97c70b17bd4050af2608cdd21551b8d1b05bf65256"
+    },
+    {
+      "path": "gpu/virtual_tile_scan.cu",
+      "sha256": "26df912b38afc8ee261eb03dc88c65d6a6f2cf5a9a6769b6dc7f1cfba053586c"
+    },
+    {
+      "path": "gpu/warp_tile_scan.cu",
+      "sha256": "7de77cc99d924a2bc4378f95e7ca45548f9c076bfc227c52a86b56a675fcb32b"
+    }
+  ]
+}

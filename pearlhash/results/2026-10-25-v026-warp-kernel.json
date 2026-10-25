@@ -1,0 +1,23 @@
+{
+  "version": "0.0.26-fix1-source",
+  "kernel_source_commit": "0eb60c886ce25b261c14440841c8fe303e7a3325",
+  "checker_fix_commit": "7433c121525a65374686d02de32c26ea455701b8",
+  "evidence": "user-supplied completed Termius output, 2026-10-25",
+  "gpu": "RTX 5060 sm_120",
+  "independent_cpu_transcript_digest_queue_cases_passed": 20,
+  "same_nonce_tiles": 4096,
+  "same_nonce_candidate_match": true,
+  "window_seconds_cache_excluded": {
+    "block": 0.40787,
+    "warp": 0.234011
+  },
+  "stage_seconds": {
+    "base": 29.478,
+    "nonce": 0.58,
+    "bounded_scan": 0.283,
+    "nonce_cache": 0.04502
+  },
+  "receiver_closed_worker_joined_job_invalidated": "passed",
+  "submitted_shares": 0,
+  "scope": "independent GPU component correctness and same-nonce timing under existing concurrent mining; no full nonce or miner throughput claim"
+}

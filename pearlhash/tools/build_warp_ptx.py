@@ -15,6 +15,8 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--nvrtc',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--source',default='warp_tile_scan.cu')
+    parser.add_argument('--entry',default='warp_virtual_tile_scan')
     args=parser.parse_args();root=Path(__file__).resolve().parents[1]
     lib=C.CDLL(str(args.nvrtc.resolve()))
     def bind(name,types):
@@ -29,8 +31,8 @@ def main():
     getsize=bind('nvrtcGetPTXSize',[C.c_void_p,C.POINTER(C.c_size_t)])
     getptx=bind('nvrtcGetPTX',[C.c_void_p,C.c_void_p])
     destroy=bind('nvrtcDestroyProgram',[C.POINTER(C.c_void_p)])
-    program=C.c_void_p();source=(root/'gpu/warp_tile_scan.cu').read_bytes()
-    if create(C.byref(program),source,b'warp_tile_scan.cu',0,None,None):raise RuntimeError('NVRTC create failed')
+    program=C.c_void_p();source_path=root/'gpu'/args.source;source=source_path.read_bytes()
+    if create(C.byref(program),source,source_path.name.encode(),0,None,None):raise RuntimeError('NVRTC create failed')
     try:
         options=[b'--gpu-architecture=compute_120',b'--std=c++17',('-I'+str(root/'gpu')).encode()]
         rc=compile(program,len(options),(C.c_char_p*len(options))(*options))
@@ -41,9 +43,10 @@ def main():
         buffer=C.create_string_buffer(size.value)
         if getptx(program,buffer):raise RuntimeError('NVRTC PTX retrieval failed')
         raw=buffer.raw[:-1];raw.decode('utf-8')
-        if b'.target sm_120'not in raw or b'.visible .entry warp_virtual_tile_scan('not in raw:
+        marker=('.visible .entry '+args.entry+'(').encode()
+        if b'.target sm_120'not in raw or marker not in raw:
             raise RuntimeError('unexpected PTX target or entry')
-        entry=raw.split(b'.visible .entry warp_virtual_tile_scan(',1)[1]
+        entry=raw.split(marker,1)[1]
         if b'bar.sync'in entry:raise RuntimeError('new warp entry contains a block barrier')
         args.output.write_bytes(raw)
         print(json.dumps({'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'warp_entry_block_barriers':0}))

@@ -26,6 +26,7 @@ from reference.patterns import PeriodicPattern
 from tools.candidate_scan import CandidateScanner, CandidateBackend
 from tools.wide_scan import WideCandidateScanner, WideCandidateBackend, wide_plan_for
 from tools.warp_scan import WarpCandidateScanner
+from tools.production_scan import ProductionCandidateScanner
 from tools.check_live_job import saved_wallet
 
 
@@ -41,17 +42,17 @@ def main():
     parser.add_argument('--window', type=int, default=512)
     parser.add_argument('--dispatch', choices=('64', '4096'), default='64')
     parser.add_argument('--compare', action='store_true', help='same nonce comparison; requires --dispatch 4096')
-    parser.add_argument('--kernel', choices=('block', 'warp'), default='block')
+    parser.add_argument('--kernel', choices=('block', 'warp', 'production'), default='block')
     parser.add_argument('--compare-kernels', action='store_true')
     args = parser.parse_args()
     if not 1 <= args.seconds <= 300 or not 1 <= args.tiles <= 65536 or not 1 <= args.window <= 4096:
         raise ValueError('receive window or tile cap outside bounded experiment')
     if args.compare and args.dispatch != '4096':
         raise ValueError('comparison requires the wide dispatcher')
-    if args.kernel == 'warp' and args.dispatch != '4096':
+    if args.kernel != 'block' and args.dispatch != '4096':
         raise ValueError('warp kernel requires the wide dispatcher')
-    if args.compare_kernels and (args.kernel != 'warp' or args.compare):
-        raise ValueError('kernel comparison requires --kernel warp without --compare')
+    if args.compare_kernels and (args.kernel not in ('warp', 'production') or args.compare):
+        raise ValueError('kernel comparison requires --kernel warp/production without --compare')
     rows = PeriodicPattern(bytes.fromhex('000103040000'))
     cols = PeriodicPattern(bytes.fromhex('000103010103'))
     profile = MiningProfile(5121, 262144, 32768, 128, rows, cols)
@@ -81,13 +82,15 @@ def main():
         nonce_started = time.monotonic()
         context = prepare_nonce(job, base, job.assigned_extranonce, secrets.token_bytes(8), current)
         nonce_seconds = time.monotonic()-nonce_started
-        device = WarpCandidateScanner() if args.kernel == 'warp' else (WideCandidateScanner() if args.dispatch == '4096' else CandidateScanner())
+        device = ProductionCandidateScanner() if args.kernel == 'production' else (WarpCandidateScanner() if args.kernel == 'warp' else (WideCandidateScanner() if args.dispatch == '4096' else CandidateScanner()))
         try:
             progress('Starting this worker thread\'s own GPU context and bounded production tile search.')
             device.start(args.module)
-            def scan_mode(wide, warp=False):
+            def scan_mode(wide, kernel='block'):
                 if isinstance(device, WarpCandidateScanner):
-                    device.warp_enabled = warp
+                    device.warp_enabled = kernel != 'block'
+                if isinstance(device, ProductionCandidateScanner):
+                    device.production_enabled = kernel == 'production'
                 scan_started = time.monotonic()
                 segments = []
                 dispatch_before = device.dispatches
@@ -103,7 +106,7 @@ def main():
                         elapsed = time.monotonic()-window_started
                         segments.append({'start': first, 'stop': cursor.next_tile,
                                          'seconds': round(elapsed, 6)})
-                        progress(f'Search progress ({"warp" if warp else "block"}, {"4096" if wide else "64"}-query batches): {cursor.next_tile}/{args.tiles} tiles; nonce cache retained.')
+                        progress(f'Search progress ({kernel}, {"4096" if wide else "64"}-query batches): {cursor.next_tile}/{args.tiles} tiles; nonce cache retained.')
                 result = {'generation': job.generation, 'scaled_target_bits': job.share_bound.bit_length(),
                           'production_domain_tiles': plan_for(job).count, 'tiles_scanned': cursor.next_tile,
                           'candidate_found': found is not None,
@@ -112,16 +115,17 @@ def main():
                           'cache_seconds': round(cache_seconds, 6), 'search_windows': segments,
                           'base_seconds': round(base_seconds, 3), 'nonce_seconds': round(nonce_seconds, 3),
                           'bounded_scan_seconds': round(time.monotonic()-scan_started, 3),
-                          'dispatch_query_cap': 4096 if wide else 64, 'kernel': 'warp' if warp else 'block'}
+                          'dispatch_query_cap': 4096 if wide else 64, 'kernel': kernel}
                 return found, result
             baseline_hit = baseline = None
             if args.compare:
                 progress('Comparing the validated 64-query path on this same nonce first.')
                 baseline_hit, baseline = scan_mode(False)
             if args.compare_kernels:
-                progress('Comparing the validated block kernel on this same nonce first.')
-                baseline_hit, baseline = scan_mode(True, False)
-            found, result = scan_mode(args.dispatch == '4096', args.kernel == 'warp')
+                baseline_kernel = 'warp' if args.kernel == 'production' else 'block'
+                progress('Comparing the validated '+baseline_kernel+' kernel on this same nonce first.')
+                baseline_hit, baseline = scan_mode(True, baseline_kernel)
+            found, result = scan_mode(args.dispatch == '4096', args.kernel)
             if args.compare or args.compare_kernels:
                 if found != baseline_hit:
                     raise RuntimeError('wide search candidate differs from same-nonce 64-query search')

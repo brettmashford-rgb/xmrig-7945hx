@@ -864,3 +864,37 @@ wrong byte-tuple representation for GPU audits; the corrected twenty-case mock
 uses real decoded-u32 audit format. It passes, along with isolated patch tests.
 This still does not execute a real GPU. Corrected real GPU diagnostics and
 subsequent same-nonce comparison remain pending; no performance claim.
+
+
+### v0.0.26 corrected rig result
+
+Completed user output confirms the two checker patch checksums, all20 real GPU
+cases across the four layouts/ranks, exact CPU transcripts/digests and queue/
+guard matches. Same-nonce 4096-tile comparison passes: 0.407870s block versus
+0.234011s warp, cache excluded. B preparation29.478s, nonce0.580s, new bounded
+scan0.283s including cache0.045020s. Receiver closure/join/invalidation pass.
+No submitted share, full-nonce result or overall throughput claim.
+
+### v0.0.27 production-profile cache
+
+The new kernel strictly selects 10x16/K32768/rank128/fill64. A warp preloads
+26x128 signed coefficients into its own shared slice; layout is coefficient-
+major/row-minor. Warp synchronisation occurs once after prefetch, with no
+block barrier. Global map bounds are checked before loading. Two explicit MMA
+operations reuse A fragments; padded A rows contribute zero, and nonce-tail
+signal replacement still follows global last-row identity.
+
+Real PTX from NVRTC12.9.86 rebuilds byte-identically, with no new-entry block
+barriers. The extended build helper also reproduces the original v026 PTX.
+Three CPU tests check strict profile/shape rejection, comparison mode selection,
+partial grid and rejection before GPU operations. Two prior warp host tests
+still pass. Isolated package tests pass. Mocked fifteen-case CLI and live
+comparison/report smoke pass using actual decoded-u32 audit representation and
+the same context object for both kernels; no local GPU execution is claimed.
+
+The real rig diagnostic will check small and full production-domain first/last
+indices, nonce-tail boundary, reversed maps/extreme tails, complete and partial
+grids, all-hit/miss/equality/mixed overflow cases against independent scalar
+CPU transcript/digest references. After that, the live comparison uses both
+kernels on the same fresh nonce/target. Correctness/performance pending; no
+proof build or share submission.

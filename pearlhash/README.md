@@ -375,7 +375,8 @@ these do not execute a GPU. The rig check independently compares transcripts,
 digests, equality/overflow queues, guards and generation tags for one/two/four/
 eight-subtile layouts, ranks32/128/1024, padding/signed inputs and nonce tails.
 Only after those pass does it compare the new and old kernels at 4096 production
-tiles on the same fresh nonce/target. GPU correctness and speed are pending.
+tiles on the same fresh nonce/target. The corrected rig diagnostic now passes all20 cases; same-nonce cache-excluded
+4096-tile times were 0.407870s (block) and 0.234011s (warp).
 No proof construction, submitted share, service/clock change or miner throughput
 claim. Assigned-extranonce/compact-submit mapping remains provisional.
 
@@ -386,8 +387,8 @@ The first rig diagnostic stopped before a live connection because the checker
 compared tuple(CPU transcript bytes), length64, against sixteen decoded GPU u32
 words. The reference returns packed little-endian bytes. The fix decodes them
 with struct.unpack('<16I', raw) before comparing every word. No kernel/PTX,
-digest/target check, guard or queue validation changes. Kernel correctness and
-speed remain unestablished until the corrected real GPU run completes.
+digest/target check, guard or queue validation changes. The corrected real GPU run now passes all20 correctness cases and the
+same-nonce comparison.
 
 Two regression tests cover full-width u32 values, invalid reference formats and
 real scalar-reference byte output. The corrected twenty-case CLI mock uses the
@@ -395,3 +396,28 @@ actual decoded GPU audit format; the previous mock incorrectly supplied byte
 tuples and missed the representation mismatch. Isolated patch tests pass.
 The small fix manifest downloads the checker/test source only and reuses the
 verified v026 package/PTX; the failed report and original files are preserved.
+
+
+## Production-profile shared cache (v0.0.27)
+
+The new specialised kernel accepts exactly 10x16 tiles, K32768, rank128 and
+constant fill64. It keeps each query's 26x128 signed uniform coefficients in a
+transposed warp-owned shared cache (26KiB/block), and reuses the same four A
+fragments across both MMA operations. It preserves exact integer accumulation,
+nonce-tail handling, lane-held transcript, keyed digest, target and queue tags.
+Unsupported profile/shapes reject before launch; the validated general warp
+path remains available as the comparison baseline.
+
+Actual readable PTX was compiled with NVRTC12.9.86 and reproduced byte-for-byte.
+The updated build helper also reproduces the unchanged v026 PTX by default.
+Three new CPU selector/guard tests and two prior warp host tests pass. Mocked
+15-case correctness and same-nonce comparison CLI/report checks pass. Isolated
+package tests pass. These local checks do not run an actual GPU.
+
+The rig diagnostic checks first/last production-domain indices, nonce tails,
+reversed maps, extreme tail values, full/partial grids, exact transcript/digest
+matching, target equality and queue overflow against independent CPU references.
+It then compares the validated general warp and specialised shared-cache
+kernels on the same production nonce/target. GPU correctness and improvement
+are pending. No share submission, proof test, service/clock change or overall
+miner speed claim.
