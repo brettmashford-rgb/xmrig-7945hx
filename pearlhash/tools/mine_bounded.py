@@ -25,7 +25,8 @@ from pool.telemetry import WorkTelemetry
 from reference.patterns import PeriodicPattern
 from tools.check_live_job import saved_wallet
 from tools.production_scan import ProductionCandidateScanner
-from tools.wide_scan import WideCandidateBackend,wide_plan_for
+from tools.wide_scan import wide_plan_for
+from tools.prepared_backend import PreparedCandidateBackend
 
 
 def main():
@@ -42,6 +43,7 @@ def main():
                     PeriodicPattern(bytes.fromhex('000103010103')))
     session=PoolSession(p,cert_version=3);gate=SubmissionGate(session,max_pending=1)
     stop=threading.Event();heartbeat_done=threading.Event();lock=threading.Lock()
+    backend_reports=[]
     state={'tiles':0,'nonces_started':0,'full_nonces':0,'proofs_checked':0,'stage':'waiting for job'}
     telemetry=WorkTelemetry()
     started=time.monotonic();base_cache=[None];last_report=[0.0];last_progress=[0.0]
@@ -83,8 +85,14 @@ def main():
                 telemetry.add(job,nonces=1)
                 with lock:state['nonces_started']+=1
                 cache_started=time.monotonic()
+                def generation():
+                    require_current(job,current)
+                    return job.generation
+                def backend_factory(profile,device,*,bound):
+                    return PreparedCandidateBackend(profile,device,bound=bound,
+                        current_generation=generation,on_close=backend_reports.append)
                 try:
-                    search=NonceSearch(context,device,current,backend_factory=WideCandidateBackend,plan_factory=wide_plan_for)
+                    search=NonceSearch(context,device,current,backend_factory=backend_factory,plan_factory=wide_plan_for)
                 finally:telemetry.seconds(job,'cache',time.monotonic()-cache_started)
                 with search:
                     progress('Searching the live production domain; actual pool target retained.')
@@ -129,7 +137,8 @@ def main():
         print(f'Live target: {job.share_bound.bit_length()} scaled bits; mean {expected:.6g} tiles per candidate under uniform-digest model.',flush=True)
         if args.observe_target:stop.set()
         else:worker.publish(job)
-    receiver=PoolReceiver(session,args.host,args.port,saved_wallet(args.login_file),'5060-independent-v030')
+    receiver=PoolReceiver(session,args.host,args.port,saved_wallet(args.login_file),'5060-independent-v036',
+                          agent='pearlhash-independent/0.0.36')
     worker=LatestJobWorker(session,process,lambda job,result:None,stop=stop)
     fd=os.open(args.report,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
     beat=threading.Thread(target=heartbeat,name='pearlhash-progress',daemon=True)
@@ -152,7 +161,8 @@ def main():
         stats=gate.stats()
         report={'complete':error is None,'receiver':asdict(received)if received else None,
                 'worker':worker.stats(),'work':work,'connection':stats,'error':error,
-                'telemetry':telemetry.snapshot(),
+                'telemetry':telemetry.snapshot(),'scan_backend':'prepared-production-virtual-v036',
+                'backend_lifecycle':backend_reports,
                 'submitted_shares':stats['sent'],'pool_accepted_shares':stats['accepted'],
                 'extranonce_worker_role_verified':stats['accepted']>0,
                 'reported_rate_unit':'completed scalar dot-product terms per second, whole attempt elapsed',
@@ -166,6 +176,8 @@ def main():
     print('Stage totals (seconds):',{stage:round(sum(row['seconds'][stage]for row in summary['jobs']),3)
           for stage in ('base','nonce','cache','search','proof')},flush=True)
     print('Worker lifecycle:',worker.stats(),flush=True)
+    print('Reusable dispatch totals:',{key:sum(row[key]for row in backend_reports)
+          for key in ('prepared_batches','dispatches','dispatch_buffer_allocations')},flush=True)
     print('Connection summary:',stats,flush=True)
     if error:print('STOP:',error,flush=True);return 1
     if args.observe_target:print('Live target observation complete; no GPU work or shares sent.',flush=True)
