@@ -1,0 +1,48 @@
+{
+  "version": "0.0.42",
+  "scope": "bounded paired cached-A live experiment; existing v040 scan PTX reused",
+  "files": [
+    {
+      "path": "tools/dual_search.py",
+      "repository_path": "pearlhash/tools/dual_search.py",
+      "bytes": 7035,
+      "sha256": "83944248084ec1d0d512f495738db4becd9757918e25c550beb4b8242074481d"
+    },
+    {
+      "path": "tools/check_dual_job.py",
+      "repository_path": "pearlhash/tools/check_dual_job.py",
+      "bytes": 5508,
+      "sha256": "3c9a47019a0c33ad0617060715d41bee13097c2fa3f5624a9e1cc257013b9117"
+    },
+    {
+      "path": "tools/mine_bounded.py",
+      "repository_path": "pearlhash/tools/mine_bounded.py",
+      "bytes": 12573,
+      "sha256": "751cf02acd0194e32df505bed52650ed77fc87cc53f6cd20e01f69f253981951"
+    },
+    {
+      "path": "tests/test_dual_search.py",
+      "repository_path": "pearlhash/tests/test_dual_search.py",
+      "bytes": 5680,
+      "sha256": "050a6ce797bd37be48aa7e55f0711fb9cd8884528fe724b9f6ed3efa1bce760d"
+    },
+    {
+      "path": "tests/test_bounded_miner.py",
+      "repository_path": "pearlhash/tests/test_bounded_miner.py",
+      "bytes": 8441,
+      "sha256": "6280a190e24eeb1ebe43eeb78ae528aaa2019cc121953e326426d00dd286f459"
+    },
+    {
+      "path": "tests/test_install_v042.py",
+      "repository_path": "pearlhash/tests/test_install_v042.py",
+      "bytes": 4249,
+      "sha256": "6f218ff9e8176cb418275357b788aa8af6f5175934d0c9fb3cdd760fec0f257b"
+    },
+    {
+      "path": "docs/v042.md",
+      "repository_path": "pearlhash/docs/v042.md",
+      "bytes": 2952,
+      "sha256": "de33c37640f756dacce6a74e15f22d01a089e04fabf9dbe3ea4088803a6820f6"
+    }
+  ]
+}

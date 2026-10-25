@@ -29,6 +29,7 @@ from tools.wide_scan import wide_plan_for
 from tools.fast_plan import FastCandidateBackend,FastPlan
 from tools.gpu_base import prepare_gpu_base
 from tools.cached_a import CachedABackend
+from tools.dual_search import DualSearch
 
 
 def main():
@@ -39,10 +40,12 @@ def main():
     parser.add_argument('--commitment-module',type=Path,help='explicit GPU constant B commitment module')
     parser.add_argument('--report',type=Path,required=True)
     parser.add_argument('--seconds',type=int,default=300)
+    parser.add_argument('--two-streams',action='store_true',help='explicit paired cached-A streams')
     parser.add_argument('--cache-a',action='store_true',help='explicit cached-A scan path')
     parser.add_argument('--observe-target',action='store_true',help='receive one target, no GPU work or submission')
     args=parser.parse_args()
     if not 1<=args.seconds<=300:raise ValueError('bounded receive duration required')
+    if args.two_streams and not args.cache_a:raise ValueError('two streams requires --cache-a')
     p=MiningProfile(5121,262144,32768,128,PeriodicPattern(bytes.fromhex('000103040000')),
                     PeriodicPattern(bytes.fromhex('000103010103')))
     session=PoolSession(p,cert_version=3);gate=SubmissionGate(session,max_pending=1)
@@ -97,8 +100,9 @@ def main():
                     return (CachedABackend if args.cache_a else FastCandidateBackend)(profile,device,plan=plan,bound=bound,
                         current_generation=generation,on_close=backend_reports.append)
                 try:
-                    plan=FastPlan.from_job(job)
-                    search=NonceSearch(context,device,current,backend_factory=backend_factory,plan_factory=lambda job:plan)
+                    plan=None if args.two_streams else FastPlan.from_job(job)
+                    search=(DualSearch(context,device,current,on_close=backend_reports.append)if args.two_streams else
+                            NonceSearch(context,device,current,backend_factory=backend_factory,plan_factory=lambda job:plan))
                 finally:telemetry.seconds(job,'cache',time.monotonic()-cache_started)
                 with search:
                     progress('Searching the live production domain; actual pool target retained.')
@@ -106,7 +110,7 @@ def main():
                     while search.cursor.next_tile<search.plan.count:
                         first=search.cursor.next_tile
                         scan_started=time.monotonic()
-                        try:hit,cursor=search.advance(4096)
+                        try:hit,cursor=search.advance(8192 if args.two_streams else 4096)
                         finally:telemetry.seconds(job,'search',time.monotonic()-scan_started)
                         telemetry.add(job,tiles=cursor.next_tile-first)
                         with lock:state['tiles']+=cursor.next_tile-first
@@ -143,8 +147,8 @@ def main():
         print(f'Live target: {job.share_bound.bit_length()} scaled bits; mean {expected:.6g} tiles per candidate under uniform-digest model.',flush=True)
         if args.observe_target:stop.set()
         else:worker.publish(job)
-    receiver=PoolReceiver(session,args.host,args.port,saved_wallet(args.login_file),'5060-independent-v040',
-                          agent='pearlhash-independent/0.0.40')
+    receiver=PoolReceiver(session,args.host,args.port,saved_wallet(args.login_file),'5060-independent-v042',
+                          agent='pearlhash-independent/0.0.42')
     worker=LatestJobWorker(session,process,lambda job,result:None,stop=stop)
     fd=os.open(args.report,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
     beat=threading.Thread(target=heartbeat,name='pearlhash-progress',daemon=True)
@@ -167,7 +171,7 @@ def main():
         stats=gate.stats()
         report={'complete':error is None,'receiver':asdict(received)if received else None,
                 'worker':worker.stats(),'work':work,'connection':stats,'error':error,
-                'telemetry':telemetry.snapshot(),'scan_backend':'cached-a-virtual-b-v040'if args.cache_a else 'validated-axis-production-virtual-v038',
+                'telemetry':telemetry.snapshot(),'scan_backend':'cached-a-two-streams-v042'if args.two_streams else 'cached-a-virtual-b-v040'if args.cache_a else 'validated-axis-production-virtual-v038',
                 'backend_lifecycle':backend_reports,
                 'commitment_backend':'gpu-constant-v039'if args.commitment_module else 'cpu-streaming',
                 'submitted_shares':stats['sent'],'pool_accepted_shares':stats['accepted'],
@@ -185,6 +189,7 @@ def main():
     print('Worker lifecycle:',worker.stats(),flush=True)
     print('Reusable dispatch totals:',{key:sum(row[key]for row in backend_reports)
           for key in ('prepared_batches','dispatches','dispatch_buffer_allocations')},flush=True)
+    if args.two_streams:print('Completed stream pairs:',sum(row.get('stream_pairs',0)for row in backend_reports),flush=True)
     print('Connection summary:',stats,flush=True)
     if error:print('STOP:',error,flush=True);return 1
     if args.observe_target:print('Live target observation complete; no GPU work or shares sent.',flush=True)
