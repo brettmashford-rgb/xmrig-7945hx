@@ -17,6 +17,7 @@ def main():
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--source',default='warp_tile_scan.cu')
     parser.add_argument('--entry',default='warp_virtual_tile_scan')
+    parser.add_argument('--allow-block-barriers',action='store_true',help='cooperative CTA kernel only')
     args=parser.parse_args();root=Path(__file__).resolve().parents[1]
     lib=C.CDLL(str(args.nvrtc.resolve()))
     def bind(name,types):
@@ -47,9 +48,9 @@ def main():
         if b'.target sm_120'not in raw or marker not in raw:
             raise RuntimeError('unexpected PTX target or entry')
         entry=raw.split(marker,1)[1]
-        if b'bar.sync'in entry:raise RuntimeError('new warp entry contains a block barrier')
+        if not args.allow_block_barriers and b'bar.sync'in entry:raise RuntimeError('new warp entry contains a block barrier')
         args.output.write_bytes(raw)
-        print(json.dumps({'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'warp_entry_block_barriers':0}))
+        print(json.dumps({'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'entry_block_barriers':entry.count(b'bar.sync'),'cooperative_barriers_allowed':args.allow_block_barriers}))
     finally:destroy(C.byref(program))
     return 0
 

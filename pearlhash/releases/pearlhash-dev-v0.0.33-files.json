@@ -1,0 +1,171 @@
+{
+  "version": "0.0.33-source-ptx",
+  "distribution": "independent offline cooperative shared-input kernel, no live mining integration",
+  "required_v31_manifest_sha256": "d5b60f745f1673b575e910a687a2c81e5144c4b1b62f9c91924410982e4206c8",
+  "required_v27_manifest_sha256": "92754526e52f4e12162fc86205cbdb5e1ef390558e3ef50b4957caa5efa6e8e7",
+  "required_v17_manifest_sha256": "2ab175ecf311bb7ab7aa35fbe31fbae547740dac8b6069602957cd8c2b10a183",
+  "files": [
+    {
+      "path": "gpu/cooperative_tile_scan.cu",
+      "repository_path": "pearlhash/gpu/cooperative_tile_scan.cu",
+      "bytes": 5483,
+      "sha256": "148d311ff5da78857ac321534528d1c74e2dd45584212dfe15a5c70205c03b65"
+    },
+    {
+      "path": "gpu/fragment_cached_tile_scan.cu",
+      "repository_path": "pearlhash/gpu/fragment_cached_tile_scan.cu",
+      "bytes": 3929,
+      "sha256": "5636e492b416d51dbea23d776502e6a78a6a60ae25317cbadf6d0bd0d3c40c01"
+    },
+    {
+      "path": "gpu/fragment_layout.h",
+      "repository_path": "pearlhash/gpu/fragment_layout.h",
+      "bytes": 366,
+      "sha256": "866b56184b0ae02063d2b71ec59e1febea14f091bbe0578c77a8c99a201f325b"
+    },
+    {
+      "path": "tools/cached_scan.py",
+      "repository_path": "pearlhash/tools/cached_scan.py",
+      "bytes": 6377,
+      "sha256": "17072d373fdad553cec65a31c74194f27a5b21e7c8f604630d5d0bb756c7f024"
+    },
+    {
+      "path": "tools/fragment_scan.py",
+      "repository_path": "pearlhash/tools/fragment_scan.py",
+      "bytes": 658,
+      "sha256": "c187e6287810fc85bfa5c10ecb80ed6a22370b5b9da9f339db0aeee7b4c06112"
+    },
+    {
+      "path": "tools/cooperative_scan.py",
+      "repository_path": "pearlhash/tools/cooperative_scan.py",
+      "bytes": 1161,
+      "sha256": "6484672dd994aa90c3c4ba6dcb1da15db1d5688e87be5a98ea4f5c9fad2f7683"
+    },
+    {
+      "path": "tools/check_cooperative_gpu.py",
+      "repository_path": "pearlhash/tools/check_cooperative_gpu.py",
+      "bytes": 8532,
+      "sha256": "ae80f6b1c3319aeb4834700687e09af5260ce3ba739052d89aca932e8ba974a7"
+    },
+    {
+      "path": "tools/build_warp_ptx.py",
+      "repository_path": "pearlhash/tools/build_warp_ptx.py",
+      "bytes": 3336,
+      "sha256": "8d760f608e16beb4d2cf4128811b99b889a07032792849688f9d59ae482f9a5f"
+    },
+    {
+      "path": "tests/test_cached_scan.py",
+      "repository_path": "pearlhash/tests/test_cached_scan.py",
+      "bytes": 2420,
+      "sha256": "7c3642c9138526b798bc45701acd9972cc6995b5452b357ef3afdf86ec4ae3e0"
+    },
+    {
+      "path": "tests/test_fragment_scan.py",
+      "repository_path": "pearlhash/tests/test_fragment_scan.py",
+      "bytes": 1836,
+      "sha256": "b2e4535a0bd2e4894f141ccad2a07408d28a38c7a0109c91aeeec81e7f0e535f"
+    },
+    {
+      "path": "tests/test_cooperative_scan.py",
+      "repository_path": "pearlhash/tests/test_cooperative_scan.py",
+      "bytes": 1581,
+      "sha256": "0104479051e76adb4d4c08f9ddbc7f250981876f79c4793747b40b2e45ac436a"
+    },
+    {
+      "path": "tests/fragment_layout_test.cpp",
+      "repository_path": "pearlhash/tests/fragment_layout_test.cpp",
+      "bytes": 971,
+      "sha256": "da75ee21411251592d3da4c454fbb62788fe03e9a56eff7410345c6982c0bffb"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.33-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.33-sm120.ptx",
+      "bytes": 687234,
+      "sha256": "e4bcd36962e31da3e19b53df70d23c62bf33aba4218863b7b42ac15eb7994910"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.33-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.33-build.json",
+      "bytes": 1883,
+      "sha256": "677dc280cc8e25bcd207f38d5a2c726e8e5daa2e9c54163797c4513d41539426"
+    },
+    {
+      "path": "docs/v033.md",
+      "repository_path": "pearlhash/docs/v033.md",
+      "bytes": 2235,
+      "sha256": "bc5e30711caa655590850d6045a1b74a1200f2db26e3526152206791c0ee2bf9"
+    },
+    {
+      "path": "docs/open-miner-review.md",
+      "repository_path": "pearlhash/docs/open-miner-review.md",
+      "bytes": 3507,
+      "sha256": "5b0622898537ca34ccc0138542e940964b8ac9674a1652afc4395f2a1a5d1594"
+    },
+    {
+      "path": "gpu/cached_tile_scan.cu",
+      "repository_path": "pearlhash/gpu/cached_tile_scan.cu",
+      "bytes": 3708,
+      "sha256": "54c7b3314bb6dff87d4ce3129ede79037c49c227fc6925d8162220b074215887"
+    },
+    {
+      "path": "gpu/keyed64.h",
+      "repository_path": "pearlhash/gpu/keyed64.h",
+      "bytes": 2385,
+      "sha256": "83e9c85660360a752a9d2e399f18620496fa2859f8e0575a4e09a27ee223adb6"
+    },
+    {
+      "path": "gpu/mma_correctness.cu",
+      "repository_path": "pearlhash/gpu/mma_correctness.cu",
+      "bytes": 3287,
+      "sha256": "cc97950a9c1a65b81407ff0115434c123d8526b7741c0073f250185563a75fef"
+    },
+    {
+      "path": "gpu/noise_mma.cu",
+      "repository_path": "pearlhash/gpu/noise_mma.cu",
+      "bytes": 2113,
+      "sha256": "d946fd10f2a6aeae347b3c52bfa81ded7b45ee85eba374e952f7efcf624e532f"
+    },
+    {
+      "path": "gpu/production_tile_scan.cu",
+      "repository_path": "pearlhash/gpu/production_tile_scan.cu",
+      "bytes": 4135,
+      "sha256": "493e260683d7222c9f3c7b77bb69965520460449308eb1e174e0885bc68bdb8c"
+    },
+    {
+      "path": "gpu/scan_target.h",
+      "repository_path": "pearlhash/gpu/scan_target.h",
+      "bytes": 580,
+      "sha256": "881f89f88c220818e207833093b2285c9eb3d0cffed8ac177a95292a1b601095"
+    },
+    {
+      "path": "gpu/tile_scan.cu",
+      "repository_path": "pearlhash/gpu/tile_scan.cu",
+      "bytes": 1523,
+      "sha256": "ebd5c9b5604f2564fa6df113968122cfe4129286c6514cd8cb241a7b1b372438"
+    },
+    {
+      "path": "gpu/tile_scan_core.cuh",
+      "repository_path": "pearlhash/gpu/tile_scan_core.cuh",
+      "bytes": 3402,
+      "sha256": "6f8bfe17db620102add64c9e89f98d198dd98ca04836d7ec1f76685f4491a7d0"
+    },
+    {
+      "path": "gpu/virtual_input.h",
+      "repository_path": "pearlhash/gpu/virtual_input.h",
+      "bytes": 1815,
+      "sha256": "f09cc193877737cb0e441c97c70b17bd4050af2608cdd21551b8d1b05bf65256"
+    },
+    {
+      "path": "gpu/virtual_tile_scan.cu",
+      "repository_path": "pearlhash/gpu/virtual_tile_scan.cu",
+      "bytes": 2190,
+      "sha256": "26df912b38afc8ee261eb03dc88c65d6a6f2cf5a9a6769b6dc7f1cfba053586c"
+    },
+    {
+      "path": "gpu/warp_tile_scan.cu",
+      "repository_path": "pearlhash/gpu/warp_tile_scan.cu",
+      "bytes": 3564,
+      "sha256": "7de77cc99d924a2bc4378f95e7ca45548f9c076bfc227c52a86b56a675fcb32b"
+    }
+  ]
+}

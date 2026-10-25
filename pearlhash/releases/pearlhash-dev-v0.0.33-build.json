@@ -1,0 +1,32 @@
+{
+  "compiler": "NVIDIA NVRTC 12.9.86",
+  "architecture": "compute_120, emitted sm_120 PTX",
+  "source": "cooperative_tile_scan.cu",
+  "entry": "cooperative_tile_scan",
+  "ptx": {
+    "bytes": 687234,
+    "sha256": "e4bcd36962e31da3e19b53df70d23c62bf33aba4218863b7b42ac15eb7994910"
+  },
+  "source_sha256": {
+    "cached_tile_scan.cu": "54c7b3314bb6dff87d4ce3129ede79037c49c227fc6925d8162220b074215887",
+    "cooperative_tile_scan.cu": "148d311ff5da78857ac321534528d1c74e2dd45584212dfe15a5c70205c03b65",
+    "fragment_cached_tile_scan.cu": "5636e492b416d51dbea23d776502e6a78a6a60ae25317cbadf6d0bd0d3c40c01",
+    "fragment_layout.h": "866b56184b0ae02063d2b71ec59e1febea14f091bbe0578c77a8c99a201f325b",
+    "keyed64.h": "83e9c85660360a752a9d2e399f18620496fa2859f8e0575a4e09a27ee223adb6",
+    "mma_correctness.cu": "cc97950a9c1a65b81407ff0115434c123d8526b7741c0073f250185563a75fef",
+    "noise_mma.cu": "d946fd10f2a6aeae347b3c52bfa81ded7b45ee85eba374e952f7efcf624e532f",
+    "production_tile_scan.cu": "493e260683d7222c9f3c7b77bb69965520460449308eb1e174e0885bc68bdb8c",
+    "scan_target.h": "881f89f88c220818e207833093b2285c9eb3d0cffed8ac177a95292a1b601095",
+    "tile_scan.cu": "ebd5c9b5604f2564fa6df113968122cfe4129286c6514cd8cb241a7b1b372438",
+    "tile_scan_core.cuh": "6f8bfe17db620102add64c9e89f98d198dd98ca04836d7ec1f76685f4491a7d0",
+    "virtual_input.h": "f09cc193877737cb0e441c97c70b17bd4050af2608cdd21551b8d1b05bf65256",
+    "virtual_tile_scan.cu": "26df912b38afc8ee261eb03dc88c65d6a6f2cf5a9a6769b6dc7f1cfba053586c",
+    "warp_tile_scan.cu": "7de77cc99d924a2bc4378f95e7ca45548f9c076bfc227c52a86b56a675fcb32b"
+  },
+  "independent_rebuild_byte_identical": true,
+  "cooperative_shared_bytes": 37888,
+  "host_python_tests_passed": 7,
+  "host_cpp_layout_check": "passed; complete word indexing and warp contiguity",
+  "gpu_validation": "pending rig",
+  "live_integration": false
+}

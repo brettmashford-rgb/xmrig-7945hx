@@ -28,10 +28,13 @@ def row_plan(profile,queries):
 
 
 class RowCache:
+    materialize_kernel=b'materialize_selected_rows'
+    scan_kernel=b'cached_tile_scan'
+    plan_rows=staticmethod(row_plan)
     def __init__(self,tables,queries):
         if tables.closed:raise ValueError('closed noise cache')
         self.tables=tables;self.device=tables.device;self.closed=False;self.owned=[];self.buffers=[]
-        self.rows_a,self.rows_b,self.bytes=row_plan(tables.profile,queries)
+        self.rows_a,self.rows_b,self.bytes=self.plan_rows(tables.profile,queries)
         self.maps=({r:i for i,r in enumerate(self.rows_a)},{c:i for i,c in enumerate(self.rows_b)})
         self.local_profile=replace(tables.profile,m=len(self.rows_a),n=len(self.rows_b))
         try:
@@ -42,7 +45,7 @@ class RowCache:
                 arguments=(*tables.inputs(),indices,out,C.c_uint(len(rows)),C.c_uint(side),
                     C.c_uint(tables.profile.m),C.c_uint(tables.profile.n),C.c_uint(32768),C.c_uint(128),C.c_int(64))
                 words=len(rows)*(32768//4)
-                self.device.launch(b'materialize_selected_rows',arguments,(words+127)//128,128)
+                self.device.launch(self.materialize_kernel,arguments,(words+127)//128,128)
             self.device.api('cuCtxSynchronize',[]);self.check_guards()
         except BaseException:self.close();raise
 
@@ -76,6 +79,9 @@ class CachedCandidateScanner(ProductionCandidateScanner):
         if cache.closed or cache.device is not self or cache.tables.closed:raise ValueError('foreign or closed row cache')
         validate_wide(bounds,capacity,generation)
         if len(queries)!=len(bounds):raise ValueError('cached query/target count differs')
+        if getattr(cache,'selected_scan_kernel',cache.scan_kernel)==b'cooperative_tile_scan':
+            from tools.cooperative_scan import validate_cooperative
+            validate_cooperative(queries)
         descriptors=pack_wide(cache.local_profile,cache.remap(queries))
         mark=len(self.allocations)
         try:
@@ -88,7 +94,10 @@ class CachedCandidateScanner(ProductionCandidateScanner):
                   s,q,t,C.c_uint(audit),C.c_uint(capacity),C.c_uint(len(queries)),
                   C.c_uint(len(cache.rows_a)),C.c_uint(len(cache.rows_b)),C.c_uint(32768),
                   C.c_uint(128),C.c_int(64),C.c_ulonglong(generation))
-            self.launch(b'cached_tile_scan',args,(len(queries)+7)//8,256)
+            kernel=getattr(cache,'selected_scan_kernel',cache.scan_kernel)
+            blocks=(len(queries)+7)//8
+            if kernel==b'cooperative_tile_scan':blocks=len(queries)//16
+            self.launch(kernel,args,blocks,256)
             self.dispatches+=1;self.wide_dispatches+=1;self.api('cuCtxSynchronize',[])
             result=decode_wide(self.checked_download(queue,capacity*44),self.checked_download(status,8),bounds,capacity,generation)
             raw=self.checked_download(trace,trace_bytes)
