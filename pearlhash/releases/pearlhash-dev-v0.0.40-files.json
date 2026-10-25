@@ -1,0 +1,66 @@
+{
+  "version": "0.0.40-source-ptx",
+  "distribution": "conditional cached-A scan experiment; no live activation unless benchmark wins",
+  "files": [
+    {
+      "path": "gpu/cached_a_pack.h",
+      "repository_path": "pearlhash/gpu/cached_a_pack.h",
+      "bytes": 802,
+      "sha256": "1504a002be28b67744252bd537bb20a4e40c4c2d483fe8e657f9dc79b44fea79"
+    },
+    {
+      "path": "gpu/cached_a_tile_scan.cu",
+      "repository_path": "pearlhash/gpu/cached_a_tile_scan.cu",
+      "bytes": 3373,
+      "sha256": "7dd094d64ff7ee881b110844b82020af8f195dd8be37dcfa9756c33c897a4de2"
+    },
+    {
+      "path": "tools/cached_a.py",
+      "repository_path": "pearlhash/tools/cached_a.py",
+      "bytes": 4933,
+      "sha256": "05ce07cec6203cf1944fe3d35591f289e004775d7f046326b7d552e63defa489"
+    },
+    {
+      "path": "tools/check_cached_a.py",
+      "repository_path": "pearlhash/tools/check_cached_a.py",
+      "bytes": 8787,
+      "sha256": "a86888b43aa183d8da4b5431ead565490d79ae009dd12cb3430e84c168b168b1"
+    },
+    {
+      "path": "tools/mine_bounded.py",
+      "repository_path": "pearlhash/tools/mine_bounded.py",
+      "bytes": 11977,
+      "sha256": "34f16a4b7df46e7324850b6fec7619713f292019f68e529a740fb92afeae6a87"
+    },
+    {
+      "path": "tests/test_cached_a.py",
+      "repository_path": "pearlhash/tests/test_cached_a.py",
+      "bytes": 6430,
+      "sha256": "4400fcac4b8bd9aad9d743ca1c604ee90d7f9edd769cb9e43abfc1ba0aa65289"
+    },
+    {
+      "path": "tests/test_bounded_miner.py",
+      "repository_path": "pearlhash/tests/test_bounded_miner.py",
+      "bytes": 8138,
+      "sha256": "a475963082c3cca414fe0bf46303f9d256744936bc6aee90e2671ec8ac5b2e0b"
+    },
+    {
+      "path": "docs/v040.md",
+      "repository_path": "pearlhash/docs/v040.md",
+      "bytes": 4272,
+      "sha256": "8b2fa542f78856e4e8ddd6375665e102091af798b7097ca2e04c9493d32f5cc9"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.40-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.40-scan-sm120.ptx",
+      "bytes": 603456,
+      "sha256": "99182c3f632651f7cb89832822f2a2e4de35ce926246fb194403ed77ae1a519d"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.40-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.40-build.json",
+      "bytes": 572,
+      "sha256": "4cc796b9b9704917c2ca3bf802fb40618d2017fdf03842984f67ac2dad4fb173"
+    }
+  ]
+}

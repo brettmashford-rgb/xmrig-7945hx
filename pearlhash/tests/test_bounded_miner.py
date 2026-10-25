@@ -18,6 +18,9 @@ class RunnerTests(unittest.TestCase):
     def test_new_candidate_proof_send_correlated_verdict_and_cleanup(self):
         self.run_attempt(False)
 
+    def test_cached_a_option_is_recorded_in_live_worker(self):
+        self.run_attempt(False,gpu=True,cached=True)
+
     def test_gpu_base_option_uses_new_commitment_helper(self):
         self.run_attempt(False,gpu=True)
 
@@ -53,7 +56,7 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual([p['method']for p in stream.packets],['login'])
         self.assertTrue(stream.closed)
 
-    def run_attempt(self,rollover,gpu=False):
+    def run_attempt(self,rollover,gpu=False,cached=False):
         events=[];ready=threading.Event()
         class Stream:
             def __init__(self):self.packets=[];self.step=0;self.timeout=1;self.closed=False
@@ -110,11 +113,12 @@ class RunnerTests(unittest.TestCase):
             stack.enter_context(patch.object(runner,'NonceSearch',Search))
             stack.enter_context(patch.object(runner,'prepare_share',side_effect=proof))
             stack.enter_context(patch('sys.argv',['mine_bounded','--host','synthetic.example','--port','9000',
-                '--login-file','unused','--module','unused','--report',str(report),'--seconds','3']+(['--commitment-module','unused-commitment']if gpu else [])))
+                '--login-file','unused','--module','unused','--report',str(report),'--seconds','3']+(['--commitment-module','unused-commitment']if gpu else [])+(['--cache-a']if cached else [])))
             self.assertEqual(runner.main(),0)
             self.assertEqual(gpu_base.call_count,int(gpu))
             data=json.loads(report.read_text())
             self.assertEqual(data['commitment_backend'],'gpu-constant-v039'if gpu else 'cpu-streaming')
+            self.assertEqual(data['scan_backend'],'cached-a-virtual-b-v040'if cached else 'validated-axis-production-virtual-v038')
             self.assertEqual(data['submitted_shares'],1);self.assertEqual(data['pool_accepted_shares'],1)
             self.assertTrue(data['worker']['joined']);self.assertEqual(data['work']['proofs_checked'],1)
             self.assertEqual(data['connection']['reports']['accepted'],1)

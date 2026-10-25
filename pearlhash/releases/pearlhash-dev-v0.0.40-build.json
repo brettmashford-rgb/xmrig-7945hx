@@ -1,0 +1,15 @@
+{
+  "version": "0.0.40",
+  "compiler": "NVRTC 12.9.86",
+  "architecture": "compute_120 / sm_120",
+  "source": "gpu/cached_a_tile_scan.cu",
+  "ptx_bytes": 603456,
+  "ptx_sha256": "99182c3f632651f7cb89832822f2a2e4de35ce926246fb194403ed77ae1a519d",
+  "byte_identical_rebuild": true,
+  "entry": "cached_a_virtual_b_scan",
+  "entry_block_barriers": 0,
+  "required_gpu_source_v33_manifest_sha256": "095c40640498ab466f2dfbdddeeda98527277450994f5d6140e219b091b2b2eb",
+  "host_tests": 48,
+  "gpu_checked": false,
+  "scope": "readable cached-A experiment; rig validation pending"
+}

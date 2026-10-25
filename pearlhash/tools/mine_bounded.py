@@ -28,6 +28,7 @@ from tools.production_scan import ProductionCandidateScanner
 from tools.wide_scan import wide_plan_for
 from tools.fast_plan import FastCandidateBackend,FastPlan
 from tools.gpu_base import prepare_gpu_base
+from tools.cached_a import CachedABackend
 
 
 def main():
@@ -38,6 +39,7 @@ def main():
     parser.add_argument('--commitment-module',type=Path,help='explicit GPU constant B commitment module')
     parser.add_argument('--report',type=Path,required=True)
     parser.add_argument('--seconds',type=int,default=300)
+    parser.add_argument('--cache-a',action='store_true',help='explicit cached-A scan path')
     parser.add_argument('--observe-target',action='store_true',help='receive one target, no GPU work or submission')
     args=parser.parse_args()
     if not 1<=args.seconds<=300:raise ValueError('bounded receive duration required')
@@ -92,7 +94,7 @@ def main():
                     require_current(job,current)
                     return job.generation
                 def backend_factory(profile,device,*,bound):
-                    return FastCandidateBackend(profile,device,plan=plan,bound=bound,
+                    return (CachedABackend if args.cache_a else FastCandidateBackend)(profile,device,plan=plan,bound=bound,
                         current_generation=generation,on_close=backend_reports.append)
                 try:
                     plan=FastPlan.from_job(job)
@@ -141,8 +143,8 @@ def main():
         print(f'Live target: {job.share_bound.bit_length()} scaled bits; mean {expected:.6g} tiles per candidate under uniform-digest model.',flush=True)
         if args.observe_target:stop.set()
         else:worker.publish(job)
-    receiver=PoolReceiver(session,args.host,args.port,saved_wallet(args.login_file),'5060-independent-v039',
-                          agent='pearlhash-independent/0.0.39')
+    receiver=PoolReceiver(session,args.host,args.port,saved_wallet(args.login_file),'5060-independent-v040',
+                          agent='pearlhash-independent/0.0.40')
     worker=LatestJobWorker(session,process,lambda job,result:None,stop=stop)
     fd=os.open(args.report,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
     beat=threading.Thread(target=heartbeat,name='pearlhash-progress',daemon=True)
@@ -165,7 +167,7 @@ def main():
         stats=gate.stats()
         report={'complete':error is None,'receiver':asdict(received)if received else None,
                 'worker':worker.stats(),'work':work,'connection':stats,'error':error,
-                'telemetry':telemetry.snapshot(),'scan_backend':'validated-axis-production-virtual-v038',
+                'telemetry':telemetry.snapshot(),'scan_backend':'cached-a-virtual-b-v040'if args.cache_a else 'validated-axis-production-virtual-v038',
                 'backend_lifecycle':backend_reports,
                 'commitment_backend':'gpu-constant-v039'if args.commitment_module else 'cpu-streaming',
                 'submitted_shares':stats['sent'],'pool_accepted_shares':stats['accepted'],
