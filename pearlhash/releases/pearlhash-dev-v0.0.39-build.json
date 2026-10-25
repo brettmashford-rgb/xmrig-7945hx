@@ -1,0 +1,17 @@
+{
+  "version": "0.0.39",
+  "compiler": "NVRTC 12.9.86",
+  "architecture": "compute_120 / sm_120",
+  "source": "gpu/constant_merkle.cu",
+  "ptx_bytes": 59845,
+  "ptx_sha256": "e0da70dfb6336ffb0c99b969ecc3a258669d607f4705ccac9e9948f3c91aa595",
+  "byte_identical_rebuild": true,
+  "entry_points": [
+    "constant_merkle_leaves",
+    "constant_merkle_parents"
+  ],
+  "block_barriers": 0,
+  "host_tests": 42,
+  "gpu_checked": false,
+  "scope": "readable constant commitment PTX; rig validation pending"
+}

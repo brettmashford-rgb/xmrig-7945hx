@@ -1,0 +1,90 @@
+{
+  "version": "0.0.39-source-ptx",
+  "distribution": "independent GPU constant B commitment with mandatory CPU-reference proof preflight",
+  "files": [
+    {
+      "path": "gpu/constant_merkle_core.h",
+      "repository_path": "pearlhash/gpu/constant_merkle_core.h",
+      "bytes": 1767,
+      "sha256": "5e8631c795dde0df539af1cb3f66dfceefd823609f9508050a9bc7950de8b850"
+    },
+    {
+      "path": "gpu/constant_merkle.cu",
+      "repository_path": "pearlhash/gpu/constant_merkle.cu",
+      "bytes": 767,
+      "sha256": "948b49cd2f91bb5974915c2b937762fda794164ec49ac415323e79df20b35004"
+    },
+    {
+      "path": "gpu/keyed64.h",
+      "repository_path": "pearlhash/gpu/keyed64.h",
+      "bytes": 2385,
+      "sha256": "83e9c85660360a752a9d2e399f18620496fa2859f8e0575a4e09a27ee223adb6"
+    },
+    {
+      "path": "tools/gpu_constant_merkle.py",
+      "repository_path": "pearlhash/tools/gpu_constant_merkle.py",
+      "bytes": 4672,
+      "sha256": "a9a3a80a5979416a674ced35860b08df1e6d9fd474d20929fcd173fc7f4f7dd6"
+    },
+    {
+      "path": "tools/gpu_base.py",
+      "repository_path": "pearlhash/tools/gpu_base.py",
+      "bytes": 620,
+      "sha256": "7d201a076fd3fe8affce4e6c8b81ab1c31e87bfe93b239b5443ec93ee68a7f1f"
+    },
+    {
+      "path": "tools/check_gpu_base.py",
+      "repository_path": "pearlhash/tools/check_gpu_base.py",
+      "bytes": 5449,
+      "sha256": "ff7ae60ef5648ac90a083665391bdd2c47dd40a23b4011c9efeb81cf9cbee254"
+    },
+    {
+      "path": "tools/mine_bounded.py",
+      "repository_path": "pearlhash/tools/mine_bounded.py",
+      "bytes": 11759,
+      "sha256": "56dc3a6b808b10781a5a7d1acfe9ab9794bc5accb97bbe6d4b03b9075db2d9f9"
+    },
+    {
+      "path": "tools/build_warp_ptx.py",
+      "repository_path": "pearlhash/tools/build_warp_ptx.py",
+      "bytes": 3336,
+      "sha256": "8d760f608e16beb4d2cf4128811b99b889a07032792849688f9d59ae482f9a5f"
+    },
+    {
+      "path": "tests/test_gpu_constant_merkle.py",
+      "repository_path": "pearlhash/tests/test_gpu_constant_merkle.py",
+      "bytes": 6918,
+      "sha256": "f0454ce9e7b6721b27aa3b52b452ca24520da12886e9e2ad864952f810723d11"
+    },
+    {
+      "path": "tests/test_gpu_base.py",
+      "repository_path": "pearlhash/tests/test_gpu_base.py",
+      "bytes": 2009,
+      "sha256": "44d55056a4471e8d71ebb709c35183297092d95b073aad61e0050509f02b2c48"
+    },
+    {
+      "path": "tests/test_bounded_miner.py",
+      "repository_path": "pearlhash/tests/test_bounded_miner.py",
+      "bytes": 7843,
+      "sha256": "61fdc09c22f525271b1e43a37290e2f330bf8b6354f5b2ac46792a9c787aad4e"
+    },
+    {
+      "path": "docs/v039.md",
+      "repository_path": "pearlhash/docs/v039.md",
+      "bytes": 3773,
+      "sha256": "ec8995411736e78bbb352856ea66540284383f6d678e14d455a723622673f70d"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.39-merkle-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.39-merkle-sm120.ptx",
+      "bytes": 59845,
+      "sha256": "e0da70dfb6336ffb0c99b969ecc3a258669d607f4705ccac9e9948f3c91aa595"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.39-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.39-build.json",
+      "bytes": 500,
+      "sha256": "ebd3c8fb4c5ab6b1624119eb2d07db66d870637a34f2e1a6376eda62531f03ba"
+    }
+  ]
+}

@@ -27,6 +27,7 @@ from tools.check_live_job import saved_wallet
 from tools.production_scan import ProductionCandidateScanner
 from tools.wide_scan import wide_plan_for
 from tools.fast_plan import FastCandidateBackend,FastPlan
+from tools.gpu_base import prepare_gpu_base
 
 
 def main():
@@ -34,6 +35,7 @@ def main():
     parser.add_argument('--host',required=True);parser.add_argument('--port',type=int,required=True)
     parser.add_argument('--login-file',type=Path,required=True)
     parser.add_argument('--module',type=Path,required=True)
+    parser.add_argument('--commitment-module',type=Path,help='explicit GPU constant B commitment module')
     parser.add_argument('--report',type=Path,required=True)
     parser.add_argument('--seconds',type=int,default=300)
     parser.add_argument('--observe-target',action='store_true',help='receive one target, no GPU work or submission')
@@ -64,14 +66,15 @@ def main():
         gate.report_info(rate,'PearlHash independent GPU')
         last_report[0]=now
     def process(job,current):
-        progress('Live job: preparing the production B commitment on CPU.')
+        progress('Live job: preparing the production B commitment on '+('GPU.'if args.commitment_module else 'CPU.'))
         base_started=time.monotonic()
         base=base_cache[0]
         reused=base is not None and (base.job_key,base.n,base.k)==(job.job_key,p.n,p.k)
         telemetry.prepared(job,base_reused=reused)
         try:
             if not reused:
-                base=prepare_base(job,current);base_cache[0]=base
+                base=(prepare_gpu_base(job,current,args.commitment_module)if args.commitment_module else prepare_base(job,current))
+                base_cache[0]=base
         finally:telemetry.seconds(job,'base',time.monotonic()-base_started)
         require_current(job,current)
         device=ProductionCandidateScanner()
@@ -138,8 +141,8 @@ def main():
         print(f'Live target: {job.share_bound.bit_length()} scaled bits; mean {expected:.6g} tiles per candidate under uniform-digest model.',flush=True)
         if args.observe_target:stop.set()
         else:worker.publish(job)
-    receiver=PoolReceiver(session,args.host,args.port,saved_wallet(args.login_file),'5060-independent-v038',
-                          agent='pearlhash-independent/0.0.38')
+    receiver=PoolReceiver(session,args.host,args.port,saved_wallet(args.login_file),'5060-independent-v039',
+                          agent='pearlhash-independent/0.0.39')
     worker=LatestJobWorker(session,process,lambda job,result:None,stop=stop)
     fd=os.open(args.report,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
     beat=threading.Thread(target=heartbeat,name='pearlhash-progress',daemon=True)
@@ -164,6 +167,7 @@ def main():
                 'worker':worker.stats(),'work':work,'connection':stats,'error':error,
                 'telemetry':telemetry.snapshot(),'scan_backend':'validated-axis-production-virtual-v038',
                 'backend_lifecycle':backend_reports,
+                'commitment_backend':'gpu-constant-v039'if args.commitment_module else 'cpu-streaming',
                 'submitted_shares':stats['sent'],'pool_accepted_shares':stats['accepted'],
                 'extranonce_worker_role_verified':stats['accepted']>0,
                 'reported_rate_unit':'completed scalar dot-product terms per second, whole attempt elapsed',
