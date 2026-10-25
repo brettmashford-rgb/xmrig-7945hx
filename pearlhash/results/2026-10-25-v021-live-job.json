@@ -1,0 +1,14 @@
+{
+  "version": "0.0.21-source",
+  "source_commit": "21314da6a396507fdc5ce854915ae98475e0f833",
+  "evidence": "user-supplied completed Termius output, 2026-10-25",
+  "source_files_checked": 7,
+  "fresh_login_extranonce_notify": "passed",
+  "current_job": "passed",
+  "scaled_target_bits": 224,
+  "connection_closure_invalidation": "passed",
+  "gpu_executed": false,
+  "proof_verifier_executed": false,
+  "submitted_shares": 0,
+  "scope": "live reception/state only; no custom mining or accepted share"
+}

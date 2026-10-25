@@ -258,7 +258,25 @@ be quick; an eventual GPU worker needs its own execution thread/queue.
 
 Five receiver CPU tests and the prior five session tests pass using controlled
 socket objects, with no development-host connection. The source-package tests
-and redacted-report CLI smoke also pass. Actual live pool integration is pending
-on the rig. The runner uses the locally saved wallet, a separate diagnostic
+and redacted-report CLI smoke also pass. Actual live pool reception now passes
+on the rig: fresh login/extranonce/notify produced a current job with a 224-bit
+scaled target; disconnect invalidated it. The runner uses the locally saved wallet, a separate diagnostic
 worker name and the explicit verified V3/rank128 profile; it stops at the first
 ready job or after the bounded receive window. No GPU, proof or share submission.
+
+
+## Job-driven search engine (v0.0.22)
+
+The new engine takes a PoolJob snapshot, its explicit matrix profile and its
+share bound through nonce commitments, GPU candidate search and independent
+proof construction. Matrix dimensions and target come from the job instead of
+the earlier synthetic test constants. Work checks the session generation before
+and after expensive stages and range dispatch. An in-flight native commitment
+call is not interruptible; its result is discarded if the job changed.
+
+Worker and miner nonces are explicit caller inputs. No mapping from assigned
+extranonce is inferred. This is an engine component, without a socket worker
+thread, submission method or automatic service replacement. Four new CPU gate/
+binding tests pass, and a complete CPU-emulated synthetic proof path passes
+locally. The new 160x192 V3 session-to-GPU-to-official-verifier integration is
+pending on the rig. It reuses the validated PTX module and CPU library.

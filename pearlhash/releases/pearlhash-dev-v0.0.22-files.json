@@ -1,0 +1,57 @@
+{
+  "version": "0.0.22-source",
+  "distribution": "UTF-8 job-driven search engine; reuse existing PTX and CPU library",
+  "required_v17_manifest_sha256": "2ab175ecf311bb7ab7aa35fbe31fbae547740dac8b6069602957cd8c2b10a183",
+  "required_cpu_library_sha256": "1b0127307179b124178bdbd50c86b587984b42cc04390cdc73bf8fcb8cf284a9",
+  "required_ptx_sha256": "1265a107fc0d98250179ab3c8097c7811f857a3d29ca3f0e296cda01cf62d704",
+  "files": [
+    {
+      "path": "pool/search.py",
+      "repository_path": "pearlhash/pool/search.py",
+      "bytes": 5988,
+      "sha256": "7bcc06da6f77ee271b88e03769fe45508a35870cd136edab3b9316673a5e73c3"
+    },
+    {
+      "path": "tools/check_job_search.py",
+      "repository_path": "pearlhash/tools/check_job_search.py",
+      "bytes": 5924,
+      "sha256": "ca626a6d02cdeb736de158bd17bdb721c1220901dcbbd12102cb5286fbb6ebd7"
+    },
+    {
+      "path": "tests/test_job_search.py",
+      "repository_path": "pearlhash/tests/test_job_search.py",
+      "bytes": 4349,
+      "sha256": "ee0f6890e57b3bcadcfce92efc7e8ba6bcf0b2ab5cb50e0048a88b2f6987d644"
+    },
+    {
+      "path": "pool/__init__.py",
+      "repository_path": "pearlhash/pool/__init__.py",
+      "bytes": 67,
+      "sha256": "354f4108c5dd2929ba200b1d70608b69f14ef5b0b7deb0eb4e661b06d2aed53e"
+    },
+    {
+      "path": "pool/job.py",
+      "repository_path": "pearlhash/pool/job.py",
+      "bytes": 2454,
+      "sha256": "c77435a07813c3d32f6869ca30c818b3171cae9093048aa3fd9c1fdb73681447"
+    },
+    {
+      "path": "pool/session.py",
+      "repository_path": "pearlhash/pool/session.py",
+      "bytes": 7421,
+      "sha256": "674a91b140662d1c3c69a867ea6308208e13f1b5343ed49b2ff30a6bd6f959db"
+    },
+    {
+      "path": "tools/candidate_scan.py",
+      "repository_path": "pearlhash/tools/candidate_scan.py",
+      "bytes": 6643,
+      "sha256": "3b8dcd3dcb557381ad0945ea6d0087e391677426fb3f987118353e04d1a35b9d"
+    },
+    {
+      "path": "tools/global_range.py",
+      "repository_path": "pearlhash/tools/global_range.py",
+      "bytes": 4179,
+      "sha256": "5b9275429ef2ee088648f80814caecdc6be8281eedebedc771274cf9423308e2"
+    }
+  ]
+}

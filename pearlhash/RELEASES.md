@@ -1,11 +1,26 @@
 # PearlHash development checkpoints
 
+## v0.0.22-job-driven-search
+
+Eight UTF-8 source files; no new binary or compiler. New job-driven engine uses
+PoolJob profile/target, explicit caller-supplied nonces, streamed commitments,
+the existing candidate-only GPU backend and independent PlainProof construction.
+Native preparation and GPU results are gated by current job identity/generation.
+Target replacement rejects the old preparation/search/proof stages.
+
+Four new CPU tests and a CPU-emulated fresh synthetic path pass locally.
+The new 160x192 V3 synthetic-session integration awaits GPU/official CPU verifier
+execution on the rig. No network, service changes or share submission in this
+check. Full production nonce completion, live nonce mapping and accepted custom
+shares remain unvalidated.
+
+
 ## v0.0.21-live-job-receiver
 
 Distribution: [source-file manifest](releases/pearlhash-dev-v0.0.21-files.json).
 Seven UTF-8 Python files include the pool package and existing transport codec;
 reuse the verified v0.0.17 CPU sources and v0.0.16 CPU library. No new GPU binary,
-compiler/toolkit or opaque archive. No live test has yet run on the rig.
+compiler/toolkit or opaque archive. Live reception now passes on the rig.
 
 One explicitly configured TCP endpoint, one login, bounded framed reads, current
 job callbacks and guaranteed session invalidation at connection end. There is
@@ -23,8 +38,8 @@ EOF all exercise closure/stale-work invalidation. Isolated seven-file package
 checks pass. A mocked-socket CLI/report smoke succeeds without exposing its
 synthetic wallet. These are not real network or pool verdicts.
 
-The next rig check makes one login-only connection to pool.pearlhash.xyz:9000
-and exercises the new state handler with fresh messages. No GPU, commitments,
+The rig check made one login-only connection to pool.pearlhash.xyz:9000
+and passed with fresh messages and a 224-bit scaled target. No GPU, commitments,
 proof verification, mined/submitted share or service/clock changes. Extranonce's
 compact-submit role and broader protocol rules still require verification.
 

@@ -703,3 +703,26 @@ counts/generation and target bit width. It exits on the first ready snapshot or
 its bounded receive window, then checks no active work remains after closure.
 Actual pool execution of this new receiver is pending on the rig. Login/job
 reception is not a submitted/accepted share, proof or mining performance result.
+
+
+### v0.0.21 rig reception result
+
+The completed user-provided output confirms seven source checksums, fresh pool
+login/extranonce/notify, current job creation with a 224-bit scaled target, and
+active-work invalidation after disconnect. No GPU work, proof or submitted share.
+
+### v0.0.22 job-driven engine
+
+Four CPU tests cover explicit dimensions/nonces, incompatible base rejection,
+job replacement during native preparation, replacement during GPU dispatch,
+search-window coordinates, actual job target propagation and backend cleanup
+when cache setup becomes stale. The local CPU-emulated 160x192 V3 synthetic
+session completes independent proof construction and three stale-stage gates.
+No local official verifier or GPU execution is claimed. The rig runner will
+exercise the same new engine through the validated PTX and existing official
+CPU verifier, with fresh small synthetic inputs and no network/submission.
+
+Native commitments are synchronous and cannot cancel mid-call. Job checks
+discard stale output between stages; the receiver and engine are not yet joined
+by a live worker thread. Caller-supplied worker nonce does not establish the
+assigned-extranonce/compact-submit mapping.
