@@ -19,7 +19,7 @@ BASE = Path(__file__).resolve().parents[1]
 if str(BASE) not in sys.path:
     sys.path.insert(0, str(BASE))
 from pool.receiver import PoolReceiver
-from pool.search import prepare_base, prepare_nonce, search_nonce, plan_for
+from pool.search import prepare_base, prepare_nonce, NonceSearch, plan_for
 from pool.session import MiningProfile, PoolSession
 from pool.worker import LatestJobWorker
 from reference.patterns import PeriodicPattern
@@ -35,9 +35,10 @@ def main():
     parser.add_argument('--module', type=Path, required=True)
     parser.add_argument('--report', type=Path, required=True)
     parser.add_argument('--seconds', type=int, default=180)
-    parser.add_argument('--tiles', type=int, default=16)
+    parser.add_argument('--tiles', type=int, default=4096)
+    parser.add_argument('--window', type=int, default=512)
     args = parser.parse_args()
-    if not 1 <= args.seconds <= 300 or not 1 <= args.tiles <= 64:
+    if not 1 <= args.seconds <= 300 or not 1 <= args.tiles <= 65536 or not 1 <= args.window <= 4096:
         raise ValueError('receive window or tile cap outside bounded experiment')
     rows = PeriodicPattern(bytes.fromhex('000103040000'))
     cols = PeriodicPattern(bytes.fromhex('000103010103'))
@@ -73,11 +74,23 @@ def main():
             progress('Starting this worker thread\'s own GPU context and bounded production tile search.')
             device.start(args.module)
             scan_started = time.monotonic()
-            found, cursor = search_nonce(context, device, current, stop=args.tiles)
+            segments = []
+            with NonceSearch(context, device, current) as search:
+                cache_seconds = time.monotonic()-scan_started
+                found = None
+                while search.cursor.next_tile < args.tiles and found is None:
+                    first = search.cursor.next_tile
+                    window_started = time.monotonic()
+                    found, cursor = search.advance(min(args.window, args.tiles-first))
+                    elapsed = time.monotonic()-window_started
+                    segments.append({'start': first, 'stop': cursor.next_tile,
+                                     'seconds': round(elapsed, 6)})
+                    progress(f'Search progress: {cursor.next_tile}/{args.tiles} tiles; one nonce cache retained.')
             return {'generation': job.generation, 'scaled_target_bits': job.share_bound.bit_length(),
                     'production_domain_tiles': plan_for(job).count, 'tiles_scanned': cursor.next_tile,
                     'candidate_found': found is not None, 'cpu_checked_candidates': device.verified_tiles,
-                    'gpu_dispatches': device.dispatches, 'base_seconds': round(base_seconds, 3),
+                    'gpu_dispatches': device.dispatches, 'nonce_caches_created': 1,
+                    'cache_seconds': round(cache_seconds, 6), 'search_windows': segments, 'base_seconds': round(base_seconds, 3),
                     'nonce_seconds': round(nonce_seconds, 3),
                     'bounded_scan_seconds': round(time.monotonic()-scan_started, 3)}
         finally:
@@ -127,6 +140,8 @@ def main():
     result = results[0]
     print('PASS: receiver closed; worker joined; active job invalidated', flush=True)
     print(f'Timings: B commitment {result["base_seconds"]}s; nonce {result["nonce_seconds"]}s; bounded scan {result["bounded_scan_seconds"]}s', flush=True)
+    print(f'GPU work: {result["gpu_dispatches"]} batches; one nonce cache; {len(result["search_windows"])} completed search windows.', flush=True)
+    print(f'Nonce cache setup: {result["cache_seconds"]}s. Window timings saved locally.', flush=True)
     print('No share submitted. No full-nonce or throughput claim. Miners and clocks unchanged.', flush=True)
     return 0
 

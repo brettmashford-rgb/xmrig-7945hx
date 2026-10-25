@@ -1,0 +1,18 @@
+{
+  "version": "0.0.23-source",
+  "source_commit": "be914511e8407023cb143c5744b9e84d26a6cb04",
+  "evidence": "user-supplied completed Termius output, 2026-10-25",
+  "source_files_checked": 12,
+  "gpu": "RTX 5060 sm_120",
+  "fresh_live_job_production_search": "passed",
+  "actual_received_target_retained": true,
+  "tiles_scanned": 16,
+  "stage_seconds": {
+    "base": 29.404,
+    "nonce": 0.583,
+    "bounded_scan": 0.074
+  },
+  "receiver_closed_worker_joined_job_invalidated": "passed",
+  "submitted_shares": 0,
+  "scope": "bounded live production search under existing concurrent mining; not full nonce or throughput measurement"
+}

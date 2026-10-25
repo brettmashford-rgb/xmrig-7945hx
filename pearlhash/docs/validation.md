@@ -751,3 +751,27 @@ component wall times, not throughput. Native stages are finite but not mid-call
 cancellable, so shutdown may outlast the receive deadline. No proof generation
 or submit path. Provisional assigned-extranonce use does not prove the live
 compact-submit nonce mapping. Live GPU execution remains pending.
+
+
+### v0.0.23 rig result
+
+Completed user output confirms fresh pool job -> production commitments/seeds ->
+16 GPU tiles at the actual received target, then receiver closure, worker join
+and active-job invalidation. Component wall times: B commitment 29.404s, nonce
+preparation 0.583s, bounded scan 0.074s. Existing miners were running; these
+measurements do not establish full-nonce throughput. No share was submitted.
+
+### v0.0.24 persistent cache/window checks
+
+Six CPU tests cover exact cursor continuity across windows, one backend creation
+and idempotent close, overflow retry without cache recreation/duplicate hit,
+replacement between windows, dispatch failure preserving the last committed
+cursor, setup-time replacement cleanup, and clamping/empty windows at the
+domain end. Four prior engine tests still pass. Isolated package tests pass.
+A mocked CLI/report smoke checks eight windows, 64 dispatches, one cache and
+joined shutdown/redaction; this is not real network/GPU execution.
+
+The new rig runner uses 4,096 production tiles in eight windows, preserving
+one live-job nonce cache and the actual target. Cache setup and each window
+are timed separately. No proof rebuild or share submission; existing miners
+and clocks stay unchanged. Actual multi-window execution awaits the rig.

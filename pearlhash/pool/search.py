@@ -84,31 +84,79 @@ def prepare_nonce(job, base, worker, miner, current):
     return Nonce(job, worker, miner, base, opening.root, profile)
 
 
+class NonceSearch:
+    """Resumable windows over one nonce; owns one backend/cache until close.
+
+    The CUDA context belongs to the caller. This object closes only its own
+    nonce cache. Window boundaries retain the committed global tile cursor;
+    stale jobs or dispatch failures close the cache and cannot resume it.
+    """
+    def __init__(self, context, device, current, *, start=0, backend_factory=CandidateBackend):
+        self.context = context
+        self.job = context.job
+        self.current = current
+        self.plan = plan_for(self.job)
+        self.hit = None
+        self.closed = False
+        self.backend = None
+        require_current(self.job, current)
+        if type(start) is not int or not 0 <= start <= self.plan.count:
+            raise ValueError('invalid search start')
+        self.cursor = RangeCursor(self.job.generation, start, start)
+        try:
+            self.backend = backend_factory(context.profile, device, bound=self.job.share_bound)
+            require_current(self.job, current)
+        except BaseException:
+            self.close()
+            raise
+
+    def advance(self, tiles):
+        if self.closed:
+            raise ValueError('nonce search is closed')
+        if type(tiles) is not int or tiles < 0:
+            raise ValueError('invalid search window size')
+        if self.hit is not None:
+            raise ValueError('nonce search already found a candidate')
+        try:
+            require_current(self.job, self.current)
+            self.cursor.stop = min(self.plan.count, self.cursor.next_tile + tiles)
+            def generation():
+                return self.job.generation if self.hit is None and self.current(self.job) else self.job.generation ^ 1
+            def deliver(records):
+                require_current(self.job, self.current)
+                if records and self.hit is None:
+                    tile, digest, gen = records[0]
+                    self.hit = Hit(gen, tile, digest)
+            run_range(self.plan, self.cursor, self.backend, generation, deliver)
+            require_current(self.job, self.current)
+            return self.hit, self.cursor
+        except BaseException:
+            self.close()
+            raise
+
+    def close(self):
+        if not self.closed:
+            self.closed = True
+            if self.backend is not None:
+                self.backend.close()
+
+    def __enter__(self):
+        if self.closed:
+            raise ValueError('nonce search is closed')
+        return self
+
+    def __exit__(self, *args):
+        self.close()
+
+
 def search_nonce(context, device, current, *, start=0, stop=None, backend_factory=CandidateBackend):
-    job = context.job
-    require_current(job, current)
-    plan = plan_for(job)
-    stop = plan.count if stop is None else stop
-    cursor = RangeCursor(job.generation, start, stop)
-    if (any(type(v) is not int for v in (start, stop)) or not 0 <= start <= stop <= plan.count):
+    require_current(context.job, current)
+    total = plan_for(context.job).count
+    stop = total if stop is None else stop
+    if any(type(v) is not int for v in (start, stop)) or not 0 <= start <= stop <= total:
         raise ValueError('invalid search window')
-    found = []
-    def generation():
-        return job.generation if not found and current(job) else job.generation ^ 1
-    def deliver(records):
-        require_current(job, current)
-        if records and not found:
-            tile, digest, gen = records[0]
-            found.append(Hit(gen, tile, digest))
-    backend = backend_factory(context.profile, device, bound=job.share_bound)
-    try:
-        # A replacement during cache setup must not launch a stale batch.
-        require_current(job, current)
-        run_range(plan, cursor, backend, generation, deliver)
-        require_current(job, current)
-    finally:
-        backend.close()
-    return (found[0] if found else None), cursor
+    with NonceSearch(context, device, current, start=start, backend_factory=backend_factory) as search:
+        return search.advance(stop-start)
 
 
 def build_proof(context, hit, current):

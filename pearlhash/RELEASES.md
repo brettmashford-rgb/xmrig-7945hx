@@ -1,5 +1,19 @@
 # PearlHash development checkpoints
 
+## v0.0.24-persistent-nonce-search
+
+Twelve UTF-8 source files; unchanged GPU module and CPU library. NonceSearch
+retains one candidate backend/cache across windows, preserving committed global
+cursors and overflow retry behavior. Stale/error paths close the owned cache.
+Six new CPU tests, four prior engine tests and a mocked eight-window CLI pass.
+The isolated package tests also pass.
+
+Next live check: 4,096 tiles, eight 512-tile windows, one nonce cache, actual
+received target. Separate cache/window wall times will identify the next search
+bottleneck. No new proof test, share submission, service or clock change. Live
+multi-window GPU execution is pending; no full nonce or throughput claim.
+
+
 ## v0.0.23-live-search-worker
 
 Twelve UTF-8 source files; reuse the existing PTX and CPU library. Single search
@@ -12,7 +26,9 @@ at the actual received target. One pool connection, 180-second receive window,
 with possible extra shutdown wait for an in-flight native commitment. No proof
 build, share submission or service/clock changes. Assigned extranonce is a
 provisional worker-nonce input for this experiment, not a verified submit rule.
-Live execution is pending; no full nonce, accepted custom share or speed claim.
+Live execution now passes: fresh production commitments/seeds and 16 GPU tiles
+at the actual received target, followed by joined shutdown. No full nonce,
+accepted custom share or speed claim.
 
 
 ## v0.0.22-job-driven-search

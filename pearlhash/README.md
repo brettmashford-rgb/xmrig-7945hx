@@ -303,5 +303,25 @@ Assigned extranonce is provisionally supplied as worker nonce only for this
 no-submit experiment; its required compact-submit mapping remains unproven.
 No proof construction, submitted share, miner replacement or clock changes.
 Five deterministic concurrency tests, the five receiver tests and a mocked CLI
-lifecycle/redaction smoke pass locally. Actual live GPU integration awaits the
-rig result.
+lifecycle/redaction smoke pass locally. Actual live GPU integration now passes on the rig: production commitments/
+seeds, 16 tiles at the received target, and joined shutdown. Observed wall times
+were 29.404s B preparation, 0.583s nonce preparation and 0.074s bounded scan;
+these are component times under concurrent existing mining, not throughput.
+
+
+## Persistent nonce search (v0.0.24)
+
+NonceSearch owns one candidate backend/cache across multiple pausable search
+windows. Its cursor records committed global tile IDs, so the next window
+continues without repeating tiles or regenerating the nonce noise tables.
+Overflow retries keep the same cache. Job replacement, setup/dispatch failures
+and explicit close release owned resources; the caller retains its CUDA context.
+The existing search_nonce entry point now uses this implementation.
+
+Six new CPU lifecycle/cursor tests and four prior job-engine tests pass. The
+isolated source package and mocked eight-window CLI/report checks pass. The
+new live runner defaults to 4,096 tiles in eight 512-tile windows, using the
+actual target and one nonce cache. It records cache setup and separate window
+wall times. The unchanged PTX and CPU library are reused. GPU execution of this
+new multi-window path awaits the rig; no full nonce, proof/submission or speed
+claim. The assigned-extranonce/submit-worker mapping remains provisional.
