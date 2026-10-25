@@ -26,7 +26,7 @@ from reference.patterns import PeriodicPattern
 from tools.check_live_job import saved_wallet
 from tools.production_scan import ProductionCandidateScanner
 from tools.wide_scan import wide_plan_for
-from tools.prepared_backend import PreparedCandidateBackend
+from tools.fast_plan import FastCandidateBackend,FastPlan
 
 
 def main():
@@ -89,10 +89,11 @@ def main():
                     require_current(job,current)
                     return job.generation
                 def backend_factory(profile,device,*,bound):
-                    return PreparedCandidateBackend(profile,device,bound=bound,
+                    return FastCandidateBackend(profile,device,plan=plan,bound=bound,
                         current_generation=generation,on_close=backend_reports.append)
                 try:
-                    search=NonceSearch(context,device,current,backend_factory=backend_factory,plan_factory=wide_plan_for)
+                    plan=FastPlan.from_job(job)
+                    search=NonceSearch(context,device,current,backend_factory=backend_factory,plan_factory=lambda job:plan)
                 finally:telemetry.seconds(job,'cache',time.monotonic()-cache_started)
                 with search:
                     progress('Searching the live production domain; actual pool target retained.')
@@ -137,8 +138,8 @@ def main():
         print(f'Live target: {job.share_bound.bit_length()} scaled bits; mean {expected:.6g} tiles per candidate under uniform-digest model.',flush=True)
         if args.observe_target:stop.set()
         else:worker.publish(job)
-    receiver=PoolReceiver(session,args.host,args.port,saved_wallet(args.login_file),'5060-independent-v036',
-                          agent='pearlhash-independent/0.0.36')
+    receiver=PoolReceiver(session,args.host,args.port,saved_wallet(args.login_file),'5060-independent-v038',
+                          agent='pearlhash-independent/0.0.38')
     worker=LatestJobWorker(session,process,lambda job,result:None,stop=stop)
     fd=os.open(args.report,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
     beat=threading.Thread(target=heartbeat,name='pearlhash-progress',daemon=True)
@@ -161,7 +162,7 @@ def main():
         stats=gate.stats()
         report={'complete':error is None,'receiver':asdict(received)if received else None,
                 'worker':worker.stats(),'work':work,'connection':stats,'error':error,
-                'telemetry':telemetry.snapshot(),'scan_backend':'prepared-production-virtual-v036',
+                'telemetry':telemetry.snapshot(),'scan_backend':'validated-axis-production-virtual-v038',
                 'backend_lifecycle':backend_reports,
                 'submitted_shares':stats['sent'],'pool_accepted_shares':stats['accepted'],
                 'extranonce_worker_role_verified':stats['accepted']>0,

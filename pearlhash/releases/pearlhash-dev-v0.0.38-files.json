@@ -1,0 +1,36 @@
+{
+  "version": "0.0.38-source",
+  "distribution": "canonical-axis planning with fresh-proof preflight and bounded live worker",
+  "files": [
+    {
+      "path": "tools/fast_plan.py",
+      "repository_path": "pearlhash/tools/fast_plan.py",
+      "bytes": 8522,
+      "sha256": "f4625335512565aba9c0ae4943f742584b0732e6874af5ef31587c69d1d3d9c4"
+    },
+    {
+      "path": "tools/check_fast_job.py",
+      "repository_path": "pearlhash/tools/check_fast_job.py",
+      "bytes": 8712,
+      "sha256": "018ef6521209e19a40c5d38b113e7c7d54143a41be4b5ed68e50bcee3635813c"
+    },
+    {
+      "path": "tools/mine_bounded.py",
+      "repository_path": "pearlhash/tools/mine_bounded.py",
+      "bytes": 11362,
+      "sha256": "c94e3e4e3165976375063d2c92b113b1bdef0047148a09e532076f77a0ba6378"
+    },
+    {
+      "path": "tests/test_fast_plan.py",
+      "repository_path": "pearlhash/tests/test_fast_plan.py",
+      "bytes": 6216,
+      "sha256": "0f5de84b8b2758fda821e449abfc17858a5bbfc30f079816121eecbc32d5ac2d"
+    },
+    {
+      "path": "docs/v038.md",
+      "repository_path": "pearlhash/docs/v038.md",
+      "bytes": 3793,
+      "sha256": "e190d9a162ef339b42c9caf06f478c369f153509a454ee064fb58cb3bca4072f"
+    }
+  ]
+}
