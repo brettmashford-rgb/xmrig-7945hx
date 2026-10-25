@@ -418,6 +418,33 @@ The rig diagnostic checks first/last production-domain indices, nonce tails,
 reversed maps, extreme tail values, full/partial grids, exact transcript/digest
 matching, target equality and queue overflow against independent CPU references.
 It then compares the validated general warp and specialised shared-cache
-kernels on the same production nonce/target. GPU correctness and improvement
-are pending. No share submission, proof test, service/clock change or overall
+kernels on the same production nonce/target. The real GPU run now passes all15 cases and the same-nonce comparison: warp
+0.246530s, specialised kernel0.141634s, cache excluded. No share submission, proof test, service/clock change or overall
 miner speed claim.
+
+
+## Compact-share component and status-schema inspection (v0.0.28)
+
+The new prepare_share component calls the existing independent proof builder
+to recheck candidate math, nonce binding, roots/seeds and Merkle openings before
+forming the observed compact-submit fields. Prepared parameters use explicit
+job dimensions/patterns and caller-supplied nonces; assigned-extranonce mapping
+is not inferred. No recorded existing-miner share is replayed.
+
+SubmissionGate is a one-connection component with a finite-timeout socket
+attachment, current-job check/write under the session lock, monotonic request
+IDs, pending limits and bounded recent/history ledgers. Only matching integer
+request IDs with a well-formed explicit positive response count as accepted.
+Unknown/duplicate replies cannot add credit; write failures invalidate the
+connection without automatic retry. An eventual receiver adapter must attach/
+detach the owned socket and feed responses; this is not yet wired into the live
+runner and has not sent a real custom share.
+
+Eight local CPU/socket tests pass, including actual independently constructed
+synthetic proof preparation, compact payload fields, stale gates, correlation,
+reject/error/disconnect cases and concurrent replacement versus a locked write.
+These use simulated sockets, not a pool. Two saved-status inspector tests and a
+real CLI smoke against synthetic JSON pass. The rig block only reads existing
+decoded report_info messages to establish status-report parameter structure;
+strings/credentials are redacted while numeric values/types are retained.
+No new capture, GPU test, pool connection or share submission in that inspection.

@@ -1,5 +1,19 @@
 # PearlHash development checkpoints
 
+## v0.0.28-compact-share-components
+
+Source-only compact-share preparation and same-connection submission gate,
+plus saved report_info schema inspector. No new GPU module/native library.
+Eight CPU/mock-socket tests, two inspector tests and synthetic inspector CLI
+smoke pass. The adapter to the live receiver is not implemented in this release;
+no actual custom share has been sent or accepted.
+
+The rig block installs source and reads already-saved decoded status messages,
+with credentials/string values redacted. No new capture, connection, GPU test,
+proof rebuild or service/clock change. Status-message schema remains pending
+that local inspection.
+
+
 ## v0.0.27-production-shared-cache
 
 Specialised 10x16/K32768/rank128/fill64 kernel, 26KiB warp-owned transposed
@@ -11,7 +25,9 @@ Three new CPU guard/selector tests, two prior warp host tests, isolated package
 and mocked correctness/comparison CLIs pass. Next rig check covers fifteen
 independent CPU transcript/digest/queue cases including first/last production
 indices and extreme tails, then a same-nonce warp-vs-specialised comparison.
-Actual GPU correctness/performance pending; no share or service/clock changes.
+Actual GPU correctness now passes all15 cases and same-nonce comparison:
+warp0.246530s versus specialised0.141634s, cache excluded. No submitted share
+or service/clock changes.
 
 
 ## v0.0.26-fix1-transcript-checker

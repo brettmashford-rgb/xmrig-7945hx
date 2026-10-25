@@ -1,0 +1,69 @@
+{
+  "version": "0.0.28-source",
+  "distribution": "source-only share/gate components and saved status inspector; live submission not enabled",
+  "required_v27_manifest_sha256": "92754526e52f4e12162fc86205cbdb5e1ef390558e3ef50b4957caa5efa6e8e7",
+  "required_v17_manifest_sha256": "2ab175ecf311bb7ab7aa35fbe31fbae547740dac8b6069602957cd8c2b10a183",
+  "required_cpu_library_sha256": "1b0127307179b124178bdbd50c86b587984b42cc04390cdc73bf8fcb8cf284a9",
+  "files": [
+    {
+      "path": "pool/submission.py",
+      "repository_path": "pearlhash/pool/submission.py",
+      "bytes": 7613,
+      "sha256": "ef91f57a7554e805672c0ed0f845c4f11fcd4d0669f3812a2efb9718878ff8a2"
+    },
+    {
+      "path": "tools/inspect_report_info.py",
+      "repository_path": "pearlhash/tools/inspect_report_info.py",
+      "bytes": 4871,
+      "sha256": "417fee4d75a872d3592dae51dba33a7f661d558bf95136bfdc6f250034fceb85"
+    },
+    {
+      "path": "tests/test_submission.py",
+      "repository_path": "pearlhash/tests/test_submission.py",
+      "bytes": 8231,
+      "sha256": "fc94c42b7beff9404e194b9e138c2b37357a6b60e141478f39373a9ba53886e0"
+    },
+    {
+      "path": "tests/test_report_info.py",
+      "repository_path": "pearlhash/tests/test_report_info.py",
+      "bytes": 1510,
+      "sha256": "e5288d9a2340732c1f9b2df652c0996a8346f891689fc27497236d5f0a4e5426"
+    },
+    {
+      "path": "pool/__init__.py",
+      "repository_path": "pearlhash/pool/__init__.py",
+      "bytes": 67,
+      "sha256": "354f4108c5dd2929ba200b1d70608b69f14ef5b0b7deb0eb4e661b06d2aed53e"
+    },
+    {
+      "path": "pool/job.py",
+      "repository_path": "pearlhash/pool/job.py",
+      "bytes": 2454,
+      "sha256": "c77435a07813c3d32f6869ca30c818b3171cae9093048aa3fd9c1fdb73681447"
+    },
+    {
+      "path": "pool/session.py",
+      "repository_path": "pearlhash/pool/session.py",
+      "bytes": 7421,
+      "sha256": "674a91b140662d1c3c69a867ea6308208e13f1b5343ed49b2ff30a6bd6f959db"
+    },
+    {
+      "path": "pool/search.py",
+      "repository_path": "pearlhash/pool/search.py",
+      "bytes": 7953,
+      "sha256": "b14bda47b5a4e3984a4c5f841274a4294a22a7fc85ed0f1bebced6e94bd86d04"
+    },
+    {
+      "path": "pool/receiver.py",
+      "repository_path": "pearlhash/pool/receiver.py",
+      "bytes": 4916,
+      "sha256": "bde0b88157b345ac9df09f728c74f6d983ca9179d6cd9d0887d1bdbfff424468"
+    },
+    {
+      "path": "pool/worker.py",
+      "repository_path": "pearlhash/pool/worker.py",
+      "bytes": 4234,
+      "sha256": "9c08a04f8ce6c784ff4a917b006bc8cce1d4111ee5131ad2ed1097017a8cabdd"
+    }
+  ]
+}

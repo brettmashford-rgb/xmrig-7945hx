@@ -1,0 +1,23 @@
+{
+  "version": "0.0.27-source-ptx",
+  "source_commit": "1cdc30c0a38eb4b9c4745ebb489e912d5b834d38",
+  "evidence": "user-supplied completed Termius output, 2026-10-25",
+  "source_files_checked": 30,
+  "gpu": "RTX 5060 sm_120",
+  "independent_cpu_transcript_digest_queue_cases_passed": 15,
+  "same_nonce_tiles": 4096,
+  "same_nonce_candidate_match": true,
+  "window_seconds_cache_excluded": {
+    "warp": 0.24653,
+    "production": 0.141634
+  },
+  "stage_seconds": {
+    "base": 29.325,
+    "nonce": 0.571,
+    "bounded_scan": 0.186,
+    "nonce_cache": 0.042893
+  },
+  "receiver_closed_worker_joined_job_invalidated": "passed",
+  "submitted_shares": 0,
+  "scope": "GPU component correctness and same-nonce timing under concurrent existing mining; no full nonce or miner throughput claim"
+}

@@ -898,3 +898,38 @@ grids, all-hit/miss/equality/mixed overflow cases against independent scalar
 CPU transcript/digest references. After that, the live comparison uses both
 kernels on the same fresh nonce/target. Correctness/performance pending; no
 proof build or share submission.
+
+
+### v0.0.27 rig result
+
+User output confirms all30 source/PTX checksums and all15 independent CPU/GPU
+production-cache cases, including first/last production-domain indices and
+reversed maps/extreme tails. Same-nonce 4096-tile result matches: warp0.246530s,
+production0.141634s, cache excluded. B29.325s, nonce0.571s, bounded scan0.186s
+including cache0.042893s. Receiver closure/join/invalidation pass. No pool share.
+
+### v0.0.28 compact share/gate and saved status inspector
+
+Eight CPU tests prepare a fresh synthetic CPU-emulated range candidate and
+independent proof, then check exact observed compact fields, immutable parameter
+copies, duplicate-send blocking, strict typed request-ID correlation, duplicate
+response handling, stale-send rejection, old correlated verdict after job
+replacement, failed-write invalidation/no retry, rejected/malformed/disconnected
+outcomes, finite socket timeout/pending/ID limits and candidate/profile mismatch
+rejection. A two-thread test proves replacement cannot interleave the session-
+locked socket write. All sockets are controlled local objects; simulated
+accepted replies are not actual pool acceptance evidence.
+
+PreparedShare is an internal trusted-runtime object; its dataclass constructor
+is not a security boundary against arbitrary Python code. Socket ownership and
+finite timeout remain the future receiver adapter's responsibility. The gate
+retains bounded pending/recent/history data and does not connect or reconnect.
+It is not attached to the live runner in this version. Live nonce mapping and
+custom share acceptance remain unvalidated.
+
+Two inspector tests cover numeric schema preservation and credential/nested
+string redaction, and selection of outbound report_info only. A real CLI smoke
+uses synthetic saved decoded JSON and verifies no credential/nonce text leaks.
+The new rig step only reads existing decoded captures. Actual report_info
+parameter structure remains pending; no assumption that reporting changes pool
+difficulty is made. No GPU or official-proof tests are repeated by this step.
