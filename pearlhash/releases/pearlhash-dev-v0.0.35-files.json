@@ -1,0 +1,30 @@
+{
+  "version": "0.0.35-source",
+  "distribution": "offline reusable-dispatch correctness and component comparisons; no live integration",
+  "files": [
+    {
+      "path": "tools/prepared_dispatch.py",
+      "repository_path": "pearlhash/tools/prepared_dispatch.py",
+      "bytes": 10559,
+      "sha256": "53a0ab270c8b4e21814328fc1ed73cbd975b38db6e181df52952f73c47eeec95"
+    },
+    {
+      "path": "tools/check_prepared_gpu.py",
+      "repository_path": "pearlhash/tools/check_prepared_gpu.py",
+      "bytes": 10693,
+      "sha256": "2cb63cd400fc4e023b5d981edf72d21bfe6a1c3b4a0924ef72b4e171c7caf55e"
+    },
+    {
+      "path": "tests/test_prepared_dispatch.py",
+      "repository_path": "pearlhash/tests/test_prepared_dispatch.py",
+      "bytes": 7126,
+      "sha256": "88ebee86e998ff000afe4c81c02fff88ef33d5195e040f692cb1f71cb9e7a01a"
+    },
+    {
+      "path": "docs/v035.md",
+      "repository_path": "pearlhash/docs/v035.md",
+      "bytes": 3814,
+      "sha256": "b46ee3f78482a34ae68d0b26eff354a089c961a00b4f12caed55919c58f24667"
+    }
+  ]
+}
