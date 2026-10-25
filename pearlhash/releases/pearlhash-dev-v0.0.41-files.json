@@ -1,0 +1,36 @@
+{
+  "version": "0.0.41",
+  "scope": "offline stream comparison; existing v040 GPU module reused",
+  "files": [
+    {
+      "path": "tools/stream_scan.py",
+      "repository_path": "pearlhash/tools/stream_scan.py",
+      "bytes": 4235,
+      "sha256": "0c55a0f7e9fa2dadba8c40642dbb455ad5264355013485c6ef9e70f7909f7a3c"
+    },
+    {
+      "path": "tools/check_streams.py",
+      "repository_path": "pearlhash/tools/check_streams.py",
+      "bytes": 8743,
+      "sha256": "b5985dcd1be04ddf70912b760b1e603afc46cacb90fcab03f3fb324b3c1264d1"
+    },
+    {
+      "path": "tests/test_stream_scan.py",
+      "repository_path": "pearlhash/tests/test_stream_scan.py",
+      "bytes": 4120,
+      "sha256": "66fec3513e3fb54d5dce41bf34763108a8c82212a96b18149b222b3ad4310a63"
+    },
+    {
+      "path": "tests/test_install_v041.py",
+      "repository_path": "pearlhash/tests/test_install_v041.py",
+      "bytes": 3436,
+      "sha256": "8f1f02bc36ee5772f68f399f9286444f9d658b61df565c8bd0bc2f90e4dfba4d"
+    },
+    {
+      "path": "docs/v041.md",
+      "repository_path": "pearlhash/docs/v041.md",
+      "bytes": 2246,
+      "sha256": "8d2c8e5b10a6dd2b62340da73c47a030f2897992b5ed18323682af5e0a5f1d56"
+    }
+  ]
+}
