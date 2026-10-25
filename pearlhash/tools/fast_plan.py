@@ -77,7 +77,7 @@ class FastPlan:
                         or entry.indices!=domain.indices(i)
                         or type(entry.packed)is not bytes or entry.packed!=struct.pack('<32I',*entry.indices,*([0]*(32-shape)))):
                     raise ValueError('axis bounds or descriptor differs')
-                if side==0 and self.prefixes[i]!=struct.pack('<2I',10,16)+entry.packed:
+                if side==0 and (type(self.prefixes[i])is not bytes or self.prefixes[i]!=struct.pack('<2I',10,16)+entry.packed):
                     raise ValueError('row descriptor prefix differs')
 
     def indices(self,tile):

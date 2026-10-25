@@ -5,8 +5,8 @@
     {
       "path": "tools/fast_plan.py",
       "repository_path": "pearlhash/tools/fast_plan.py",
-      "bytes": 8522,
-      "sha256": "f4625335512565aba9c0ae4943f742584b0732e6874af5ef31587c69d1d3d9c4"
+      "bytes": 8562,
+      "sha256": "a7743bfe2648308bbd79c0f3218f9b038cdb13922022d60c428639b11c225f0e"
     },
     {
       "path": "tools/check_fast_job.py",
@@ -23,8 +23,8 @@
     {
       "path": "tests/test_fast_plan.py",
       "repository_path": "pearlhash/tests/test_fast_plan.py",
-      "bytes": 6216,
-      "sha256": "0f5de84b8b2758fda821e449abfc17858a5bbfc30f079816121eecbc32d5ac2d"
+      "bytes": 6324,
+      "sha256": "f692c228b27d31059a59b903a439444dbc1f77c7b321e75c1de3f02c0c220f89"
     },
     {
       "path": "docs/v038.md",

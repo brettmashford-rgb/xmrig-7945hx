@@ -54,6 +54,7 @@ class PlanTests(unittest.TestCase):
         for start,stop in ((-1,1),(True,2),(0,4097),(0,plan.count+1),(1,1)):
             with self.assertRaises(ValueError):FastBatch(plan,start,stop)
         with self.assertRaises(ValueError):replace(plan,prefixes=(bytes(136),)*len(plan.rows))
+        with self.assertRaises(ValueError):replace(plan,prefixes=tuple(bytearray(p)for p in plan.prefixes))
         wrong=Axis(tuple(range(10)),bytes(128))
         with self.assertRaises(ValueError):replace(plan,rows=(wrong,)+plan.rows[1:])
         other=FastPlan.from_job(self.job);batch=next(other.batches(0,1))
