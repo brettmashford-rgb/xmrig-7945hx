@@ -60,3 +60,24 @@ The working pool remains pool.pearlhash.xyz:9000. No alternate pool is selected.
 No custom share has been submitted/accepted, no production search is implemented,
 and no speed/power improvement is measured. Services, clocks and autostart remain
 unchanged. Synthetic V2/V3 GPU-leaf-to-proof validation is recorded separately.
+
+
+
+## Explicit profile and job-state checkpoint (v0.0.20)
+
+The saved metadata inspection is complete. Raw and both diagnostic XOR views
+have no exact match to the verified replay configuration; no field interpretation
+is inferred from those unsuccessful views. Reference GPU setup consumes a
+76-byte header and builds its 52-byte config separately. The new independent
+adapter accepts an explicit V3/rank128 dense profile instead of pretending the
+opaque tail supplies a decoded configuration.
+
+Job-key and little-endian scaled-target calculations can now be checked directly
+against the completed local replay facts without repeating its expensive proof.
+A separate saved independent-login exchange exercises login/extranonce/notify
+readiness, then controlled replacement/reset invalidates stale work. Five CPU
+unit tests and isolated synthetic-input integration pass. Real saved-input rig
+integration is pending. No new live connection or submitted share is made.
+The assigned-extranonce role in compact submit remains unverified, as do token/
+metadata meanings and broader deployed-version rules. Neither marker3 alone nor
+an offline fixture is a pool share verdict.

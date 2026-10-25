@@ -227,3 +227,22 @@ by the official offline CPU verifier: 64 tiles scanned, 13 returned candidates
 CPU-checked. This count is not a speed or efficiency measurement.
 No new GPU compilation or toolkit is needed. No full production nonce completion,
 live pool submission, accepted custom share or measured speed/power gain is claimed.
+
+
+## Pool job state (v0.0.20)
+
+An explicit dense V3/rank128 profile now serializes the 52-byte mining config,
+combines it with the decoded 76-byte pool header to derive the job key, and
+scales the supplied little-endian share target. Zero/overflowing share bounds
+reject. Login acceptance, assigned extranonce and a supported notify must all
+be present before a job snapshot is available. Job/target/extranonce replacement
+and connection reset invalidate prior generations. No socket or submit path is
+included yet. The assigned extranonce is retained without claiming that its
+mapping to a future compact-submit worker_nonce has been verified.
+
+Five new CPU tests and isolated synthetic-message integration pass. The rig
+check compares job key/target with the completed local replay facts, then replays
+the existing independent login exchange through the new state machine. No matrix
+commitment, GPU math or proof test is repeated. Actual saved-input integration
+is pending. The 124 retained payload bytes and token remain opaque; an explicit
+profile is not inferred from those bytes. No live mining or custom pool verdict.

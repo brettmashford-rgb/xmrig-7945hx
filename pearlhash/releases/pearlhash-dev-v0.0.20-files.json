@@ -1,0 +1,39 @@
+{
+  "version": "0.0.20-source",
+  "distribution": "UTF-8 source only; existing verified CPU hash library; no new GPU module",
+  "required_v17_manifest_sha256": "2ab175ecf311bb7ab7aa35fbe31fbae547740dac8b6069602957cd8c2b10a183",
+  "required_cpu_library_sha256": "1b0127307179b124178bdbd50c86b587984b42cc04390cdc73bf8fcb8cf284a9",
+  "files": [
+    {
+      "repository_path": "pearlhash/pool/session.py",
+      "path": "pool/session.py",
+      "bytes": 7421,
+      "sha256": "674a91b140662d1c3c69a867ea6308208e13f1b5343ed49b2ff30a6bd6f959db"
+    },
+    {
+      "repository_path": "pearlhash/tools/check_pool_session.py",
+      "path": "tools/check_pool_session.py",
+      "bytes": 7301,
+      "sha256": "b4687f7bcf377704bce176c1058582d6a246ba7ad6a0c47458fc5cb0bbaf2367"
+    },
+    {
+      "repository_path": "pearlhash/tests/test_pool_session.py",
+      "path": "tests/test_pool_session.py",
+      "bytes": 5371,
+      "sha256": "5e9d06ed4c307b4e53d797d2f2c10f1507eee5604902d802aab3283c12dc9497"
+    },
+    {
+      "repository_path": "pearlhash/pool/job.py",
+      "path": "pool/job.py",
+      "bytes": 2454,
+      "sha256": "c77435a07813c3d32f6869ca30c818b3171cae9093048aa3fd9c1fdb73681447"
+    },
+    {
+      "repository_path": "pearlhash/pool/__init__.py",
+      "path": "pool/__init__.py",
+      "bytes": 67,
+      "sha256": "354f4108c5dd2929ba200b1d70608b69f14ef5b0b7deb0eb4e661b06d2aed53e"
+    }
+  ],
+  "scope": "explicit V3 rank128 dense profile and saved pool job-state binding; no network, GPU, proof rebuild or shares"
+}

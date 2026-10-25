@@ -1,5 +1,36 @@
 # PearlHash development checkpoints
 
+## v0.0.20-pool-job-state
+
+Distribution: [source-file manifest](releases/pearlhash-dev-v0.0.20-files.json).
+Five UTF-8 Python files include the complete pool package needed by this step;
+reuse the verified v0.0.17 CPU reference sources and v0.0.16 CPU hash library.
+No new GPU module, compiler installation or opaque package is required.
+
+Explicit V3 dense/rank128 profile validation, mining-config serialization,
+header/config job-key derivation, non-saturating scaled share-target checks and
+login/extranonce/notify job gating are implemented. Every notify/extranonce update
+invalidates prior generation handles. Connection reset removes prior identity
+and work. Unsupported markers, malformed notifications and zero/overflowing
+share targets reject rather than continuing old work. Snapshot checks are not
+an atomic network submission gate; no socket or share-submitting client is added.
+
+Five CPU tests pass, including all six handshake orderings, changed-header vs
+opaque-data behavior, target/extranonce replacement, reset/close/rejected login,
+profile limits and target overflow boundaries. Isolated source-package tests and
+a synthetic CLI-path smoke check pass with Python site packages disabled. Real
+saved-context/login integration remains pending on rig. The runner reuses the
+completed private replay's facts and independent login transcript without
+rebuilding commitments, GPU work or proofs. Nothing private is distributed.
+
+The terminal metadata inspection completed; neither raw nor either XOR view
+contains an exact verified configuration match. This does not establish what
+the retained bytes mean or require inferring config from them. The new path uses
+an explicit verified profile. Metadata/token meanings and assigned-extranonce
+mapping to submit worker_nonce remain unproven. No live pool job execution,
+submitted/accepted custom share, full production nonce or performance claim.
+
+
 ## v0.0.19-candidate-only-search
 
 Distribution: [source-file manifest](releases/pearlhash-dev-v0.0.19-files.json).

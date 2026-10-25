@@ -604,3 +604,61 @@ unverified hypotheses, not a protocol implementation or inferred configuration.
 The tool makes no connection and does no GPU/proof work. Headers, wallet, worker/
 miner nonces and private capture fingerprints are not printed or distributed.
 Session-specific input/output remains on the rig and in the user's terminal.
+
+
+### Saved metadata inspection outcome
+
+The user completed the inspector after the installer was corrected to include
+its own pool decoder instead of assuming the v0.0.17 source manifest included
+that package. No previous GPU/proof test failed. Raw/two repeating-XOR views
+show no exact 52-byte config match. These unsuccessful views do not establish
+a decoder or prove the retained bytes carry that configuration.
+
+Reference CPU setup inspection copies 76 header bytes and assembles 52 config
+bytes separately from dimension/rank/pattern parameters. This observation does
+not establish every pool payload field or handshake rule. The independent job
+state therefore accepts an explicit profile and retains all other payload/token
+bytes as opaque. It does not guess their meanings or discard their identity:
+every incoming notification invalidates the preceding generation.
+
+## v0.0.20 explicit pool profile/job-state binding
+
+MiningProfile supports the currently implemented V3 dense constant-bias64/tail1
+path, rank128, complete 1024-byte chunk rows, k2048..65536, canonical even-sized
+patterns up to32 rows/columns, tile32..256 elements, worker input<=4MiB, matrix
+streaming<=8GiB per side, dimensions<=2^24 and virtual noise table payload<=64MiB.
+These are intentionally narrower implementation limits. The upstream pinned
+sanity_checks.rs and pearl_program.rs define TILE_H=2 and validate public-proof
+shapes. The config is k(u32), rank(u16), Int7 MMA(u16=0), two six-byte patterns,
+then32 zero dense bytes. Job key hashes header76+config52 with independent BLAKE3.
+
+Rank128 is neutral for the pinned rank penalty, so share bound is rawLEtarget *
+rows.size * cols.size * k. It must be positive and fit u256. This follows the
+upstream mining-share penalized_target_bound behavior, which rejects overflow;
+it deliberately does not use the saturating consensus-nBits helper. This is a
+policy/configuration adapter, not a complete consensus validator or inferred
+live deployment/version rule. The caller must explicitly configure V3; marker2
+and any unsupported message/profile reject.
+
+PoolSession publishes an immutable job only after accepted login, valid eight-
+byte assigned extranonce and supported notification exist. All six input orders
+are tested. Each notification/extranonce update invalidates previous generations;
+target updates preserve the header/config key but change the bound. Opaque
+metadata/token changes still invalidate the prior handle. Reset clears login,
+assigned identity and active/pending work. Invalid notifications cannot retain
+active work; rejected login closes the session. Lock-protected snapshot checks
+are not an atomic share send gate. Assigned extranonce is not yet asserted to
+be the submit worker_nonce, and notify token is not asserted to be a job ID.
+
+Five new CPU tests pass, plus synthetic saved-input CLI integration and altered
+bound rejection. The isolated five-file source package passes those tests and
+CLI smoke check with site packages disabled, including its own pool/__init__.py
+and job.py. No new native or CUDA compilation. The actual rig check is pending:
+compare derived key/bound with the already-completed private replay, then feed
+its separate independent-login transcript through the new state machine and
+exercise controlled target replacement/reset. It does not mix identities across
+those two sessions, rebuild proofs/matrices, use GPU or contact a pool. Reports
+explicitly say GPU=false, proof-verifier=false and live-connection=false.
+
+Remaining metadata meanings, live identity/submit integration, full production
+search and real custom pool acceptance remain unproven. No performance claim.
