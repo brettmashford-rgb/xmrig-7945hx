@@ -1,3 +1,36 @@
+## v0.0.29 bounded live mining attempt
+
+The saved status capture established `report_info` parameters as
+`[{"hashrate": <number>, "name": <string>}]`, with three correlated positive
+acknowledgements. No difficulty-control behavior is inferred from that capture.
+
+The new `tools/mine_bounded.py` joins the live receiver, latest-job worker,
+production GPU scanner, independent candidate/proof checks and compact submission
+gate. It searches successive 4096-tile windows across a full nonce domain and
+starts a fresh nonce on exhaustion. A single cached B commitment can be reused
+when the job key and dimensions agree. Status and submit requests share one ID
+allocator and socket; their acknowledgement counters remain separate.
+
+One connection, up to 300 seconds, at most one freshly generated custom share.
+No ambiguous write is retried. Job changes invalidate preparation/search/proof;
+a share already written can still receive its correlated verdict. Search stops
+after the first share verdict. Socket teardown detaches the gate before closing
+and joins the worker; native commitment calls finish before cancellation returns.
+The assigned extranonce is provisionally used as worker_nonce, pending real pool
+validation. No custom pool acceptance has been observed yet. The bounded runner
+is not a persistent service and does not reconnect or change existing miners.
+
+Reported rate is completed scalar dot-product terms divided by whole-attempt
+elapsed time, including preparation. A multiply-add is not doubled. This is an
+explicit conservative work counter, not a benchmark comparison or a claim that
+the pool defines hashrate identically. Device name is our own runtime label.
+
+Validation: eight existing CPU/proof submission tests, five receiver lifecycle
+tests, five worker concurrency tests, three status/connection tests and two runner
+orchestration tests passed. Runner tests use fake GPU/math and scripted replies;
+their simulated acceptance is not pool evidence. The previous real v27 GPU and
+proof validations are reused, with no kernel or PTX change in this release.
+
 # PearlHash development checkpoints
 
 ## v0.0.28-compact-share-components

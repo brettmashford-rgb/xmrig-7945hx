@@ -1,13 +1,13 @@
 """CPU-checked compact shares and a same-connection submission gate. ISC.
 
-No connection creation/reconnect. An eventual receiver adapter owns the socket,
-feeds replies here and detaches on connection end. This component is not yet
-wired into the live runner. Worker nonce remains an explicit caller input;
+No connection creation/reconnect. The receiver adapter owns the socket,
+feeds replies here and detaches on connection end. The bounded live runner uses this gate. Worker nonce remains an explicit caller input;
 assigned-extranonce mapping and actual custom pool acceptance are unverified.
 """
 from collections import OrderedDict
 from dataclasses import dataclass
 import hashlib
+import math
 
 from pool.search import build_proof, plan_for, require_current
 from pool.session import PoolSession
@@ -68,6 +68,7 @@ class SubmissionGate:
             raise ValueError('configured session and bounded pending limit required')
         self.session=session;self.max_pending=max_pending
         self.stream=None;self.attached_once=False;self.next_id=1
+        self.reports={};self.report_counts={k:0 for k in ('sent','accepted','rejected','disconnected')}
         self.pending={};self.history=OrderedDict();self.recent=OrderedDict()
         self.attempted=self.sent=self.duplicates=0
         self.counts={name:0 for name in('accepted','rejected','disconnected','send_error','protocol_error')}
@@ -91,7 +92,8 @@ class SubmissionGate:
         self.stream=None
         for request_id,generation in tuple(self.pending.items()):
             self._record(request_id,generation,'disconnected')
-        self.pending.clear();self.session.close()
+        self.pending.clear();self.report_counts['disconnected']+=len(self.reports)
+        self.reports.clear();self.session.close()
 
     def detach(self):
         with self.session.lock:self._disconnect()
@@ -131,10 +133,43 @@ class SubmissionGate:
             self.sent+=1
             return request_id
 
+    def report_info(self, hashrate, name):
+        """Measured scalar products/second; observed params shape, shared IDs.
+
+        No vendor rate, guessed device identifier or difficulty assumption.
+        Status ACKs never count as accepted shares.
+        """
+        if (type(hashrate) not in (int,float) or not math.isfinite(hashrate) or hashrate<0
+                or type(name)is not str or not 1<=len(name)<=64):
+            raise ValueError('finite nonnegative measured rate and own name required')
+        with self.session.lock:
+            if self.stream is None or self.session.closed:raise ConnectionError('no live status connection')
+            if self.reports:return None
+            if self.next_id>0x7fffffff:
+                self._disconnect();raise ConnectionError('request ID space exhausted')
+            request_id=self.next_id;self.next_id+=1
+            packet=encode({'id':request_id,'method':'report_info',
+                           'params':[{'hashrate':hashrate,'name':name}]})
+            self.reports[request_id]=None
+            try:self.stream.sendall(packet)
+            except OSError:
+                self._disconnect()
+                raise ConnectionError('status write failed; connection invalidated')from None
+            self.report_counts['sent']+=1
+            return request_id
+
     def response(self,message):
         with self.session.lock:
             if not isinstance(message,dict)or type(message.get('id'))is not int:return None
             request_id=message['id']
+            if request_id in self.reports:
+                del self.reports[request_id]
+                status=message.get('status');value=message.get('result')
+                if type(status)is not int or type(value)is not bool or message.get('error')is not None:
+                    self.report_counts['disconnected']+=1;self._disconnect()
+                    raise ConnectionError('malformed correlated status response')
+                self.report_counts['accepted'if status==1 and value is True else'rejected']+=1
+                return None
             if request_id in self.history:
                 self.duplicates+=1;return None
             if request_id not in self.pending:return None
@@ -149,4 +184,5 @@ class SubmissionGate:
     def stats(self):
         with self.session.lock:
             return dict(self.counts,attempted=self.attempted,sent=self.sent,pending=len(self.pending),
-                        duplicate_responses=self.duplicates,attached=self.stream is not None)
+                        duplicate_responses=self.duplicates,attached=self.stream is not None,
+                        reports=dict(self.report_counts,pending=len(self.reports)))

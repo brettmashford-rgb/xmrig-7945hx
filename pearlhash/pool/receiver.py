@@ -1,6 +1,6 @@
 """Bounded pool job receiver over the independent Pearlhash framing. ISC.
 
-One explicit endpoint, one login, no submit method or automatic reconnect.
+One explicit endpoint and login. Optional same-connection gate; no reconnect.
 Callbacks must be quick: LatestJobWorker supplies a separate search thread.
 Connection end always invalidates the session's active work.
 """
@@ -64,11 +64,13 @@ class PoolReceiver:
         self.connect = connect
         self.clock = clock
 
-    def run(self, on_job, *, stop=None, seconds=30, max_messages=64):
+    def run(self, on_job, *, stop=None, seconds=30, max_messages=64, gate=None, on_response=None):
         if (type(seconds) is not int or not 1 <= seconds <= 300
                 or type(max_messages) is not int or not 1 <= max_messages <= 256
                 or not callable(on_job)):
             raise ValueError('invalid bounded receiver settings')
+        if gate is not None and gate.session is not self.session:
+            raise ValueError('gate belongs to a different session')
         stop = stop if stop is not None else threading.Event()
         self.session.reset()
         messages = jobs = received = 0
@@ -79,9 +81,14 @@ class PoolReceiver:
                 return ReceiveResult(0, 0, 0, 'requested')
             # Only this explicit endpoint is dialed. The public framing encoder
             # supplies a fresh transport nonce, never a mining/share nonce.
-            with self.connect(self.endpoint, timeout=min(10, seconds)) as stream:
+            from contextlib import ExitStack
+            with ExitStack() as lifetime:
+                stream=lifetime.enter_context(self.connect(self.endpoint, timeout=min(10, seconds)))
+                if gate is not None:lifetime.callback(gate.detach)
                 stream.sendall(encode({'id': 0, 'method': 'login',
                                       'params': [self.wallet, self.worker, 'pearlhash-dev/0.0.21-receiver']}))
+                stream.settimeout(0.5)
+                if gate is not None:gate.attach(stream)
                 frames = FrameBuffer()
                 while not stop.is_set():
                     remaining = deadline - self.clock()
@@ -104,6 +111,10 @@ class PoolReceiver:
                         if messages >= max_messages:
                             raise ValueError('pool message budget exceeded')
                         messages += 1
+                        if gate is not None:
+                            verdict=gate.response(message)
+                            if verdict is not None and on_response is not None:on_response(verdict)
+                            if self.session.closed:raise ConnectionError('connection gate closed')
                         job = self.session.consume(message)
                         if job is not None and job is not last_job:
                             if not self.session.is_current(job):
