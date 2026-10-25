@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Controlled v040/v042 full-search-loop comparison, same synthetic nonce. ISC."""
+"""Controlled v040/compact-v044 full-search-loop comparison, same synthetic nonce. ISC."""
 import argparse
 from collections import Counter
 import json
@@ -117,7 +117,7 @@ def main():
             with DriverCounts(device)as counter:diagnostic_ranges[mode]=run_window(searches[mode],mode)
             counts[mode]=counter.report()
         if diagnostic_ranges[MODES[0]]!=diagnostic_ranges[MODES[1]]:raise RuntimeError('diagnostic ranges differ')
-        report['loop_comparison']=summary(samples,setup);report['loop_comparison']['stage_samples']=stages
+        report['loop_comparison']=summary(samples,setup);report['loop_comparison']['two_stream_readback']='populated-only-v044';report['loop_comparison']['stage_samples']=stages
         report['loop_comparison']['timed_tile_ranges']=ranges
         report['driver_diagnostic']={'tiles_per_mode':WINDOW,'separate_from_primary_timings':True,'modes':counts}
         for search in searches.values():search.close()

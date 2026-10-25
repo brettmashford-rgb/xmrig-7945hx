@@ -1,0 +1,42 @@
+{
+  "version": "0.0.44",
+  "scope": "compact stream queue readback; offline correctness and controlled loop comparison",
+  "files": [
+    {
+      "path": "tools/stream_scan.py",
+      "repository_path": "pearlhash/tools/stream_scan.py",
+      "bytes": 5063,
+      "sha256": "d4c12bc497e6e07a8487b3a27b85305d3bd388de73f9ad1f708b50f2512a10a3"
+    },
+    {
+      "path": "tools/check_compact_queue.py",
+      "repository_path": "pearlhash/tools/check_compact_queue.py",
+      "bytes": 4792,
+      "sha256": "f483c34ceb669d00ce0e39a5e8a028bd87bc40c77b0e8c0ec2b54a12d9f31792"
+    },
+    {
+      "path": "tools/compare_search_loops.py",
+      "repository_path": "pearlhash/tools/compare_search_loops.py",
+      "bytes": 8377,
+      "sha256": "2540fa1e295ee88ecc8a1713c771b19391ea66a2620a1c7669420334729282ec"
+    },
+    {
+      "path": "tests/test_compact_queue.py",
+      "repository_path": "pearlhash/tests/test_compact_queue.py",
+      "bytes": 4056,
+      "sha256": "3a99a71db510151fdfbc7ffa0b881a3f6debd4d5a9bca37f78442a021d336d6b"
+    },
+    {
+      "path": "tests/test_install_v044.py",
+      "repository_path": "pearlhash/tests/test_install_v044.py",
+      "bytes": 3587,
+      "sha256": "4e1d4d95b70d1fe03176125df1003543194365120d2a030dc2c5cd2123c13b0a"
+    },
+    {
+      "path": "docs/v044.md",
+      "repository_path": "pearlhash/docs/v044.md",
+      "bytes": 2248,
+      "sha256": "d6e67c8d44e0d0f6c16b123e7b19b9bcfdfe12ea1bd9263cd6423b74bcfdbce1"
+    }
+  ]
+}

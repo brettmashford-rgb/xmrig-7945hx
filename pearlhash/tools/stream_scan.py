@@ -1,10 +1,19 @@
-"""Offline split-phase dispatch; shared read-only A/noise, private queues. ISC."""
+"""Split-phase dispatch with bounded populated-only queue readback; shared read-only A/noise, private queues. ISC."""
 import ctypes as C
 import struct
 from tools.prepared_dispatch import PreparedDispatch, PreparedBatch
 from tools.wide_scan import validate_wide, decode_wide
 from tools.virtual_scan import global_reference
 from tools.candidate_scan import verify_returned
+
+
+def populated_count(status,bounds,capacity,generation):
+    """Validate the original queue contract before trusting a device count."""
+    validate_wide(bounds,capacity,generation)
+    if type(status)is not bytes or len(status)!=8:raise ValueError('invalid candidate status size')
+    total,overflow=struct.unpack('<2I',status)
+    if total>len(bounds)or overflow!=int(total>capacity):raise ValueError('invalid candidate count or overflow')
+    return min(total,capacity)
 
 
 class StreamDispatch(PreparedDispatch):
@@ -45,7 +54,12 @@ class StreamDispatch(PreparedDispatch):
         self.wait();batch,generation,capacity,audit=self.loaded
         # This is called only after both streams have waited in the benchmark,
         # so synchronous readback/guard checks cannot serialize their launches.
-        result=decode_wide(self.download(self.queue,capacity*44),self.download(self.status,8),batch.bounds,capacity,generation)
+        status=self.download(self.status,8)
+        count=populated_count(status,batch.bounds,capacity,generation)
+        # With a complete queue, reducing decoder capacity to its populated
+        # length preserves overflow=False. For a partial queue count remains
+        # the original capacity, preserving overflow=True and retry semantics.
+        result=decode_wide(self.download(self.queue,count*44),status,batch.bounds,count,generation)
         raw=self.download(self.trace,len(batch.queries)*64 if audit else 0)
         traces=tuple(struct.unpack_from('<16I',raw,i*64)for i in range(len(batch.queries)))if audit else None
         self.check_buffer(self.desc);self.check_buffer(self.targets);self.tables.check_guards()
