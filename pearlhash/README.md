@@ -278,5 +278,30 @@ Worker and miner nonces are explicit caller inputs. No mapping from assigned
 extranonce is inferred. This is an engine component, without a socket worker
 thread, submission method or automatic service replacement. Four new CPU gate/
 binding tests pass, and a complete CPU-emulated synthetic proof path passes
-locally. The new 160x192 V3 session-to-GPU-to-official-verifier integration is
-pending on the rig. It reuses the validated PTX module and CPU library.
+locally. The new 160x192 V3 session-to-GPU-to-official-verifier integration now
+passes on the RTX 5060. It reuses the validated PTX module and CPU library.
+
+
+## Receiver/search worker (v0.0.23)
+
+LatestJobWorker supplies a single search thread and a one-slot latest-job
+mailbox. Receiver callbacks only enqueue work; socket reads continue during
+native commitment preparation and GPU dispatch. Pending replacements collapse
+to the latest job; stale in-flight results are discarded. The processing thread
+owns its CUDA context and joins at shutdown. Native commitment calls still
+cannot abort mid-call, so a connection deadline may be followed by a wait for
+the current native stage to return.
+
+The new live runner makes one connection, receives for up to 180 seconds by
+default, and attempts one fresh production nonce with a bounded 16-tile window.
+It uses the exact received target, not an easier test target. Preparation is
+CPU-streamed (8 GiB logical B matrix); uniform tables/tile search use the existing
+GPU module. It records component wall times under concurrent existing mining,
+not miner throughput. No full nonce completion or performance claim.
+
+Assigned extranonce is provisionally supplied as worker nonce only for this
+no-submit experiment; its required compact-submit mapping remains unproven.
+No proof construction, submitted share, miner replacement or clock changes.
+Five deterministic concurrency tests, the five receiver tests and a mocked CLI
+lifecycle/redaction smoke pass locally. Actual live GPU integration awaits the
+rig result.

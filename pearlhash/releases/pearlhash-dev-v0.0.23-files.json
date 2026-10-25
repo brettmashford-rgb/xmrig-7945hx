@@ -1,0 +1,81 @@
+{
+  "version": "0.0.23-source",
+  "distribution": "UTF-8 receiver/search worker; no new native binary",
+  "required_v17_manifest_sha256": "2ab175ecf311bb7ab7aa35fbe31fbae547740dac8b6069602957cd8c2b10a183",
+  "required_cpu_library_sha256": "1b0127307179b124178bdbd50c86b587984b42cc04390cdc73bf8fcb8cf284a9",
+  "required_ptx_sha256": "1265a107fc0d98250179ab3c8097c7811f857a3d29ca3f0e296cda01cf62d704",
+  "files": [
+    {
+      "path": "pool/worker.py",
+      "repository_path": "pearlhash/pool/worker.py",
+      "bytes": 4234,
+      "sha256": "9c08a04f8ce6c784ff4a917b006bc8cce1d4111ee5131ad2ed1097017a8cabdd"
+    },
+    {
+      "path": "pool/receiver.py",
+      "repository_path": "pearlhash/pool/receiver.py",
+      "bytes": 4916,
+      "sha256": "bde0b88157b345ac9df09f728c74f6d983ca9179d6cd9d0887d1bdbfff424468"
+    },
+    {
+      "path": "tools/check_live_search.py",
+      "repository_path": "pearlhash/tools/check_live_search.py",
+      "bytes": 6859,
+      "sha256": "e371a50fe42c7cca66f62351f59dca32fd11c73483df0bd813c8498d81967f80"
+    },
+    {
+      "path": "tests/test_live_worker.py",
+      "repository_path": "pearlhash/tests/test_live_worker.py",
+      "bytes": 7177,
+      "sha256": "859747e422f65648563d64357df40dbf3b3cb66d5a69a990053ee6d171bf395b"
+    },
+    {
+      "path": "pool/__init__.py",
+      "repository_path": "pearlhash/pool/__init__.py",
+      "bytes": 67,
+      "sha256": "354f4108c5dd2929ba200b1d70608b69f14ef5b0b7deb0eb4e661b06d2aed53e"
+    },
+    {
+      "path": "pool/job.py",
+      "repository_path": "pearlhash/pool/job.py",
+      "bytes": 2454,
+      "sha256": "c77435a07813c3d32f6869ca30c818b3171cae9093048aa3fd9c1fdb73681447"
+    },
+    {
+      "path": "pool/session.py",
+      "repository_path": "pearlhash/pool/session.py",
+      "bytes": 7421,
+      "sha256": "674a91b140662d1c3c69a867ea6308208e13f1b5343ed49b2ff30a6bd6f959db"
+    },
+    {
+      "path": "pool/search.py",
+      "repository_path": "pearlhash/pool/search.py",
+      "bytes": 5988,
+      "sha256": "7bcc06da6f77ee271b88e03769fe45508a35870cd136edab3b9316673a5e73c3"
+    },
+    {
+      "path": "tools/candidate_scan.py",
+      "repository_path": "pearlhash/tools/candidate_scan.py",
+      "bytes": 6643,
+      "sha256": "3b8dcd3dcb557381ad0945ea6d0087e391677426fb3f987118353e04d1a35b9d"
+    },
+    {
+      "path": "tools/global_range.py",
+      "repository_path": "pearlhash/tools/global_range.py",
+      "bytes": 4179,
+      "sha256": "5b9275429ef2ee088648f80814caecdc6be8281eedebedc771274cf9423308e2"
+    },
+    {
+      "path": "tools/pool_probe.py",
+      "repository_path": "pearlhash/tools/pool_probe.py",
+      "bytes": 7154,
+      "sha256": "791636774a16d87af532c39cc1f0d0cac2346441c76de75044f75118015382c6"
+    },
+    {
+      "path": "tools/check_live_job.py",
+      "repository_path": "pearlhash/tools/check_live_job.py",
+      "bytes": 5378,
+      "sha256": "24108e814fa7288f93724e37a93368ea0d6726401ecd7be9580dfa35db213a41"
+    }
+  ]
+}

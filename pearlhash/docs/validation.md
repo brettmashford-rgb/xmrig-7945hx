@@ -726,3 +726,28 @@ Native commitments are synchronous and cannot cancel mid-call. Job checks
 discard stale output between stages; the receiver and engine are not yet joined
 by a live worker thread. Caller-supplied worker nonce does not establish the
 assigned-extranonce/compact-submit mapping.
+
+
+### v0.0.22 rig result
+
+The completed user-provided output confirms eight source checksums, fresh
+160x192 V3 job-driven GPU search/proof, official offline CPU verifier acceptance,
+and rejection of stale nonce/search/proof stages after target replacement.
+No connection or submitted share in this synthetic integration.
+
+### v0.0.23 concurrency and bounded live runner
+
+Five deterministic tests check latest pending replacement, in-flight stale result
+discard, close/current-state cancellation and joining, worker-error propagation,
+receiver progress during blocked search, single-login stream lifecycle, and
+settings/start guards. All five receiver tests pass with the extended maximum
+receive window (300 seconds). A mocked CLI smoke checks worker-thread context
+ownership, joined lifecycle, redacted report and zero submissions. These local
+checks do not execute an actual GPU or network connection.
+
+The rig runner keeps its receiver active while production commitment preparation
+and a 16-tile GPU window execute. It preserves the actual target and records
+component wall times, not throughput. Native stages are finite but not mid-call
+cancellable, so shutdown may outlast the receive deadline. No proof generation
+or submit path. Provisional assigned-extranonce use does not prove the live
+compact-submit nonce mapping. Live GPU execution remains pending.

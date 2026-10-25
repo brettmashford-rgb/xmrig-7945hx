@@ -1,5 +1,20 @@
 # PearlHash development checkpoints
 
+## v0.0.23-live-search-worker
+
+Twelve UTF-8 source files; reuse the existing PTX and CPU library. Single search
+thread, one-slot latest-job mailbox, stale-result discard and joined shutdown.
+Receiver remains active while preparation/GPU stages run. Five new concurrency
+tests, five receiver tests and a mocked CLI/report smoke pass.
+
+The new rig check attempts a fresh production-sized live nonce and 16 GPU tiles
+at the actual received target. One pool connection, 180-second receive window,
+with possible extra shutdown wait for an in-flight native commitment. No proof
+build, share submission or service/clock changes. Assigned extranonce is a
+provisional worker-nonce input for this experiment, not a verified submit rule.
+Live execution is pending; no full nonce, accepted custom share or speed claim.
+
+
 ## v0.0.22-job-driven-search
 
 Eight UTF-8 source files; no new binary or compiler. New job-driven engine uses
@@ -9,8 +24,8 @@ Native preparation and GPU results are gated by current job identity/generation.
 Target replacement rejects the old preparation/search/proof stages.
 
 Four new CPU tests and a CPU-emulated fresh synthetic path pass locally.
-The new 160x192 V3 synthetic-session integration awaits GPU/official CPU verifier
-execution on the rig. No network, service changes or share submission in this
+The new 160x192 V3 synthetic-session integration now passes GPU/official CPU
+verifier execution on the rig. No network, service changes or share submission in this
 check. Full production nonce completion, live nonce mapping and accepted custom
 shares remain unvalidated.
 

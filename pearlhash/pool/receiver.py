@@ -1,7 +1,7 @@
 """Bounded pool job receiver over the independent Pearlhash framing. ISC.
 
 One explicit endpoint, one login, no submit method or automatic reconnect.
-Callbacks must be quick: a future worker should use its own thread/queue.
+Callbacks must be quick: LatestJobWorker supplies a separate search thread.
 Connection end always invalidates the session's active work.
 """
 from dataclasses import dataclass
@@ -65,7 +65,7 @@ class PoolReceiver:
         self.clock = clock
 
     def run(self, on_job, *, stop=None, seconds=30, max_messages=64):
-        if (type(seconds) is not int or not 1 <= seconds <= 60
+        if (type(seconds) is not int or not 1 <= seconds <= 300
                 or type(max_messages) is not int or not 1 <= max_messages <= 256
                 or not callable(on_job)):
             raise ValueError('invalid bounded receiver settings')

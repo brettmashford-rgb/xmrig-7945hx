@@ -1,0 +1,19 @@
+{
+  "version": "0.0.22-source",
+  "source_commit": "9414eb0f35321b3b31a2f72669c0358e651c4d5a",
+  "evidence": "user-supplied completed Termius output, 2026-10-25",
+  "source_files_checked": 8,
+  "gpu": "RTX 5060 sm_120",
+  "profile": {
+    "m": 160,
+    "n": 192,
+    "k": 4096,
+    "rank": 128
+  },
+  "job_driven_nonce_search_proof": "passed",
+  "official_cpu_verifier": "passed",
+  "stale_preparation_search_proof_rejected": "passed",
+  "pool_connection": false,
+  "submitted_shares": 0,
+  "scope": "fresh small synthetic V3 session/search/proof integration; no live mining verdict"
+}
