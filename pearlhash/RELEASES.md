@@ -21,7 +21,9 @@ across seven target/queue scenarios each, then constructs a fresh synthetic V3
 proof using the candidate-path global scheduler. GPU and official verifier were
 not run on the development host. The rig runner will exercise the new GPU dispatch
 and verify its NEW V3 proof using the existing official offline CPU oracle.
-Earlier completed proof/capture tests are not rerun. No full production nonce,
+The subsequent RTX 5060 run passes all new GPU cases and official offline
+verification of the fresh V3 proof: 64 search tiles, 13 returned candidates
+CPU-checked. Earlier completed proof/capture tests are not rerun. No full production nonce,
 live pool submission, custom accepted share or performance improvement is claimed.
 
 

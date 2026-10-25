@@ -580,3 +580,27 @@ proof verdict remain pending on the rig. The GPU module bytes are unchanged.
 This remains a synchronous offline search integration, without full production
 nonce completion, live pool version/config/target rules or share submission.
 No comparative timing, hashrate, power, efficiency or working-miner claim.
+
+
+### v0.0.19 RTX 5060 confirmation
+
+The completed user terminal output confirms both candidate-only GPU dispatch
+profiles pass all seven queue/target scenarios, with complete hit sets matching
+the separate full CPU test references. No-hit/partial-queue paths perform zero
+candidate recomputations. Fresh V3 candidate-path search scanned 64 tiles and
+CPU-checked 13 returned candidates; the new independent proof was accepted by
+the existing official offline CPU verifier. Completion was saved. This supersedes
+the pending v0.0.19 GPU/oracle status above. Counts are not a performance benchmark.
+
+## Remaining pool metadata inspection
+
+The first 76 bytes of the notify payload have a verified header conversion;
+the remaining 124 bytes still have no established field interpretation. The new
+inspect_job_metadata.py reads the existing local context bound to the already
+completed captured-share replay manifest. It compares retained metadata tails
+across saved notifications and shows raw/two repeating-XOR candidate views
+against the verified 52-byte replay config. Those views are explicitly
+unverified hypotheses, not a protocol implementation or inferred configuration.
+The tool makes no connection and does no GPU/proof work. Headers, wallet, worker/
+miner nonces and private capture fingerprints are not printed or distributed.
+Session-specific input/output remains on the rig and in the user's terminal.

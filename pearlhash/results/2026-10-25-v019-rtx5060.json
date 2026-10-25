@@ -1,0 +1,26 @@
+{
+  "version": "0.0.19-source",
+  "source_commit": "c2b5f4419eba62d9807a10f8dd6b5d8087251984",
+  "evidence": "user-supplied completed Termius output, 2026-10-25",
+  "gpu": "NVIDIA RTX 5060 sm_120",
+  "checks": [
+    {
+      "name": "64-global-queries",
+      "queries": 64,
+      "target_queue_scenarios": 7,
+      "result": "passed"
+    },
+    {
+      "name": "production-row-boundary",
+      "queries": 2,
+      "target_queue_scenarios": 7,
+      "result": "passed"
+    }
+  ],
+  "fresh_v3_search_tiles": 64,
+  "fresh_v3_returned_candidates_cpu_checked": 13,
+  "official_offline_cpu_verifier": "passed",
+  "pool_submitted_shares": 0,
+  "performance_measured": false,
+  "scope": "offline candidate search/proof correctness; no pool verdict or full production nonce"
+}

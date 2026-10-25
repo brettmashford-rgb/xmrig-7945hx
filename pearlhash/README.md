@@ -221,7 +221,9 @@ overflow, global-query slots, generation tags, bounds and buffer guards are
 checked. Misses are not independently recomputed in this search path; a separate
 full-reference harness compares entire hit sets for bounded synthetic cases.
 
-Four new CPU tests and CPU-only search/proof preparation pass. New GPU execution
-and official offline verification of a fresh candidate-path V3 proof are pending.
+Four new CPU tests and CPU-only search/proof preparation pass. The subsequent
+RTX 5060 run passes all candidate-path GPU checks and a fresh V3 proof accepted
+by the official offline CPU verifier: 64 tiles scanned, 13 returned candidates
+CPU-checked. This count is not a speed or efficiency measurement.
 No new GPU compilation or toolkit is needed. No full production nonce completion,
 live pool submission, accepted custom share or measured speed/power gain is claimed.
