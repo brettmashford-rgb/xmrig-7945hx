@@ -323,5 +323,32 @@ isolated source package and mocked eight-window CLI/report checks pass. The
 new live runner defaults to 4,096 tiles in eight 512-tile windows, using the
 actual target and one nonce cache. It records cache setup and separate window
 wall times. The unchanged PTX and CPU library are reused. GPU execution of this
-new multi-window path awaits the rig; no full nonce, proof/submission or speed
+new multi-window path now passes: 4096 tiles, 64 batches, eight windows and one
+cache in 1.086s including 0.049573s cache setup. B preparation took 29.425s and
+nonce preparation 0.573s under concurrent existing mining; no full nonce, proof/submission or speed
 claim. The assigned-extranonce/submit-worker mapping remains provisional.
+
+
+## Larger GPU dispatch (v0.0.25)
+
+The existing virtual_tile_scan ABI/kernel uses a variable query_count. A new
+bounded host path packs up to 4,096 descriptors/targets per launch, with an
+equally bounded tagged candidate queue. The GPU module and tile math are
+unchanged. WideRangePlan preserves global tile IDs; NonceSearch accepts a plan
+factory to combine larger batches with its existing persistent cache/gates.
+CPU recomputation remains limited to complete returned hits; identical queries
+in a dispatch share one CPU reference. Partial queues still require retry.
+
+Five new CPU tests and six prior persistent-search tests pass, including maximum
+queue slots, malformed limits/tags/counts, exact descriptor compatibility,
+production row boundaries and wide overflow/global-ID integration. Mocked
+correctness and same-nonce comparison CLI/report checks pass locally.
+
+The rig block first checks five larger-grid/queue scenarios (4,096-query all-hit,
+all-miss, mixed overflow/complete, and a 67-query partial grid) against independent
+CPU references for four small repeated queries. It then compares 64-query and
+4,096-query dispatch on the same fresh production nonce/target. Each path builds
+one cache; reported window timings exclude cache setup. This is component
+measurement under existing mining, not miner throughput or a proven speedup.
+Actual GPU results are pending. No proof construction, submitted share or service/
+clock change. Live nonce mapping and custom accepted shares remain unvalidated.

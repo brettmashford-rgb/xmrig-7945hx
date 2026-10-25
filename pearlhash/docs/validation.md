@@ -775,3 +775,36 @@ The new rig runner uses 4,096 production tiles in eight windows, preserving
 one live-job nonce cache and the actual target. Cache setup and each window
 are timed separately. No proof rebuild or share submission; existing miners
 and clocks stay unchanged. Actual multi-window execution awaits the rig.
+
+
+### v0.0.24 rig result
+
+Completed user output confirms all twelve checksums and 4096 live-job production
+tiles across 64 batches/eight windows with one cache. B preparation 29.425s,
+nonce 0.573s, bounded scan 1.086s, cache setup 0.049573s. Receiver closure,
+worker join and invalidation pass. No submitted share or full nonce measurement.
+
+### v0.0.25 larger dispatch
+
+The pinned original virtual_tile_scan/tile_scan_core sources use query_count
+and capacity parameters with blockIdx.x global descriptors, without a 64-query
+GPU limit. The old 64-query bound is enforced by host validation/packing. The
+new path reuses the established descriptor serializer in chunks and expands
+bounded host-side target/queue handling to 4096. No PTX recompilation/patching.
+
+Five CPU tests cover the maximum descriptor payload, unordered complete queues
+with slot4095, malformed count/overflow/tag/duplicate/bound cases, strict caps,
+production row-boundary mapping, wide-plan engine injection and overflow retry
+preserving global hit IDs above63. Six prior persistent-search tests still pass.
+Isolated package tests and two mocked CLI/report smokes pass. No local GPU or
+network execution is claimed.
+
+The rig diagnostic independently computes four small query references and
+checks five large-grid/queue scenarios, including all 4096 hits and partial
+queues. It deliberately repeats those four queries to keep independent CPU work
+bounded; this is not full independent recomputation of 4096 distinct production
+tiles. The subsequent live comparison uses both dispatchers on the same nonce/
+target, with one fresh cache per path and window times excluding setup. Equal
+early-candidate results are checked; common kernel faults are not excluded by
+that same-kernel comparison alone. Larger-batch GPU execution/performance is
+pending the rig. No share submission or broader throughput claim.

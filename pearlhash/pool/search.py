@@ -91,11 +91,11 @@ class NonceSearch:
     nonce cache. Window boundaries retain the committed global tile cursor;
     stale jobs or dispatch failures close the cache and cannot resume it.
     """
-    def __init__(self, context, device, current, *, start=0, backend_factory=CandidateBackend):
+    def __init__(self, context, device, current, *, start=0, backend_factory=CandidateBackend, plan_factory=plan_for):
         self.context = context
         self.job = context.job
         self.current = current
-        self.plan = plan_for(self.job)
+        self.plan = plan_factory(self.job)
         self.hit = None
         self.closed = False
         self.backend = None

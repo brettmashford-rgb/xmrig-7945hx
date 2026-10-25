@@ -1,5 +1,18 @@
 # PearlHash development checkpoints
 
+## v0.0.25-wide-dispatch
+
+Fourteen UTF-8 source files; unchanged PTX/CPU library. New host packing/queue
+path supports up to 4096 queries, preserving the same kernel ABI, target checks,
+generation tags, overflow retry and candidate-only CPU verification.
+
+Five new CPU tests and six persistent-search tests pass. Mocked correctness and
+same-nonce comparison CLI/reports pass. Isolated package tests pass. Actual GPU
+execution is pending: five new large-grid queue cases, then 64-vs-4096-query
+comparison using the same fresh production nonce and actual received target.
+No speedup claim until measured; no proof/share/service/clock change.
+
+
 ## v0.0.24-persistent-nonce-search
 
 Twelve UTF-8 source files; unchanged GPU module and CPU library. NonceSearch
@@ -11,7 +24,8 @@ The isolated package tests also pass.
 Next live check: 4,096 tiles, eight 512-tile windows, one nonce cache, actual
 received target. Separate cache/window wall times will identify the next search
 bottleneck. No new proof test, share submission, service or clock change. Live
-multi-window GPU execution is pending; no full nonce or throughput claim.
+multi-window GPU execution now passes: 4096 tiles in 1.086s, 64 batches, eight
+windows and one cache. No full nonce or throughput claim.
 
 
 ## v0.0.23-live-search-worker

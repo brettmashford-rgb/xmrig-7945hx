@@ -23,7 +23,8 @@ from pool.search import prepare_base, prepare_nonce, NonceSearch, plan_for
 from pool.session import MiningProfile, PoolSession
 from pool.worker import LatestJobWorker
 from reference.patterns import PeriodicPattern
-from tools.candidate_scan import CandidateScanner
+from tools.candidate_scan import CandidateScanner, CandidateBackend
+from tools.wide_scan import WideCandidateScanner, WideCandidateBackend, wide_plan_for
 from tools.check_live_job import saved_wallet
 
 
@@ -37,9 +38,13 @@ def main():
     parser.add_argument('--seconds', type=int, default=180)
     parser.add_argument('--tiles', type=int, default=4096)
     parser.add_argument('--window', type=int, default=512)
+    parser.add_argument('--dispatch', choices=('64', '4096'), default='64')
+    parser.add_argument('--compare', action='store_true', help='same nonce comparison; requires --dispatch 4096')
     args = parser.parse_args()
     if not 1 <= args.seconds <= 300 or not 1 <= args.tiles <= 65536 or not 1 <= args.window <= 4096:
         raise ValueError('receive window or tile cap outside bounded experiment')
+    if args.compare and args.dispatch != '4096':
+        raise ValueError('comparison requires the wide dispatcher')
     rows = PeriodicPattern(bytes.fromhex('000103040000'))
     cols = PeriodicPattern(bytes.fromhex('000103010103'))
     profile = MiningProfile(5121, 262144, 32768, 128, rows, cols)
@@ -69,30 +74,49 @@ def main():
         nonce_started = time.monotonic()
         context = prepare_nonce(job, base, job.assigned_extranonce, secrets.token_bytes(8), current)
         nonce_seconds = time.monotonic()-nonce_started
-        device = CandidateScanner()
+        device = WideCandidateScanner() if args.dispatch == '4096' else CandidateScanner()
         try:
             progress('Starting this worker thread\'s own GPU context and bounded production tile search.')
             device.start(args.module)
-            scan_started = time.monotonic()
-            segments = []
-            with NonceSearch(context, device, current) as search:
-                cache_seconds = time.monotonic()-scan_started
-                found = None
-                while search.cursor.next_tile < args.tiles and found is None:
-                    first = search.cursor.next_tile
-                    window_started = time.monotonic()
-                    found, cursor = search.advance(min(args.window, args.tiles-first))
-                    elapsed = time.monotonic()-window_started
-                    segments.append({'start': first, 'stop': cursor.next_tile,
-                                     'seconds': round(elapsed, 6)})
-                    progress(f'Search progress: {cursor.next_tile}/{args.tiles} tiles; one nonce cache retained.')
-            return {'generation': job.generation, 'scaled_target_bits': job.share_bound.bit_length(),
-                    'production_domain_tiles': plan_for(job).count, 'tiles_scanned': cursor.next_tile,
-                    'candidate_found': found is not None, 'cpu_checked_candidates': device.verified_tiles,
-                    'gpu_dispatches': device.dispatches, 'nonce_caches_created': 1,
-                    'cache_seconds': round(cache_seconds, 6), 'search_windows': segments, 'base_seconds': round(base_seconds, 3),
-                    'nonce_seconds': round(nonce_seconds, 3),
-                    'bounded_scan_seconds': round(time.monotonic()-scan_started, 3)}
+            def scan_mode(wide):
+                scan_started = time.monotonic()
+                segments = []
+                dispatch_before = device.dispatches
+                checked_before = device.verified_tiles
+                kwargs = {'backend_factory': WideCandidateBackend, 'plan_factory': wide_plan_for} if wide else {}
+                with NonceSearch(context, device, current, **kwargs) as search:
+                    cache_seconds = time.monotonic()-scan_started
+                    found = None
+                    while search.cursor.next_tile < args.tiles and found is None:
+                        first = search.cursor.next_tile
+                        window_started = time.monotonic()
+                        found, cursor = search.advance(min(args.window, args.tiles-first))
+                        elapsed = time.monotonic()-window_started
+                        segments.append({'start': first, 'stop': cursor.next_tile,
+                                         'seconds': round(elapsed, 6)})
+                        progress(f'Search progress ({"4096" if wide else "64"}-query batches): {cursor.next_tile}/{args.tiles} tiles; nonce cache retained.')
+                result = {'generation': job.generation, 'scaled_target_bits': job.share_bound.bit_length(),
+                          'production_domain_tiles': plan_for(job).count, 'tiles_scanned': cursor.next_tile,
+                          'candidate_found': found is not None,
+                          'cpu_checked_candidates': device.verified_tiles-checked_before,
+                          'gpu_dispatches': device.dispatches-dispatch_before, 'nonce_caches_created': 1,
+                          'cache_seconds': round(cache_seconds, 6), 'search_windows': segments,
+                          'base_seconds': round(base_seconds, 3), 'nonce_seconds': round(nonce_seconds, 3),
+                          'bounded_scan_seconds': round(time.monotonic()-scan_started, 3),
+                          'dispatch_query_cap': 4096 if wide else 64}
+                return found, result
+            baseline_hit = baseline = None
+            if args.compare:
+                progress('Comparing the validated 64-query path on this same nonce first.')
+                baseline_hit, baseline = scan_mode(False)
+            found, result = scan_mode(args.dispatch == '4096')
+            if args.compare:
+                if found != baseline_hit:
+                    raise RuntimeError('wide search candidate differs from same-nonce 64-query search')
+                result['same_nonce_baseline'] = baseline
+                result['same_nonce_candidate_match'] = True
+                result['full_window_comparison'] = not result['candidate_found'] and baseline['tiles_scanned'] == result['tiles_scanned']
+            return result
         finally:
             device.close()
     def completed(job, result):
@@ -142,6 +166,12 @@ def main():
     print(f'Timings: B commitment {result["base_seconds"]}s; nonce {result["nonce_seconds"]}s; bounded scan {result["bounded_scan_seconds"]}s', flush=True)
     print(f'GPU work: {result["gpu_dispatches"]} batches; one nonce cache; {len(result["search_windows"])} completed search windows.', flush=True)
     print(f'Nonce cache setup: {result["cache_seconds"]}s. Window timings saved locally.', flush=True)
+    if 'same_nonce_baseline' in result:
+        baseline = result['same_nonce_baseline']
+        old_seconds = sum(w['seconds'] for w in baseline['search_windows'])
+        new_seconds = sum(w['seconds'] for w in result['search_windows'])
+        print(f'Same nonce, cache excluded: 64-query path {old_seconds:.6f}s / {baseline["gpu_dispatches"]} launches; wide path {new_seconds:.6f}s / {result["gpu_dispatches"]} launches.', flush=True)
+        print('PASS: same-nonce candidate result matches; this is component timing, not miner throughput.', flush=True)
     print('No share submitted. No full-nonce or throughput claim. Miners and clocks unchanged.', flush=True)
     return 0
 
