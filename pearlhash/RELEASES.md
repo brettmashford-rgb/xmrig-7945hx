@@ -1,5 +1,27 @@
 # PearlHash development checkpoints
 
+## v0.0.18-global-range-batches
+
+Distribution: [source-file manifest](releases/pearlhash-dev-v0.0.18-files.json).
+Requires the existing verified v0.0.17 source/PTX directory and v0.0.16 CPU
+library. Only three new UTF-8 Python files are downloaded. No new GPU module,
+native binary, toolkit or compressed archive is required.
+
+Global batches preserve periodic row-major tile IDs while removing the legacy
+shared 32-row/column pool limit. Up to 64 independent global queries use one
+noise cache across batches/retries. CPU references still check every tested tile.
+Generation checks discard stale in-flight results before candidate delivery and
+leave the cursor resumable. This is an offline synchronous scheduling harness,
+not live pool cancellation or a complete production nonce search.
+
+Five new CPU tests pass. CPU-only integration passes 130 small-domain tiles in
+64/64/2 batches, plus two production-shaped tiles across a row-pattern boundary.
+It checks complete-result overflow retry, cancel/resume, stale discard/resume,
+cache lifetime and global candidate IDs. GPU integration remains pending on rig.
+No new proof check is required for this host batching change; the preceding
+v0.0.17 fresh V3 proof already passed on the rig. No pool connection or gain claim.
+
+
 ## v0.0.17-virtual-fragment-cache
 
 Distribution: [source-file manifest](releases/pearlhash-dev-v0.0.17-files.json) and
@@ -31,8 +53,10 @@ checks the shared-body refactor. CPU references make this a correctness harness.
 
 63 development CPU tests pass / two prior oracle/vector cases skip. Source/PTX
 standalone CPU-only preparation passes; it explicitly reports GPU unchecked and
-official verification not run. Driver-JIT GPU checks and the fresh V3 oracle
-verdict remain pending on rig. Prior v0.0.16 V2/V3 nonce proofs passed there.
+official verification not run on the development host. The subsequent RTX 5060
+run passes driver-JIT GPU checks, the materialized-wrapper regression and a fresh
+virtual-path V3 proof accepted by the official offline CPU verifier. Prior
+v0.0.16 V2/V3 nonce proofs also passed there.
 No full production search, pool submission, measured gain or working-miner claim.
 
 
@@ -368,3 +392,4 @@ Compiled and tested on the development host; the user confirmed both offline CPU
 Validation: seven Python tests; Rust test covers both proof versions plus modified-header/opening rejection and a tiny-target rejection. Exact version behavior is checked against intermediate seeds/transcripts/digests; easy-target fixtures are not evidence of production mining performance.
 
 The source under this subdirectory uses its own ISC license. No XMRig files or live rig settings are modified by this checkpoint.
+

@@ -185,12 +185,27 @@ synthetic profile uses 34472080 payload bytes, plus small keys/guards/dispatch d
 The original materialized wrapper and virtual wrapper share one MMA/fold/queue
 body. 63 CPU tests pass / two prior oracle/vector cases skip. Native uniform/
 loader code matches CPU references, including counter limits and signed bytes.
-New GPU execution, the wrapper regression and fresh virtual-path V3 proof check
-are pending on rig. This is a correctness harness, not a measured speed/power
+The RTX 5060 run passes the new virtual GPU checks, the wrapper regression and
+a fresh virtual-path V3 proof accepted by the official offline CPU verifier. This is a correctness harness, not a measured speed/power
 result or a complete production nonce worker. No custom-miner pool submission has occurred.
 
 The v0.0.17 distribution is plain source plus readable compiler-generated PTX,
 loaded/JIT-compiled by the existing NVIDIA driver. The existing verified v0.0.16
 CPU library is reused. No compressed archive or new native binary is distributed
 for this version. The source-file manifest in releases/ binds paths/sizes/hashes.
-No toolkit installation is required. The driver-JIT hardware check is pending.
+No toolkit installation is required. Driver-JIT execution now passes on the rig.
+
+
+
+## Global range batches (v0.0.18)
+
+The virtual backend now accepts lazy batches of up to 64 global tile maps without
+sharing the materialized backend's 32-row/column pools. One nonce noise cache is
+retained across dispatches and overflow retries. Global tile IDs and the existing
+generation/cursor delivery gates are preserved. Every tested tile still has an
+independent CPU reference; this is not yet a fast production worker.
+Five new CPU tests and CPU-only integration pass. The new integration checks
+130 small-domain tiles in batches of 64/64/2 and two production-shaped tiles
+across an A-pattern row boundary. GPU integration of this scheduling change is
+pending. Reuses the already-validated v0.0.17 PTX and existing CPU library; no
+new compilation, proof regeneration or capture. No pool submission or gain claim.

@@ -1,0 +1,34 @@
+{
+  "version": "0.0.17-source-ptx",
+  "source_commit": "7bda5fe19bb2984ec630a6ef47f28bfdaefca225",
+  "evidence": "user-supplied completed Termius output, 2026-10-25",
+  "gpu": "NVIDIA RTX 5060 sm_120",
+  "source_ptx_checksums": "passed",
+  "existing_cpu_library_checksum": "passed",
+  "driver_jit": "passed",
+  "cache_profiles": [
+    {
+      "name": "eight-warps-rank32",
+      "probed_bytes": 67584,
+      "tile_queries": 4,
+      "target_queue_scenarios": 6
+    },
+    {
+      "name": "negative-fill-rank1024",
+      "probed_bytes": 14336,
+      "tile_queries": 3,
+      "target_queue_scenarios": 6
+    },
+    {
+      "name": "production-shaped-cache",
+      "probed_bytes": 196608,
+      "tile_queries": 7,
+      "target_queue_scenarios": 6
+    }
+  ],
+  "materialized_wrapper_regression": "passed",
+  "fresh_virtual_v3_official_offline_verifier": "passed",
+  "pool_submitted_shares": 0,
+  "performance_measured": false,
+  "scope": "offline correctness; no full production nonce or pool verdict"
+}

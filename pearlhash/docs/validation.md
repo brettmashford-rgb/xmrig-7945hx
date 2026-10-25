@@ -493,3 +493,45 @@ CUDA/Rust toolkit is installed there. cuModuleLoad accepts a PTX file and the
 driver compiles it for the GPU; actual driver-JIT execution is pending on rig.
 Standalone source/PTX CPU-only preparation passes with GPU unchecked and official
 verification not run. That is not a GPU result or a pool verdict.
+
+
+
+### v0.0.17 RTX 5060 confirmation
+
+User-supplied terminal output confirms all 37 source/PTX files and the existing
+CPU library verified, then the sm_120 driver loaded/JIT-compiled the PTX.
+The three cache profiles passed 67584, 14336 and 196608 signed-byte probes,
+respectively, plus 4/3/7 tile queries across six target/queue scenarios each.
+Tables, transcripts, digests, tags and guards matched the CPU references.
+The original materialized-wrapper regression passed. A newly generated
+virtual-path V3 proof was accepted by the official offline CPU verifier.
+Completion was saved on the rig. This supersedes the pending hardware status
+above; it is not a pool verdict, full production search or measured gain.
+
+## v0.0.18 global-index range batches
+
+GlobalRangePlan preserves the original domain's row-major IDs and creates only
+one bounded batch at a time. Each tile carries its own global rows/columns, so
+the former batch-wide 32-row pool restriction is unnecessary for virtual inputs.
+GlobalBatch is a separate type: the new backend rejects legacy local-pool batches.
+The unchanged virtual kernel still caps each tile at 32 rows/columns, each launch
+at 64 queries and each cache payload at 64 MiB. CPU references remain mandatory
+for every tile, including misses; no faster unchecked search path is introduced.
+
+Five new CPU tests cover lazy batch sizes/ordering, production-sized boundary
+maps compared with the original index planner, invalid indices/types/intervals,
+overflow retry, failed-delivery cursor preservation and local/global ABI rejection.
+CPU-only integration also passes 130 small tiles in 64/64/2 batches and two
+production-shaped tiles across an A-pattern row boundary. All-hit maximum bounds
+intentionally force overflow/retry; they do not model pool difficulty. Controlled
+generation changes test cancellation after a committed batch and after an
+in-flight result. Stale results cannot deliver or advance the uncommitted cursor;
+resuming the original generation completes that interval. A cache is retained
+through retries and released at test end. Callbacks retain the existing idempotency
+requirement when they raise after side effects.
+
+No CUDA compilation was needed; the rig-validated v0.0.17 PTX is reused unchanged.
+New GPU integration is pending. The runner records complete only after all new
+checks pass, and CPU-only mode explicitly records gpu_checked=false. No new
+commitment/proof/capture test is repeated. No live pool connection, custom share,
+full production nonce or throughput/power improvement is claimed.

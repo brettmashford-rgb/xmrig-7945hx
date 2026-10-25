@@ -1,0 +1,27 @@
+{
+  "version": "0.0.18-source",
+  "requires_version": "0.0.17-source-ptx",
+  "required_manifest_sha256": "2ab175ecf311bb7ab7aa35fbe31fbae547740dac8b6069602957cd8c2b10a183",
+  "required_ptx_sha256": "1265a107fc0d98250179ab3c8097c7811f857a3d29ca3f0e296cda01cf62d704",
+  "required_cpu_library_sha256": "1b0127307179b124178bdbd50c86b587984b42cc04390cdc73bf8fcb8cf284a9",
+  "files": [
+    {
+      "repository_path": "pearlhash/tools/global_range.py",
+      "path": "tools/global_range.py",
+      "bytes": 4179,
+      "sha256": "5b9275429ef2ee088648f80814caecdc6be8281eedebedc771274cf9423308e2"
+    },
+    {
+      "repository_path": "pearlhash/tools/check_global_range_gpu.py",
+      "path": "tools/check_global_range_gpu.py",
+      "bytes": 6550,
+      "sha256": "fe3ba55f84e751194573c7029e37a6201df9e50f7c7aaf2ebc8a556a6ed5dfcb"
+    },
+    {
+      "repository_path": "pearlhash/tests/test_global_range.py",
+      "path": "tests/test_global_range.py",
+      "bytes": 3696,
+      "sha256": "132984b9c495ac60e9e50ba297738234be316d92f7c6a19c610ad51e466be09b"
+    }
+  ]
+}
