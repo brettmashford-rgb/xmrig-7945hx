@@ -535,3 +535,48 @@ New GPU integration is pending. The runner records complete only after all new
 checks pass, and CPU-only mode explicitly records gpu_checked=false. No new
 commitment/proof/capture test is repeated. No live pool connection, custom share,
 full production nonce or throughput/power improvement is claimed.
+
+
+### v0.0.18 RTX 5060 confirmation
+
+The user-supplied completed Termius output confirms previous source/module/library
+checksums and both global scheduler GPU cases pass: 130 small-domain tiles in
+64/64/2 batches and two production-shaped row-boundary tiles. CPU references,
+overflow retry, global IDs, stale in-flight discard and resume all matched.
+Completion was saved. This supersedes the pending v0.0.18 GPU status above.
+
+## v0.0.19 candidate-only CPU validation
+
+CandidateScanner invokes the unchanged virtual_tile_scan entry with transcript
+audit disabled. It uploads descriptors/targets, not CPU noised matrices or CPU
+tile results. Cache generation remains on GPU. A new decoder validates exact
+queue/status lengths, total<=query_count, overflow==(total>capacity), unique valid
+query slots, full u64 generation tags and inclusive already-scaled u256 bounds.
+Only complete queues are independently recomputed on CPU using global_reference;
+zero-hit queues do no candidate reference work, and partial queues retry without
+validating/delivering a truncated set. Device output/cache guards still check.
+No table CPU-reference scan is performed before every search batch. No claim
+is made that this path independently detects GPU false negatives.
+
+The separate test harness computes all references outside CandidateScanner, then
+compares complete hit sets for 64 global singleton queries and two 10x16/k32768
+production-shaped queries. Seven scenarios cover all-hit, no-hit, mixed, inclusive
+equality, digest-minus-one and capacity-one/zero overflow. It checks the exact
+number of returned-tile CPU verifications, including zero for misses and partial
+queues. CPU emulation must compute all references to emulate the GPU; that is
+explicitly not a GPU/candidate-only-work result. Four new CPU unit tests cover
+unordered complete hits, no-call empty/partial paths, malformed lengths/counts/
+flags/slots/tags, duplicate records, equality and independent math rejection.
+The prior five global scheduler tests also pass. The standalone version-overlay
+imports and new four tests pass with Python site packages disabled.
+
+Fresh synthetic V3 nonce search now uses GlobalRangePlan plus CandidateBackend;
+returned global IDs feed the existing nonce/header/root/seed/pattern/proof checks.
+The existing official offline verifier will check this new path's fresh proof.
+CPU-only preparation passes (64 tiles scanned to first completed hit batch),
+with GPU unchecked and official verifier not run. New GPU execution and official
+proof verdict remain pending on the rig. The GPU module bytes are unchanged.
+
+This remains a synchronous offline search integration, without full production
+nonce completion, live pool version/config/target rules or share submission.
+No comparative timing, hashrate, power, efficiency or working-miner claim.

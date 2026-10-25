@@ -1,0 +1,32 @@
+{
+  "version": "0.0.18-source",
+  "source_commit": "96cc689b4d0e5360eb0fd9c6e91a5092d840c70d",
+  "evidence": "user-supplied completed Termius output, 2026-10-25",
+  "gpu": "NVIDIA RTX 5060 sm_120",
+  "source_checksums": "passed",
+  "existing_module_library_checksums": "passed",
+  "checks": [
+    {
+      "name": "64-query-global-batches",
+      "tiles": 130,
+      "batch_sizes": [
+        64,
+        64,
+        2
+      ],
+      "result": "passed"
+    },
+    {
+      "name": "production-row-boundary",
+      "tiles": 2,
+      "batch_sizes": [
+        2
+      ],
+      "result": "passed"
+    }
+  ],
+  "overflow_retry_global_ids_stale_discard_resume": "passed",
+  "pool_submitted_shares": 0,
+  "performance_measured": false,
+  "scope": "offline global scheduler correctness; no new proof or full production nonce"
+}

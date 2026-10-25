@@ -1,5 +1,30 @@
 # PearlHash development checkpoints
 
+## v0.0.19-candidate-only-search
+
+Distribution: [source-file manifest](releases/pearlhash-dev-v0.0.19-files.json).
+Only three new UTF-8 Python files; reuse the verified v0.0.17 PTX/source,
+v0.0.18 global-index planner and existing v0.0.16 CPU hash library. No new
+native binary, compilation or toolkit is needed.
+
+The new search path stops computing CPU references for unsuccessful GPU tiles.
+Returned complete candidates still require independent scalar CPU math and
+already-scaled target checks. A structural queue decoder rejects bad lengths,
+counts, overflow flags, duplicate/unknown slots and stale generation tags.
+Partial queues cannot deliver candidates; the range scheduler retries them.
+Missed GPU hits cannot be detected by this path alone, so the bounded correctness
+runner separately compares all hit sets against full CPU references.
+
+Four new CPU tests pass; the five preceding scheduler CPU tests also pass.
+CPU-only integration prepares 64-query and production-shaped two-query cases
+across seven target/queue scenarios each, then constructs a fresh synthetic V3
+proof using the candidate-path global scheduler. GPU and official verifier were
+not run on the development host. The rig runner will exercise the new GPU dispatch
+and verify its NEW V3 proof using the existing official offline CPU oracle.
+Earlier completed proof/capture tests are not rerun. No full production nonce,
+live pool submission, custom accepted share or performance improvement is claimed.
+
+
 ## v0.0.18-global-range-batches
 
 Distribution: [source-file manifest](releases/pearlhash-dev-v0.0.18-files.json).
@@ -17,7 +42,8 @@ not live pool cancellation or a complete production nonce search.
 Five new CPU tests pass. CPU-only integration passes 130 small-domain tiles in
 64/64/2 batches, plus two production-shaped tiles across a row-pattern boundary.
 It checks complete-result overflow retry, cancel/resume, stale discard/resume,
-cache lifetime and global candidate IDs. GPU integration remains pending on rig.
+cache lifetime and global candidate IDs. The subsequent RTX 5060 run passes
+both GPU integration checks with completion saved.
 No new proof check is required for this host batching change; the preceding
 v0.0.17 fresh V3 proof already passed on the rig. No pool connection or gain claim.
 

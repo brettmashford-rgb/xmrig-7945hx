@@ -206,6 +206,22 @@ generation/cursor delivery gates are preserved. Every tested tile still has an
 independent CPU reference; this is not yet a fast production worker.
 Five new CPU tests and CPU-only integration pass. The new integration checks
 130 small-domain tiles in batches of 64/64/2 and two production-shaped tiles
-across an A-pattern row boundary. GPU integration of this scheduling change is
-pending. Reuses the already-validated v0.0.17 PTX and existing CPU library; no
+across an A-pattern row boundary. The subsequent RTX 5060 run passes both new
+GPU integration checks, including overflow and stale-result discard/resume. Reuses the already-validated v0.0.17 PTX and existing CPU library; no
 new compilation, proof regeneration or capture. No pool submission or gain claim.
+
+
+## Candidate-only CPU validation (v0.0.19)
+
+A new host search path feeds the unchanged validated virtual GPU kernel without
+precomputing CPU transcripts for every tile. Complete returned candidates are
+independently recomputed on CPU; empty queues require no candidate math, and
+partial queues must retry before validation/delivery. Queue lengths, counts,
+overflow, global-query slots, generation tags, bounds and buffer guards are
+checked. Misses are not independently recomputed in this search path; a separate
+full-reference harness compares entire hit sets for bounded synthetic cases.
+
+Four new CPU tests and CPU-only search/proof preparation pass. New GPU execution
+and official offline verification of a fresh candidate-path V3 proof are pending.
+No new GPU compilation or toolkit is needed. No full production nonce completion,
+live pool submission, accepted custom share or measured speed/power gain is claimed.

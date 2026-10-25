@@ -1,0 +1,31 @@
+{
+  "version": "0.0.19-source",
+  "requires": [
+    "0.0.17-source-ptx",
+    "0.0.18-source"
+  ],
+  "required_v17_manifest_sha256": "2ab175ecf311bb7ab7aa35fbe31fbae547740dac8b6069602957cd8c2b10a183",
+  "required_v18_global_range_sha256": "5b9275429ef2ee088648f80814caecdc6be8281eedebedc771274cf9423308e2",
+  "required_ptx_sha256": "1265a107fc0d98250179ab3c8097c7811f857a3d29ca3f0e296cda01cf62d704",
+  "required_cpu_library_sha256": "1b0127307179b124178bdbd50c86b587984b42cc04390cdc73bf8fcb8cf284a9",
+  "files": [
+    {
+      "repository_path": "pearlhash/tools/candidate_scan.py",
+      "path": "tools/candidate_scan.py",
+      "bytes": 6643,
+      "sha256": "3b8dcd3dcb557381ad0945ea6d0087e391677426fb3f987118353e04d1a35b9d"
+    },
+    {
+      "repository_path": "pearlhash/tools/check_candidate_gpu.py",
+      "path": "tools/check_candidate_gpu.py",
+      "bytes": 9862,
+      "sha256": "7ed6b75552386286b17af123c6bddf6298531a1f56a33d5f6ee415bf8ad1f615"
+    },
+    {
+      "repository_path": "pearlhash/tests/test_candidate_scan.py",
+      "path": "tests/test_candidate_scan.py",
+      "bytes": 3151,
+      "sha256": "93b88f75acc94d959dacceb125d187df69f0e8c0d01be06371e4cf61aa21b974"
+    }
+  ]
+}
