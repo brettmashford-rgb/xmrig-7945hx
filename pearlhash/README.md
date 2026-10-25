@@ -378,3 +378,20 @@ Only after those pass does it compare the new and old kernels at 4096 production
 tiles on the same fresh nonce/target. GPU correctness and speed are pending.
 No proof construction, submitted share, service/clock change or miner throughput
 claim. Assigned-extranonce/compact-submit mapping remains provisional.
+
+
+## v0.0.26 transcript checker correction
+
+The first rig diagnostic stopped before a live connection because the checker
+compared tuple(CPU transcript bytes), length64, against sixteen decoded GPU u32
+words. The reference returns packed little-endian bytes. The fix decodes them
+with struct.unpack('<16I', raw) before comparing every word. No kernel/PTX,
+digest/target check, guard or queue validation changes. Kernel correctness and
+speed remain unestablished until the corrected real GPU run completes.
+
+Two regression tests cover full-width u32 values, invalid reference formats and
+real scalar-reference byte output. The corrected twenty-case CLI mock uses the
+actual decoded GPU audit format; the previous mock incorrectly supplied byte
+tuples and missed the representation mismatch. Isolated patch tests pass.
+The small fix manifest downloads the checker/test source only and reuses the
+verified v026 package/PTX; the failed report and original files are preserved.

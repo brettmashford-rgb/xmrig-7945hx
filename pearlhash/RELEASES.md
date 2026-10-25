@@ -1,5 +1,18 @@
 # PearlHash development checkpoints
 
+## v0.0.26-fix1-transcript-checker
+
+The rig stopped before a live connection on a checker representation bug:
+packed CPU transcript bytes versus sixteen decoded GPU u32 words. Decode the
+64 CPU bytes with explicit little-endian u32 unpacking before equality. Keep
+all transcript words, digests, guards and queue checks. Kernel/PTX unchanged.
+
+Two regression tests using real CPU output and full-width words pass; corrected
+twenty-case CLI mock uses the actual GPU audit format. Isolated patch tests pass.
+The patch manifest contains two source files and requires the original verified
+v026 package/PTX. Actual corrected GPU correctness/comparison remain pending.
+
+
 ## v0.0.26-per-warp-kernel
 
 New one-query-per-warp integer MMA/fold kernel. Transcript slots stay in lanes,

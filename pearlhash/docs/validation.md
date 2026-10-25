@@ -844,3 +844,23 @@ complete/overflow queues and high generation tags, with guards unchanged.
 The live comparison is gated on diagnostic success and uses both compiled
 kernels from the new module on the same nonce/target, one cache per path.
 Actual GPU correctness and speed remain pending; no proof/share verdict.
+
+
+### v0.0.26 first rig attempt and harness correction
+
+User output confirms all27 source/PTX checksums and successful sm120 module
+load, then a stop on the first transcript comparison. The script did not start
+the live pool comparison. This is not recorded as a passed kernel test.
+
+The reference scalar_reference returns struct.pack('<16I', words), not a tuple
+of sixteen integers. The harness used tuple(raw), producing64 byte integers,
+while GPU audit decoding produces16 u32 integers. The fix uses explicit
+struct.unpack('<16I', raw), rejecting nonbytes/wrong-length references and
+comparing every full-width word. No CUDA/PTX or digest/target/queue change.
+
+Two new regression tests use words above255 and real scalar-reference bytes,
+including malformed-length/type rejection. The previous mock had repeated the
+wrong byte-tuple representation for GPU audits; the corrected twenty-case mock
+uses real decoded-u32 audit format. It passes, along with isolated patch tests.
+This still does not execute a real GPU. Corrected real GPU diagnostics and
+subsequent same-nonce comparison remain pending; no performance claim.

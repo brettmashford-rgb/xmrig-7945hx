@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import struct
 from pathlib import Path
 import sys
 
@@ -14,6 +15,17 @@ from tools.check_range_scan_gpu import ConstantProfile
 from tools.check_tile_scan_gpu import MAX_BOUND,TileQuery
 from tools.virtual_scan import VirtualTables,global_reference
 from tools.warp_scan import WarpCandidateScanner
+
+
+def expected_transcripts(references, queries):
+    """CPU reference returns packed 64-byte LE transcripts, GPU audit u32s."""
+    result=[]
+    for query in queries:
+        raw=references[query][0]
+        if type(raw)is not bytes or len(raw)!=64:
+            raise ValueError('CPU reference transcript must contain exactly 64 bytes')
+        result.append(struct.unpack('<16I',raw))
+    return tuple(result)
 
 
 def cases():
@@ -51,7 +63,7 @@ def main():
                 result=device.scan_wide(tables,queries,bounds,capacity,(1<<63)+29,audit=True)
                 if result.total!=len(expected)or result.overflow!=(len(expected)>capacity):
                     raise RuntimeError('warp queue count/overflow differs')
-                if tuple(tuple(refs[q][0])for q in queries)!=device.last_transcripts:
+                if expected_transcripts(refs,queries)!=device.last_transcripts:
                     raise RuntimeError('warp prefix transcript differs from independent CPU')
                 if result.overflow:
                     if len(result.records)!=capacity or any(expected.get(i)!=d for i,d in result.records.items()):

@@ -1,0 +1,20 @@
+{
+  "version": "0.0.26-fix1-source",
+  "distribution": "transcript comparison source correction only; no PTX change",
+  "required_v26_manifest_sha256": "b17548171d90e02f95398a5ec15ae546180f2bd7d82d81b1b9f5c0148fd79711",
+  "required_ptx_sha256": "4d4a2247a89f4b181c126ddcf2dfa47d6c8f155324e7510f1dbf2532bcb24a6c",
+  "files": [
+    {
+      "path": "tools/check_warp_gpu.py",
+      "repository_path": "pearlhash/tools/check_warp_gpu.py",
+      "bytes": 5048,
+      "sha256": "0ea6fc4203dbfc3902980c77de40b4473b26996d6a3b56cc190eb4bb47e2eb69"
+    },
+    {
+      "path": "tests/test_warp_transcripts.py",
+      "repository_path": "pearlhash/tests/test_warp_transcripts.py",
+      "bytes": 1438,
+      "sha256": "17ca104d2764f252c94ae6b04596f07e7298826e526544326d7676a687027948"
+    }
+  ]
+}

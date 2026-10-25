@@ -1,0 +1,13 @@
+{
+  "version": "0.0.26-source-ptx",
+  "source_commit": "0eb60c886ce25b261c14440841c8fe303e7a3325",
+  "evidence": "user-supplied Termius output, 2026-10-25",
+  "source_files_checked": 27,
+  "gpu": "RTX 5060 sm_120",
+  "diagnostic": "stopped on first transcript comparison",
+  "identified_harness_fault": "packed 64-byte CPU transcript compared against decoded 16-u32 GPU audit tuple",
+  "kernel_correctness": "not established; corrected diagnostic required",
+  "live_pool_connection": false,
+  "submitted_shares": 0,
+  "ptx_changed_by_fix": false
+}
