@@ -1,0 +1,23 @@
+{
+  "version": "0.0.25-source",
+  "source_commit": "f744729186b2e87dbb5d443dceb8a798762371c8",
+  "evidence": "user-supplied completed Termius output, 2026-10-25",
+  "source_files_checked": 14,
+  "gpu": "RTX 5060 sm_120",
+  "large_grid_queue_checks_passed": 5,
+  "same_nonce_candidate_match": true,
+  "same_nonce_tiles": 4096,
+  "window_seconds_cache_excluded": {
+    "64_query": 1.043411,
+    "4096_query": 0.389395
+  },
+  "rig_stage_seconds": {
+    "base": 29.436,
+    "nonce": 0.57,
+    "bounded_scan": 0.436,
+    "nonce_cache": 0.045167
+  },
+  "receiver_closed_worker_joined_job_invalidated": "passed",
+  "submitted_shares": 0,
+  "scope": "component comparison under concurrent existing mining; no full nonce or miner throughput claim"
+}

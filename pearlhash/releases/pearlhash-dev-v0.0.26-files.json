@@ -1,0 +1,170 @@
+{
+  "version": "0.0.26-source-ptx",
+  "distribution": "UTF-8 CUDA/Python source and actual compiler-generated PTX; reuse existing CPU library",
+  "required_v17_manifest_sha256": "2ab175ecf311bb7ab7aa35fbe31fbae547740dac8b6069602957cd8c2b10a183",
+  "required_cpu_library_sha256": "1b0127307179b124178bdbd50c86b587984b42cc04390cdc73bf8fcb8cf284a9",
+  "files": [
+    {
+      "path": "gpu/warp_tile_scan.cu",
+      "repository_path": "pearlhash/gpu/warp_tile_scan.cu",
+      "bytes": 3564,
+      "sha256": "7de77cc99d924a2bc4378f95e7ca45548f9c076bfc227c52a86b56a675fcb32b"
+    },
+    {
+      "path": "tools/warp_scan.py",
+      "repository_path": "pearlhash/tools/warp_scan.py",
+      "bytes": 458,
+      "sha256": "f48927330a155ccce3769f9f747868feae67a9854ef84b719cc2e39cb66290cb"
+    },
+    {
+      "path": "tools/check_warp_gpu.py",
+      "repository_path": "pearlhash/tools/check_warp_gpu.py",
+      "bytes": 4628,
+      "sha256": "9671521a5f46d233fb065bb8dcf08e3555523759877b220458327027ba397a68"
+    },
+    {
+      "path": "tools/build_warp_ptx.py",
+      "repository_path": "pearlhash/tools/build_warp_ptx.py",
+      "bytes": 2980,
+      "sha256": "e64310a5c91b7f12e0f2dc0ae5bcd8aec2bb53cbe09e3aaaad99777fccf9063c"
+    },
+    {
+      "path": "tests/test_warp_scan.py",
+      "repository_path": "pearlhash/tests/test_warp_scan.py",
+      "bytes": 2808,
+      "sha256": "c4dfa6c2fe266d9e785d679ae1588fa40609d7583746d7568472beac9de77ad2"
+    },
+    {
+      "path": "tools/wide_scan.py",
+      "repository_path": "pearlhash/tools/wide_scan.py",
+      "bytes": 7585,
+      "sha256": "71001a176cada3706e7afa4bd837822659fac84c17787a098fd3221a4fc4233c"
+    },
+    {
+      "path": "tools/check_live_search.py",
+      "repository_path": "pearlhash/tools/check_live_search.py",
+      "bytes": 11429,
+      "sha256": "6f8627175a481588824a25473cd237572b826d48f9206dd8a12e66e57d140833"
+    },
+    {
+      "path": "pool/__init__.py",
+      "repository_path": "pearlhash/pool/__init__.py",
+      "bytes": 67,
+      "sha256": "354f4108c5dd2929ba200b1d70608b69f14ef5b0b7deb0eb4e661b06d2aed53e"
+    },
+    {
+      "path": "pool/job.py",
+      "repository_path": "pearlhash/pool/job.py",
+      "bytes": 2454,
+      "sha256": "c77435a07813c3d32f6869ca30c818b3171cae9093048aa3fd9c1fdb73681447"
+    },
+    {
+      "path": "pool/session.py",
+      "repository_path": "pearlhash/pool/session.py",
+      "bytes": 7421,
+      "sha256": "674a91b140662d1c3c69a867ea6308208e13f1b5343ed49b2ff30a6bd6f959db"
+    },
+    {
+      "path": "pool/receiver.py",
+      "repository_path": "pearlhash/pool/receiver.py",
+      "bytes": 4916,
+      "sha256": "bde0b88157b345ac9df09f728c74f6d983ca9179d6cd9d0887d1bdbfff424468"
+    },
+    {
+      "path": "pool/worker.py",
+      "repository_path": "pearlhash/pool/worker.py",
+      "bytes": 4234,
+      "sha256": "9c08a04f8ce6c784ff4a917b006bc8cce1d4111ee5131ad2ed1097017a8cabdd"
+    },
+    {
+      "path": "pool/search.py",
+      "repository_path": "pearlhash/pool/search.py",
+      "bytes": 7953,
+      "sha256": "b14bda47b5a4e3984a4c5f841274a4294a22a7fc85ed0f1bebced6e94bd86d04"
+    },
+    {
+      "path": "tools/candidate_scan.py",
+      "repository_path": "pearlhash/tools/candidate_scan.py",
+      "bytes": 6643,
+      "sha256": "3b8dcd3dcb557381ad0945ea6d0087e391677426fb3f987118353e04d1a35b9d"
+    },
+    {
+      "path": "tools/global_range.py",
+      "repository_path": "pearlhash/tools/global_range.py",
+      "bytes": 4179,
+      "sha256": "5b9275429ef2ee088648f80814caecdc6be8281eedebedc771274cf9423308e2"
+    },
+    {
+      "path": "tools/pool_probe.py",
+      "repository_path": "pearlhash/tools/pool_probe.py",
+      "bytes": 7154,
+      "sha256": "791636774a16d87af532c39cc1f0d0cac2346441c76de75044f75118015382c6"
+    },
+    {
+      "path": "tools/check_live_job.py",
+      "repository_path": "pearlhash/tools/check_live_job.py",
+      "bytes": 5378,
+      "sha256": "24108e814fa7288f93724e37a93368ea0d6726401ecd7be9580dfa35db213a41"
+    },
+    {
+      "path": "gpu/keyed64.h",
+      "repository_path": "pearlhash/gpu/keyed64.h",
+      "bytes": 2385,
+      "sha256": "83e9c85660360a752a9d2e399f18620496fa2859f8e0575a4e09a27ee223adb6"
+    },
+    {
+      "path": "gpu/mma_correctness.cu",
+      "repository_path": "pearlhash/gpu/mma_correctness.cu",
+      "bytes": 3287,
+      "sha256": "cc97950a9c1a65b81407ff0115434c123d8526b7741c0073f250185563a75fef"
+    },
+    {
+      "path": "gpu/noise_mma.cu",
+      "repository_path": "pearlhash/gpu/noise_mma.cu",
+      "bytes": 2113,
+      "sha256": "d946fd10f2a6aeae347b3c52bfa81ded7b45ee85eba374e952f7efcf624e532f"
+    },
+    {
+      "path": "gpu/scan_target.h",
+      "repository_path": "pearlhash/gpu/scan_target.h",
+      "bytes": 580,
+      "sha256": "881f89f88c220818e207833093b2285c9eb3d0cffed8ac177a95292a1b601095"
+    },
+    {
+      "path": "gpu/tile_scan.cu",
+      "repository_path": "pearlhash/gpu/tile_scan.cu",
+      "bytes": 1523,
+      "sha256": "ebd5c9b5604f2564fa6df113968122cfe4129286c6514cd8cb241a7b1b372438"
+    },
+    {
+      "path": "gpu/tile_scan_core.cuh",
+      "repository_path": "pearlhash/gpu/tile_scan_core.cuh",
+      "bytes": 3402,
+      "sha256": "6f8bfe17db620102add64c9e89f98d198dd98ca04836d7ec1f76685f4491a7d0"
+    },
+    {
+      "path": "gpu/virtual_input.h",
+      "repository_path": "pearlhash/gpu/virtual_input.h",
+      "bytes": 1815,
+      "sha256": "f09cc193877737cb0e441c97c70b17bd4050af2608cdd21551b8d1b05bf65256"
+    },
+    {
+      "path": "gpu/virtual_tile_scan.cu",
+      "repository_path": "pearlhash/gpu/virtual_tile_scan.cu",
+      "bytes": 2190,
+      "sha256": "26df912b38afc8ee261eb03dc88c65d6a6f2cf5a9a6769b6dc7f1cfba053586c"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.26-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.26-sm120.ptx",
+      "bytes": 453491,
+      "sha256": "4d4a2247a89f4b181c126ddcf2dfa47d6c8f155324e7510f1dbf2532bcb24a6c"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.26-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.26-build.json",
+      "bytes": 1609,
+      "sha256": "3a5c8264def953485bdcab8aa58a927120431f3d56a26ac5011f48a22d15eb44"
+    }
+  ]
+}

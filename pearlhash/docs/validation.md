@@ -808,3 +808,39 @@ target, with one fresh cache per path and window times excluding setup. Equal
 early-candidate results are checked; common kernel faults are not excluded by
 that same-kernel comparison alone. Larger-batch GPU execution/performance is
 pending the rig. No share submission or broader throughput claim.
+
+
+### v0.0.25 rig result
+
+User output confirms fourteen checksums and all five GPU wide-grid queue cases,
+including 4096 complete hits, empty/overflow queues and a 67-query partial grid.
+The same-nonce production comparison passes. Cache-excluded times: 1.043411s
+for 64 launches versus 0.389395s for one 4096-query launch. B preparation 29.436s,
+nonce 0.570s, new bounded scan including cache 0.436s, cache setup 0.045167s.
+This is component timing under concurrent existing mining, not miner throughput.
+
+### v0.0.26 per-warp kernel
+
+The new kernel retains exact signed-int8/int32 MMA accumulation, prefix XOR/
+rotate transcript and keyed digest/target/queue behavior. It computes each
+query's up-to-eight MMA subtiles within one warp. All lanes participate in
+shuffle reductions/gathers; transcript slot i is retained by lane i. Partial
+grids return only whole inactive warps; there are no cross-warp barriers.
+
+NVRTC 12.9.86 produced real UTF-8 PTX8.8/sm120. An independent invocation of
+the published build helper reproduced identical bytes; generated new-entry
+PTX contains zero block barriers. Eight inherited GPU files were restored and
+verified against the pinned v017 manifest before compilation. No vendor binary
+or compiler is distributed.
+
+Two CPU tests check coverage for partial/full warp grids and the 20-argument
+host ABI/audit allocation contract; five prior wide tests pass. Mocked CLIs
+check report/lifecycle and all twenty intended scenarios with CPU references;
+these are not GPU executions. The real rig diagnostic must match independent
+CPU prefix transcripts and digests for ranks32/128/1024, one/two/four/eight
+MMA-subtile layouts, padding, signed values, nonce tails, max/equal/below bounds,
+complete/overflow queues and high generation tags, with guards unchanged.
+
+The live comparison is gated on diagnostic success and uses both compiled
+kernels from the new module on the same nonce/target, one cache per path.
+Actual GPU correctness and speed remain pending; no proof/share verdict.

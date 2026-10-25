@@ -350,5 +350,31 @@ CPU references for four small repeated queries. It then compares 64-query and
 4,096-query dispatch on the same fresh production nonce/target. Each path builds
 one cache; reported window timings exclude cache setup. This is component
 measurement under existing mining, not miner throughput or a proven speedup.
-Actual GPU results are pending. No proof construction, submitted share or service/
+Actual GPU checks and the same-nonce comparison now pass. Five queue/grid
+cases pass; cache-excluded 4096-tile times were 1.043411s (64 queries/launch)
+and 0.389395s (4096 queries/launch), under concurrent existing mining. No proof construction, submitted share or service/
 clock change. Live nonce mapping and custom accepted shares remain unvalidated.
+
+
+## Per-warp tile kernel (v0.0.26)
+
+A new independent kernel assigns one complete query to each warp, up to eight
+queries per block. Each warp computes the query's MMA subtiles, reduces the
+prefix fold within its lanes and keeps transcript slot i in lane i. It removes
+the old cross-warp shared transcript/barriers. Queue ABI, target test, nonce
+inputs, generation tags and candidate CPU checks are preserved.
+
+Readable sm_120 PTX was compiled with NVRTC 12.9.86 and reproduced byte-for-byte
+using the included build helper. The new entry has no block barriers in the
+generated PTX. Source, inherited headers, compiler metadata and actual PTX are
+included; no opaque archive or compiler installation on the rig is needed.
+
+Two host launch/ABI tests and five preceding wide-dispatch tests pass. Mocked
+20-case correctness/report and same-nonce kernel-comparison smokes pass locally;
+these do not execute a GPU. The rig check independently compares transcripts,
+digests, equality/overflow queues, guards and generation tags for one/two/four/
+eight-subtile layouts, ranks32/128/1024, padding/signed inputs and nonce tails.
+Only after those pass does it compare the new and old kernels at 4096 production
+tiles on the same fresh nonce/target. GPU correctness and speed are pending.
+No proof construction, submitted share, service/clock change or miner throughput
+claim. Assigned-extranonce/compact-submit mapping remains provisional.

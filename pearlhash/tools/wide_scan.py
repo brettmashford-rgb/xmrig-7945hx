@@ -97,7 +97,10 @@ class WideCandidateScanner(CandidateScanner):
         self.wide_dispatches = 0
         self.unique_cpu_checks = 0
 
-    def scan_wide(self, tables, queries, bounds, capacity, generation):
+    def kernel_launch(self, query_count):
+        return b'virtual_tile_scan', query_count
+
+    def scan_wide(self, tables, queries, bounds, capacity, generation, *, audit=False):
         if tables.device is not self or tables.closed:
             raise ValueError('foreign or closed wide nonce cache')
         descriptors = pack_wide(tables.profile, queries)
@@ -113,18 +116,22 @@ class WideCandidateScanner(CandidateScanner):
             zero = C.create_string_buffer(bytes(8), 8)
             self.api('cuMemcpyHtoD_v2', [C.c_ulonglong, C.c_void_p, C.c_size_t], s, zero, 8)
             queue, q = self.guarded(capacity*44)
-            trace, t = self.guarded(0)
+            trace_bytes = len(queries)*64 if audit else 0
+            trace, t = self.guarded(trace_bytes)
             arguments = (*tables.inputs(), desc, limits, tables.key_a, s, q, t,
-                         C.c_uint(0), C.c_uint(capacity), C.c_uint(len(queries)),
+                         C.c_uint(audit), C.c_uint(capacity), C.c_uint(len(queries)),
                          C.c_uint(profile.m), C.c_uint(profile.n), C.c_uint(profile.k),
                          C.c_uint(profile.rank), C.c_int(profile.fill), C.c_ulonglong(generation))
-            self.launch(b'virtual_tile_scan', arguments, len(queries), 256)
+            kernel, blocks = self.kernel_launch(len(queries))
+            self.launch(kernel, arguments, blocks, 256)
             self.dispatches += 1
             self.wide_dispatches += 1
             self.api('cuCtxSynchronize', [])
             result = decode_wide(self.checked_download(queue, capacity*44),
                                  self.checked_download(status, 8), bounds, capacity, generation)
-            self.checked_download(trace, 0)
+            transcript_raw = self.checked_download(trace, trace_bytes)
+            self.last_transcripts = tuple(struct.unpack_from('<16I', transcript_raw, i*64)
+                                          for i in range(len(queries))) if audit else None
             tables.check_guards()
             references = {}
             def reference(query):

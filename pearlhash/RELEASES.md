@@ -1,5 +1,19 @@
 # PearlHash development checkpoints
 
+## v0.0.26-per-warp-kernel
+
+New one-query-per-warp integer MMA/fold kernel. Transcript slots stay in lanes,
+removing cross-warp shared-memory prefix barriers. Actual readable PTX built
+with NVRTC 12.9.86; byte-identical rebuild passed. Full source/headers and build
+metadata are included. No new compiler/toolkit required on the rig.
+
+Two CPU host-contract tests and five prior wide-dispatch tests pass. Mocked
+correctness/report and same-nonce comparison CLIs pass. The rig will check 20
+independent transcript/digest/queue cases over four layouts before a live old-
+versus-new kernel comparison on the same production nonce. GPU result/speedup
+is pending. No share submission or service/clock change.
+
+
 ## v0.0.25-wide-dispatch
 
 Fourteen UTF-8 source files; unchanged PTX/CPU library. New host packing/queue
@@ -8,8 +22,8 @@ generation tags, overflow retry and candidate-only CPU verification.
 
 Five new CPU tests and six persistent-search tests pass. Mocked correctness and
 same-nonce comparison CLI/reports pass. Isolated package tests pass. Actual GPU
-execution is pending: five new large-grid queue cases, then 64-vs-4096-query
-comparison using the same fresh production nonce and actual received target.
+execution now passes: all five large-grid cases and the same-nonce comparison.
+Cache-excluded times: 1.043411s (64-query) and 0.389395s (4096-query).
 No speedup claim until measured; no proof/share/service/clock change.
 
 
