@@ -1,0 +1,94 @@
+{
+  "version": "0.0.30-source",
+  "distribution": "target observation and bounded mining work diagnostics; unchanged GPU kernel",
+  "required_v29_manifest_sha256": "1372bea1c2dacc5a622afe5aecea08ab70c10b2186e399b93cf0f9665d81fe97",
+  "required_v27_manifest_sha256": "92754526e52f4e12162fc86205cbdb5e1ef390558e3ef50b4957caa5efa6e8e7",
+  "required_v17_manifest_sha256": "2ab175ecf311bb7ab7aa35fbe31fbae547740dac8b6069602957cd8c2b10a183",
+  "required_cpu_library_sha256": "1b0127307179b124178bdbd50c86b587984b42cc04390cdc73bf8fcb8cf284a9",
+  "files": [
+    {
+      "path": "pool/__init__.py",
+      "repository_path": "pearlhash/pool/__init__.py",
+      "bytes": 67,
+      "sha256": "354f4108c5dd2929ba200b1d70608b69f14ef5b0b7deb0eb4e661b06d2aed53e"
+    },
+    {
+      "path": "pool/job.py",
+      "repository_path": "pearlhash/pool/job.py",
+      "bytes": 2454,
+      "sha256": "c77435a07813c3d32f6869ca30c818b3171cae9093048aa3fd9c1fdb73681447"
+    },
+    {
+      "path": "pool/session.py",
+      "repository_path": "pearlhash/pool/session.py",
+      "bytes": 7421,
+      "sha256": "674a91b140662d1c3c69a867ea6308208e13f1b5343ed49b2ff30a6bd6f959db"
+    },
+    {
+      "path": "pool/search.py",
+      "repository_path": "pearlhash/pool/search.py",
+      "bytes": 7953,
+      "sha256": "b14bda47b5a4e3984a4c5f841274a4294a22a7fc85ed0f1bebced6e94bd86d04"
+    },
+    {
+      "path": "pool/receiver.py",
+      "repository_path": "pearlhash/pool/receiver.py",
+      "bytes": 5840,
+      "sha256": "24bf011d16b8fa02019176f21a9609f0e3fdf4d5d02e38644fef383697e23e7d"
+    },
+    {
+      "path": "pool/worker.py",
+      "repository_path": "pearlhash/pool/worker.py",
+      "bytes": 4234,
+      "sha256": "9c08a04f8ce6c784ff4a917b006bc8cce1d4111ee5131ad2ed1097017a8cabdd"
+    },
+    {
+      "path": "pool/submission.py",
+      "repository_path": "pearlhash/pool/submission.py",
+      "bytes": 9745,
+      "sha256": "c5c302ad86b2fcfc208ce28e1b834e5845db8554816d0fafb0e0a775c52bea1f"
+    },
+    {
+      "path": "pool/telemetry.py",
+      "repository_path": "pearlhash/pool/telemetry.py",
+      "bytes": 3356,
+      "sha256": "835cbae2e3dc1ae45f735b73b03399bcdd7fbcf789e035cca433b8932ed1cbe9"
+    },
+    {
+      "path": "tools/mine_bounded.py",
+      "repository_path": "pearlhash/tools/mine_bounded.py",
+      "bytes": 10544,
+      "sha256": "4a0f254435ab53029208a9f5c5e7547c9372d6f741ed72777a24193c4ca0c45e"
+    },
+    {
+      "path": "tests/test_submission.py",
+      "repository_path": "pearlhash/tests/test_submission.py",
+      "bytes": 8231,
+      "sha256": "fc94c42b7beff9404e194b9e138c2b37357a6b60e141478f39373a9ba53886e0"
+    },
+    {
+      "path": "tests/test_connection_gate.py",
+      "repository_path": "pearlhash/tests/test_connection_gate.py",
+      "bytes": 3686,
+      "sha256": "031725a83db0b5e15bc737ca5f058bdb83426195f93933e0e24ae11c2d081d59"
+    },
+    {
+      "path": "tests/test_bounded_miner.py",
+      "repository_path": "pearlhash/tests/test_bounded_miner.py",
+      "bytes": 7380,
+      "sha256": "ee185ad6f0848d6687f345554d08e9a6633051972a99a88cdeb9dff8d89171d5"
+    },
+    {
+      "path": "tests/test_telemetry.py",
+      "repository_path": "pearlhash/tests/test_telemetry.py",
+      "bytes": 2638,
+      "sha256": "d32afdd5d8e47a9dc14b11cc6db9ae1c336506f0a28b4ac5d3f82517f9bb276a"
+    },
+    {
+      "path": "tests/test_pool_receiver.py",
+      "repository_path": "pearlhash/tests/test_pool_receiver.py",
+      "bytes": 5859,
+      "sha256": "62dc611ddfed336aa7b8ef34813f942131554be49461e98511c1a3aee3f88b6d"
+    }
+  ]
+}

@@ -63,6 +63,7 @@ class ReceiverTests(unittest.TestCase):
         request = decode(stream.sent[0])
         self.assertEqual(request['method'], 'login')
         self.assertEqual(request['params'][:2], ['synthetic-wallet', 'synthetic-worker'])
+        self.assertEqual(request['params'][2], 'pearlhash-independent/0.0.30')
         self.assertEqual((result.messages, result.jobs, result.stop_reason), (3, 1, 'eof'))
         self.assertTrue(stream.closed)
         self.assertFalse(state.is_current(jobs[0]))

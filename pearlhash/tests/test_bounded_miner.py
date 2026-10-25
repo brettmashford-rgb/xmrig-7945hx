@@ -21,6 +21,35 @@ class RunnerTests(unittest.TestCase):
     def test_full_domain_rolls_to_fresh_nonce_before_next_candidate(self):
         self.run_attempt(True)
 
+    def test_target_only_mode_does_not_prepare_or_start_gpu(self):
+        class Stream:
+            def __init__(self):self.packets=[];self.timeout=1;self.closed=False
+            def __enter__(self):return self
+            def __exit__(self,*args):self.closed=True
+            def settimeout(self,value):self.timeout=value
+            def gettimeout(self):return self.timeout
+            def sendall(self,data):self.packets.append(decode(data))
+            def recv(self,size):return b''.join(encode(x)for x in (
+                {'id':0,'status':1,'result':True},
+                {'id':-1,'status':1,'result':['extranonce',bytes(8).hex()]},
+                {'id':-1,'status':1,'result':['notify',bytes(200).hex(),
+                 (1<<200).to_bytes(32,'little').hex(),bytes(8).hex(),'3']}))
+        stream=Stream();actual_receiver=runner.PoolReceiver
+        def receiver(*args,**kwargs):return actual_receiver(*args,**kwargs,connect=lambda *a,**k:stream)
+        with tempfile.TemporaryDirectory()as folder,ExitStack()as stack:
+            report=Path(folder)/'observation.json'
+            stack.enter_context(patch.object(runner,'PoolReceiver',receiver))
+            stack.enter_context(patch.object(runner,'saved_wallet',return_value='synthetic-wallet'))
+            prepare=stack.enter_context(patch.object(runner,'prepare_base'))
+            gpu=stack.enter_context(patch.object(runner,'ProductionCandidateScanner'))
+            stack.enter_context(patch('sys.argv',['mine_bounded','--host','synthetic.example','--port','9000',
+                '--login-file','unused','--module','unused','--report',str(report),'--seconds','3','--observe-target']))
+            self.assertEqual(runner.main(),0);prepare.assert_not_called();gpu.assert_not_called()
+            data=json.loads(report.read_text());self.assertEqual(data['worker']['started'],0)
+            self.assertEqual(data['submitted_shares'],0);self.assertEqual(len(data['telemetry']['jobs']),1)
+            self.assertEqual([p['method']for p in stream.packets],['login'])
+        self.assertTrue(stream.closed)
+
     def run_attempt(self,rollover):
         events=[];ready=threading.Event()
         class Stream:

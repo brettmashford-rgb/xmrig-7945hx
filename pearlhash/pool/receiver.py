@@ -49,7 +49,8 @@ class ReceiveResult:
 
 class PoolReceiver:
     def __init__(self, session, host, port, wallet, worker, *,
-                 connect=socket.create_connection, clock=time.monotonic):
+                 connect=socket.create_connection, clock=time.monotonic,
+                 agent='pearlhash-independent/0.0.30'):
         if not isinstance(session, PoolSession):
             raise ValueError('expected configured pool session')
         if (type(host) is not str or not host or len(host) > 253
@@ -57,6 +58,9 @@ class PoolReceiver:
                 or type(wallet) is not str or not 1 <= len(wallet) <= 256
                 or type(worker) is not str or not 1 <= len(worker) <= 64):
             raise ValueError('invalid explicit pool endpoint or login fields')
+        if type(agent)is not str or not 1<=len(agent)<=96:
+            raise ValueError('bounded truthful agent name required')
+        self.agent=agent
         self.session = session
         self.endpoint = (host, port)
         self.wallet = wallet
@@ -86,7 +90,7 @@ class PoolReceiver:
                 stream=lifetime.enter_context(self.connect(self.endpoint, timeout=min(10, seconds)))
                 if gate is not None:lifetime.callback(gate.detach)
                 stream.sendall(encode({'id': 0, 'method': 'login',
-                                      'params': [self.wallet, self.worker, 'pearlhash-dev/0.0.21-receiver']}))
+                                      'params': [self.wallet, self.worker, self.agent]}))
                 stream.settimeout(0.5)
                 if gate is not None:gate.attach(stream)
                 frames = FrameBuffer()
