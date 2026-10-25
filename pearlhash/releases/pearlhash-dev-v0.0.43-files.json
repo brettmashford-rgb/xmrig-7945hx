@@ -1,0 +1,30 @@
+{
+  "version": "0.0.43",
+  "scope": "offline controlled full-search-loop comparison; unchanged v040/v042 backends",
+  "files": [
+    {
+      "path": "tools/compare_search_loops.py",
+      "repository_path": "pearlhash/tools/compare_search_loops.py",
+      "bytes": 8298,
+      "sha256": "6077e7511e6d4ce39354e7cff4278d80d6ec34074c385a4ffec86adbe05de750"
+    },
+    {
+      "path": "tests/test_compare_search_loops.py",
+      "repository_path": "pearlhash/tests/test_compare_search_loops.py",
+      "bytes": 2887,
+      "sha256": "1c060a954c2022568405f0f787ab69e066eca0163ff971fca50410aa67dee903"
+    },
+    {
+      "path": "tests/test_install_v043.py",
+      "repository_path": "pearlhash/tests/test_install_v043.py",
+      "bytes": 3148,
+      "sha256": "f641129621a4b78de06a0f6268dd4e35a40fc0958f5b8dba2e897d177e7f8b7e"
+    },
+    {
+      "path": "docs/v043.md",
+      "repository_path": "pearlhash/docs/v043.md",
+      "bytes": 2923,
+      "sha256": "ee038c68bd0eac438c08af3df5c616b73df152d46bdfeec59e3dda26771acf47"
+    }
+  ]
+}
