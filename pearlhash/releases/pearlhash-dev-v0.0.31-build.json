@@ -1,0 +1,28 @@
+{
+  "compiler": "NVIDIA NVRTC 12.9.86",
+  "architecture": "compute_120, emitted PTX sm_120",
+  "source": "cached_tile_scan.cu",
+  "entry": "cached_tile_scan",
+  "ptx": {
+    "bytes": 556807,
+    "sha256": "08affd3aefbb4ebfc124fed442c0e5e87bc134de699a97529c70d7a6fde66a22"
+  },
+  "source_sha256": {
+    "cached_tile_scan.cu": "54c7b3314bb6dff87d4ce3129ede79037c49c227fc6925d8162220b074215887",
+    "keyed64.h": "83e9c85660360a752a9d2e399f18620496fa2859f8e0575a4e09a27ee223adb6",
+    "mma_correctness.cu": "cc97950a9c1a65b81407ff0115434c123d8526b7741c0073f250185563a75fef",
+    "noise_mma.cu": "d946fd10f2a6aeae347b3c52bfa81ded7b45ee85eba374e952f7efcf624e532f",
+    "production_tile_scan.cu": "493e260683d7222c9f3c7b77bb69965520460449308eb1e174e0885bc68bdb8c",
+    "scan_target.h": "881f89f88c220818e207833093b2285c9eb3d0cffed8ac177a95292a1b601095",
+    "tile_scan.cu": "ebd5c9b5604f2564fa6df113968122cfe4129286c6514cd8cb241a7b1b372438",
+    "tile_scan_core.cuh": "6f8bfe17db620102add64c9e89f98d198dd98ca04836d7ec1f76685f4491a7d0",
+    "virtual_input.h": "f09cc193877737cb0e441c97c70b17bd4050af2608cdd21551b8d1b05bf65256",
+    "virtual_tile_scan.cu": "26df912b38afc8ee261eb03dc88c65d6a6f2cf5a9a6769b6dc7f1cfba053586c",
+    "warp_tile_scan.cu": "7de77cc99d924a2bc4378f95e7ca45548f9c076bfc227c52a86b56a675fcb32b"
+  },
+  "independent_rebuild_byte_identical": true,
+  "new_entry_block_barriers": 0,
+  "host_tests_passed": 3,
+  "real_gpu_validation": "pending rig run",
+  "pool_submission": false
+}
