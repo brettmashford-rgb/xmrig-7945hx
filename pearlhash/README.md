@@ -243,6 +243,22 @@ mapping to a future compact-submit worker_nonce has been verified.
 Five new CPU tests and isolated synthetic-message integration pass. The rig
 check compares job key/target with the completed local replay facts, then replays
 the existing independent login exchange through the new state machine. No matrix
-commitment, GPU math or proof test is repeated. Actual saved-input integration
-is pending. The 124 retained payload bytes and token remain opaque; an explicit
+commitment, GPU math or proof test is repeated. The rig saved-input integration now passes: job key/bound match, independent
+login state is ready, and replacement/reset invalidate stale jobs. The 124 retained payload bytes and token remain opaque; an explicit
 profile is not inferred from those bytes. No live mining or custom pool verdict.
+
+
+## Live job receiver (v0.0.21)
+
+The new receiver connects once to an explicitly configured endpoint, sends one
+independent login and feeds strict bounded transport frames into PoolSession.
+It handles fragmented/coalesced reads and invalidates active work on every
+connection end. It has no submit method or automatic reconnect. Callbacks must
+be quick; an eventual GPU worker needs its own execution thread/queue.
+
+Five receiver CPU tests and the prior five session tests pass using controlled
+socket objects, with no development-host connection. The source-package tests
+and redacted-report CLI smoke also pass. Actual live pool integration is pending
+on the rig. The runner uses the locally saved wallet, a separate diagnostic
+worker name and the explicit verified V3/rank128 profile; it stops at the first
+ready job or after the bounded receive window. No GPU, proof or share submission.

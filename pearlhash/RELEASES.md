@@ -1,5 +1,34 @@
 # PearlHash development checkpoints
 
+## v0.0.21-live-job-receiver
+
+Distribution: [source-file manifest](releases/pearlhash-dev-v0.0.21-files.json).
+Seven UTF-8 Python files include the pool package and existing transport codec;
+reuse the verified v0.0.17 CPU sources and v0.0.16 CPU library. No new GPU binary,
+compiler/toolkit or opaque archive. No live test has yet run on the rig.
+
+One explicitly configured TCP endpoint, one login, bounded framed reads, current
+job callbacks and guaranteed session invalidation at connection end. There is
+no submit method, hidden fallback endpoint or automatic reconnect. The runner
+loads the user's wallet from its existing local independent-login transcript,
+uses a separate diagnostic worker label, accepts an explicitly supplied V3/rank128
+mining profile and stops after the first ready job or its receive deadline.
+Only lengths/counts/target-bit-widths go into the report; no credential, header,
+job key, token or assigned nonce is printed or stored in that report.
+
+Five new CPU socket/stream tests pass, plus the preceding five session tests.
+Fragmented/coalesced frames, truncated/invalid frames, size/message budgets,
+job replacement, callback failure, cancellation before connection, timeout and
+EOF all exercise closure/stale-work invalidation. Isolated seven-file package
+checks pass. A mocked-socket CLI/report smoke succeeds without exposing its
+synthetic wallet. These are not real network or pool verdicts.
+
+The next rig check makes one login-only connection to pool.pearlhash.xyz:9000
+and exercises the new state handler with fresh messages. No GPU, commitments,
+proof verification, mined/submitted share or service/clock changes. Extranonce's
+compact-submit role and broader protocol rules still require verification.
+
+
 ## v0.0.20-pool-job-state
 
 Distribution: [source-file manifest](releases/pearlhash-dev-v0.0.20-files.json).
@@ -18,8 +47,9 @@ an atomic network submission gate; no socket or share-submitting client is added
 Five CPU tests pass, including all six handshake orderings, changed-header vs
 opaque-data behavior, target/extranonce replacement, reset/close/rejected login,
 profile limits and target overflow boundaries. Isolated source-package tests and
-a synthetic CLI-path smoke check pass with Python site packages disabled. Real
-saved-context/login integration remains pending on rig. The runner reuses the
+a synthetic CLI-path smoke check pass with Python site packages disabled. The subsequent real rig
+saved-context/login integration passes all new checks (three inbound handshake
+messages), including replay key/bound match and replacement/reset invalidation. The runner reuses the
 completed private replay's facts and independent login transcript without
 rebuilding commitments, GPU work or proofs. Nothing private is distributed.
 

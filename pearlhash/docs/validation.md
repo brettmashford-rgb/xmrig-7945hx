@@ -662,3 +662,44 @@ explicitly say GPU=false, proof-verifier=false and live-connection=false.
 
 Remaining metadata meanings, live identity/submit integration, full production
 search and real custom pool acceptance remain unproven. No performance claim.
+
+
+### v0.0.20 rig saved-message confirmation
+
+The completed user terminal output confirms all five source checksums and all
+saved-input checks pass. Explicit profile/header derive the completed replay's
+job key and scaled share bound; the separate independent-login exchange builds
+a ready snapshot from three messages. Controlled target replacement and reset
+invalidate stale work. No connection, GPU or proof work occurred. This supersedes
+the pending saved-input status above; unknown nonce/token/metadata roles remain.
+
+## v0.0.21 bounded live-job receiver
+
+PoolReceiver consumes strict newline/ASCII-hex outer frames through the existing
+independent codec, then feeds the validated messages to PoolSession. FrameBuffer
+handles split nibbles/newlines and multiple frames in a read; oversized complete/
+unfinished frames, invalid decoding and truncated EOF reject. Reads and total
+message/byte budgets are bounded. One explicit endpoint is connected and one
+login is sent; transport nonces are not mining nonces. No alternate endpoint,
+automatic reconnect or submit capability is present. An RLock-protected session
+provides job snapshots; callbacks must publish quickly rather than blocking
+receipt on GPU/commitment work. No atomic network-send gate is claimed.
+
+Every run resets the old identity/work first. Every connection end or exception
+closes the session, invalidating its active job. Controlled tests cover one-
+endpoint/one-login behavior, fragmentation/coalescing, repeated job callbacks,
+callback failure, pre-connect cancellation, read timeout/deadline, EOF, malformed/
+truncated frames and message/size budgets. Five receiver CPU tests and five prior
+session tests pass. The isolated seven-file source package passes its five new
+tests with site packages disabled; a mocked-socket CLI smoke confirms its report
+does not contain synthetic wallet credentials. No real network/GPU run on this
+host, and no new native/CUDA compilation is needed.
+
+The live runner reads the already saved successful login's wallet locally, uses
+a separate diagnostic worker label, and receives at most one ready job under an
+explicit V3/rank128 profile. It reserves a mode0600 result file before connecting,
+never records credentials/raw sessions, and stores only readiness, lengths,
+counts/generation and target bit width. It exits on the first ready snapshot or
+its bounded receive window, then checks no active work remains after closure.
+Actual pool execution of this new receiver is pending on the rig. Login/job
+reception is not a submitted/accepted share, proof or mining performance result.

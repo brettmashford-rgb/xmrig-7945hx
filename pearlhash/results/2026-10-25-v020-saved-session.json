@@ -1,0 +1,15 @@
+{
+  "version": "0.0.20-source",
+  "source_commit": "d9e9a71ad570d0f90cd3f31f9d18635a785b2cef",
+  "evidence": "user-supplied completed Termius output, 2026-10-25",
+  "source_checksums": "passed",
+  "verified_replay_job_key_bound_match": "passed",
+  "saved_independent_login_state": "passed",
+  "saved_inbound_messages": 3,
+  "target_replacement_reset_invalidation": "passed",
+  "live_pool_connection": false,
+  "gpu_executed": false,
+  "proof_verifier_executed": false,
+  "submitted_shares": 0,
+  "scope": "saved message/profile/session integration; not live mining or pool share verdict"
+}
