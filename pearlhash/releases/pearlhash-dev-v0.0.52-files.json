@@ -1,0 +1,72 @@
+{
+  "version": "0.0.52",
+  "scope": "offline four-row packed B GPU reconstruction, correctness/proof gates and balanced comparison against lean v051",
+  "files": [
+    {
+      "path": "gpu/b_quad.h",
+      "repository_path": "pearlhash/gpu/b_quad.h",
+      "bytes": 1039,
+      "sha256": "4121f94bf83361a2a02f51775eb70afb06b91a66c80e20728b5e0a7a7fb04bd6"
+    },
+    {
+      "path": "gpu/b_quad_scan.cu",
+      "repository_path": "pearlhash/gpu/b_quad_scan.cu",
+      "bytes": 4940,
+      "sha256": "11bcf283d05033a72a458d3a620f921ac8c0911724911045eb5253d6ecba9d0f"
+    },
+    {
+      "path": "tools/b_quad_scan.py",
+      "repository_path": "pearlhash/tools/b_quad_scan.py",
+      "bytes": 2099,
+      "sha256": "52698eb2cfdf46e9b037299a276694da20abeaa64340c6343ea301af525c50dc"
+    },
+    {
+      "path": "tools/check_b_quad_job.py",
+      "repository_path": "pearlhash/tools/check_b_quad_job.py",
+      "bytes": 11148,
+      "sha256": "47d3af27e11a4a694bafd184d3813259aaa6ad6c78d0ec00315136d7f197ce8c"
+    },
+    {
+      "path": "tools/compare_b_quad_loops.py",
+      "repository_path": "pearlhash/tools/compare_b_quad_loops.py",
+      "bytes": 9381,
+      "sha256": "cdfee9526846d1aeb055b44a0817754bc45d493ddd495847983c94849c802cdd"
+    },
+    {
+      "path": "tests/test_b_quad.py",
+      "repository_path": "pearlhash/tests/test_b_quad.py",
+      "bytes": 7926,
+      "sha256": "76c603854390246c133c7c8bb0eb58eb08747609c02bc0349a5791f4935456ca"
+    },
+    {
+      "path": "tests/test_compare_b_quad_loops.py",
+      "repository_path": "pearlhash/tests/test_compare_b_quad_loops.py",
+      "bytes": 1865,
+      "sha256": "0d84145f70be3f0e5b899b125dd8da285cebcb69aef2195bcd5c77c7df51c194"
+    },
+    {
+      "path": "tests/test_install_v052.py",
+      "repository_path": "pearlhash/tests/test_install_v052.py",
+      "bytes": 4591,
+      "sha256": "ed8ee26e50ed88831c8751057af20318a40878612524510312bc7c007e287c03"
+    },
+    {
+      "path": "docs/v052.md",
+      "repository_path": "pearlhash/docs/v052.md",
+      "bytes": 5062,
+      "sha256": "fbb9c67e2b63c9bbb8ea0f895ba144670ea5baee6b8d7151c24131759fe11a4e"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.52-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.52-build.json",
+      "bytes": 618,
+      "sha256": "d4673e5058f219fb8b6be2fc543bcd288ab7ce272f1c7306c3d0c71c1d1487ad"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.52-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.52-scan-sm120.ptx",
+      "bytes": 752088,
+      "sha256": "83f7820098dc8183f4e390a7642b2b4ea1bf43efb5a9a447c3d133ba1b357ce5"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "compiler": "NVRTC 12.9.86",
+  "architecture": "compute_120",
+  "standard": "c++17",
+  "source": "gpu/b_quad_scan.cu",
+  "new_entries": [
+    "b_quad_packed_scan",
+    "b_quad_padded_scan"
+  ],
+  "bytes": 752088,
+  "sha256": "83f7820098dc8183f4e390a7642b2b4ea1bf43efb5a9a447c3d133ba1b357ce5",
+  "repeat_build_identical": true,
+  "new_entry_block_barriers": 0,
+  "host_targeted_tests": 73,
+  "gpu_validation": "pending rig execution",
+  "static_b_load_instructions": {
+    "baseline_permutation": 8,
+    "new_permutation": 2,
+    "baseline_shared_byte": 32,
+    "new_shared_word": 8,
+    "added_shuffles": 16
+  }
+}
