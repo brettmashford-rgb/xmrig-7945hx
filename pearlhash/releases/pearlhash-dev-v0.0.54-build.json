@@ -1,0 +1,13 @@
+{
+  "version": "0.0.54",
+  "scope": "bounded live integration of validated quad5; unchanged v052 readable PTX and v039 B commitment",
+  "kernel_source": "gpu/b_quad_scan.cu",
+  "reused_ptx": "releases/pearlhash-dev-v0.0.52-scan-sm120.ptx",
+  "entry": "b_quad_padded_scan",
+  "ptx_sha256": "83f7820098dc8183f4e390a7642b2b4ea1bf43efb5a9a447c3d133ba1b357ce5",
+  "stream_count": 1,
+  "tiles_per_window": 4096,
+  "receive_seconds": 300,
+  "host_targeted_tests": 95,
+  "gpu_live_validation": "pending rig execution"
+}

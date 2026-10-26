@@ -1,0 +1,36 @@
+{
+  "version": "0.0.54",
+  "scope": "bounded live integration of validated quad5; unchanged v052 readable PTX and v039 B commitment",
+  "files": [
+    {
+      "path": "tools/mine_bounded.py",
+      "repository_path": "pearlhash/tools/mine_bounded.py",
+      "bytes": 14738,
+      "sha256": "be05a8c2370a4bebe2152ac1790e432ea744efa85833e473f628708bd11c3627"
+    },
+    {
+      "path": "tests/test_bounded_miner.py",
+      "repository_path": "pearlhash/tests/test_bounded_miner.py",
+      "bytes": 13421,
+      "sha256": "31ef33346e283d7a732e4fd5ca13ea3ee55f4a76483008745cb9113a6f782538"
+    },
+    {
+      "path": "tests/test_install_v054.py",
+      "repository_path": "pearlhash/tests/test_install_v054.py",
+      "bytes": 6835,
+      "sha256": "2c0c0dec6d9b4d8d9ca723bf0d8696211281db37f21a6ca7d2d20e8058416271"
+    },
+    {
+      "path": "docs/v054.md",
+      "repository_path": "pearlhash/docs/v054.md",
+      "bytes": 3410,
+      "sha256": "cbd03ba17c315e259aa4dcd6692789cab55e68085c76e6b7462e473dc22e4a04"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.54-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.54-build.json",
+      "bytes": 512,
+      "sha256": "8f3cca39153d7cb8f79dd01ac4e335349032d435252f3bee88d4f16ac3ec8e19"
+    }
+  ]
+}

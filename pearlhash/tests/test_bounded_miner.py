@@ -48,9 +48,20 @@ class RunnerTests(unittest.TestCase):
     def test_lean_status_acknowledgement_is_not_an_accepted_share(self):
         self.run_attempt(False,gpu=True,cached=True,lean=True,no_hit=True)
 
+    def test_quad5_uses_validated_padded_search_and_truthful_metadata(self):
+        self.run_attempt(False,gpu=True,cached=True,quad=True)
+
+    def test_quad5_rolls_over_full_nonce(self):
+        self.run_attempt(True,gpu=True,cached=True,quad=True)
+
+    def test_quad5_status_acknowledgement_is_not_an_accepted_share(self):
+        self.run_attempt(False,gpu=True,cached=True,quad=True,no_hit=True)
+
     def test_incompatible_scan_flags_fail_before_any_pool_work(self):
         with patch.object(runner,'PoolReceiver')as receiver:
-            for flags in (['--resident-maps'],['--packed-direct'],
+            for flags in (['--quad5'],['--quad5','--lean-direct','--cache-a'],
+                    ['--quad5','--packed-direct','--cache-a'],['--quad5','--resident-maps','--cache-a'],
+                    ['--quad5','--two-streams','--cache-a'],['--resident-maps'],['--packed-direct'],
                     ['--resident-maps','--two-streams','--cache-a'],
                     ['--packed-direct','--resident-maps','--cache-a'],
                     ['--packed-direct','--two-streams','--cache-a'],['--lean-direct'],
@@ -97,7 +108,7 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual([p['method']for p in stream.packets],['login'])
         self.assertTrue(stream.closed)
 
-    def run_attempt(self,rollover,gpu=False,cached=False,dual=False,resident=False,packed=False,no_hit=False,lean=False):
+    def run_attempt(self,rollover,gpu=False,cached=False,dual=False,resident=False,packed=False,no_hit=False,lean=False,quad=False):
         events=[];ready=threading.Event();scanned=threading.Event();finished=threading.Event()
         class Stream:
             def __init__(self):self.packets=[];self.step=0;self.timeout=1;self.closed=False
@@ -163,20 +174,23 @@ class RunnerTests(unittest.TestCase):
             stack.enter_context(patch.object(runner,'DualSearch',Search))
             resident_search=stack.enter_context(patch.object(runner,'new_resident_search',side_effect=Search))
             packed_search=stack.enter_context(patch.object(runner,'new_snapshot_search',side_effect=Search))
+            quad_search=stack.enter_context(patch.object(runner,'new_b_quad_search',side_effect=Search))
             lean_search=stack.enter_context(patch.object(runner,'new_lean_search',side_effect=Search))
             stack.enter_context(patch.object(runner,'prepare_share',side_effect=proof))
             stack.enter_context(patch('sys.argv',['mine_bounded','--host','synthetic.example','--port','9000',
-                '--login-file','unused','--module','unused','--report',str(report),'--seconds','3']+(['--commitment-module','unused-commitment']if gpu else [])+(['--cache-a']if cached else [])+(['--two-streams']if dual else [])+(['--resident-maps']if resident else [])+(['--packed-direct']if packed else [])+(['--lean-direct']if lean else [])))
+                '--login-file','unused','--module','unused','--report',str(report),'--seconds','3']+(['--commitment-module','unused-commitment']if gpu else [])+(['--cache-a']if cached else [])+(['--two-streams']if dual else [])+(['--resident-maps']if resident else [])+(['--packed-direct']if packed else [])+(['--lean-direct']if lean else [])+(['--quad5']if quad else [])))
             self.assertEqual(runner.main(),0)
             self.assertEqual(gpu_base.call_count,int(gpu))
             self.assertEqual(packed_search.call_count,(1+int(rollover))if packed else 0)
             self.assertEqual(resident_search.call_count,(1+int(rollover))if resident else 0)
             self.assertEqual(lean_search.call_count,(1+int(rollover))if lean else 0)
+            self.assertEqual(quad_search.call_count,(1+int(rollover))if quad else 0)
+            if quad:self.assertTrue(all(k.get('padded')is True for k in search_kwargs))
             if lean:self.assertTrue(all(k.get('lean')is True for k in search_kwargs))
             if packed:self.assertTrue(all(k.get('direct')is True for k in search_kwargs))
             data=json.loads(report.read_text())
             self.assertEqual(data['commitment_backend'],'gpu-constant-v039'if gpu else 'cpu-streaming')
-            self.assertEqual(data['scan_backend'],'lean-direct-one-stream-v051'if lean else 'packed-direct-one-stream-v049'if packed else 'resident-maps-one-stream-v046'if resident else 'cached-a-two-streams-v042'if dual else 'cached-a-virtual-b-v040'if cached else 'validated-axis-production-virtual-v038')
+            self.assertEqual(data['scan_backend'],'quad5-one-stream-v054'if quad else 'lean-direct-one-stream-v051'if lean else 'packed-direct-one-stream-v049'if packed else 'resident-maps-one-stream-v046'if resident else 'cached-a-two-streams-v042'if dual else 'cached-a-virtual-b-v040'if cached else 'validated-axis-production-virtual-v038')
             self.assertEqual(data['submitted_shares'],int(not no_hit));self.assertEqual(data['pool_accepted_shares'],int(not no_hit))
             self.assertEqual(data['extranonce_worker_role_verified'],not no_hit)
             self.assertTrue(data['worker']['joined']);self.assertEqual(data['work']['proofs_checked'],int(not no_hit))
