@@ -30,9 +30,21 @@ class RunnerTests(unittest.TestCase):
     def test_resident_maps_rolls_over_full_nonce(self):
         self.run_attempt(True,gpu=True,cached=True,resident=True)
 
+    def test_packed_direct_uses_validated_path_and_truthful_metadata(self):
+        self.run_attempt(False,gpu=True,cached=True,packed=True)
+
+    def test_packed_direct_rolls_over_full_nonce(self):
+        self.run_attempt(True,gpu=True,cached=True,packed=True)
+
+    def test_packed_direct_status_acknowledgement_is_not_an_accepted_share(self):
+        self.run_attempt(False,gpu=True,cached=True,packed=True,no_hit=True)
+
     def test_incompatible_scan_flags_fail_before_any_pool_work(self):
         with patch.object(runner,'PoolReceiver')as receiver:
-            for flags in (['--resident-maps'],['--resident-maps','--two-streams','--cache-a']):
+            for flags in (['--resident-maps'],['--packed-direct'],
+                    ['--resident-maps','--two-streams','--cache-a'],
+                    ['--packed-direct','--resident-maps','--cache-a'],
+                    ['--packed-direct','--two-streams','--cache-a']):
                 with patch('sys.argv',['mine_bounded','--host','synthetic.example','--port','9000',
                         '--login-file','unused','--module','unused','--report','unused']+flags):
                     with self.assertRaises((ValueError,SystemExit)):runner.main()
@@ -73,8 +85,8 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual([p['method']for p in stream.packets],['login'])
         self.assertTrue(stream.closed)
 
-    def run_attempt(self,rollover,gpu=False,cached=False,dual=False,resident=False):
-        events=[];ready=threading.Event()
+    def run_attempt(self,rollover,gpu=False,cached=False,dual=False,resident=False,packed=False,no_hit=False):
+        events=[];ready=threading.Event();scanned=threading.Event();finished=threading.Event()
         class Stream:
             def __init__(self):self.packets=[];self.step=0;self.timeout=1;self.closed=False
             def __enter__(self):return self
@@ -83,7 +95,7 @@ class RunnerTests(unittest.TestCase):
             def gettimeout(self):return self.timeout
             def sendall(self,data):
                 request=decode(data);self.packets.append(request)
-                if request['method']=='submit':ready.set()
+                if request['method']=='submit' or(no_hit and request['method']=='report_info'):ready.set()
             def recv(self,size):
                 self.step+=1
                 if self.step==1:return b''.join(encode(x)for x in (
@@ -91,21 +103,29 @@ class RunnerTests(unittest.TestCase):
                     {'id':-1,'status':1,'result':['extranonce',bytes(8).hex()]},
                     {'id':-1,'status':1,'result':['notify',bytes(200).hex(),
                      (1<<200).to_bytes(32,'little').hex(),bytes(8).hex(),'3']}))
+                if no_hit and self.step>=3:finished.set();return b''
                 if not ready.wait(5):raise RuntimeError('worker did not submit')
+                if no_hit and not scanned.wait(5):raise RuntimeError('worker did not scan')
                 return b''.join(encode({'id':r['id'],'status':1,'result':True})
                     for r in self.packets if r['method']in('report_info','submit'))
         class Device:
             def start(self,module):events.append('device-start')
             def close(self):events.append('device-close')
-        searches=[]
+        searches=[];search_kwargs=[]
         class Search:
             def __init__(self,context,device,current,**kwargs):
-                searches.append(self);self.first=len(searches)==1
-                self.context=context;self.cursor=SimpleNamespace(next_tile=0)
+                search_kwargs.append(kwargs);searches.append(self);self.first=len(searches)==1
+                self.context=context;self.current=current;self.cursor=SimpleNamespace(next_tile=0)
                 self.plan=SimpleNamespace(count=8388608)
             def __enter__(self):return self
             def __exit__(self,*args):events.append('cache-close')
             def advance(self,n):
+                if no_hit:
+                    runner.require_current(self.context.job,self.current)
+                    self.cursor.next_tile+=n;scanned.set()
+                    if not finished.wait(5):raise RuntimeError('scripted receiver did not finish')
+                    runner.require_current(self.context.job,self.current)
+                    return None,self.cursor
                 if rollover and self.first:
                     self.cursor.next_tile=self.plan.count;events.append('full-domain');return None,self.cursor
                 self.cursor.next_tile=n;events.append('gpu-hit')
@@ -129,20 +149,25 @@ class RunnerTests(unittest.TestCase):
             stack.enter_context(patch.object(runner,'ProductionCandidateScanner',Device))
             stack.enter_context(patch.object(runner,'NonceSearch',Search))
             stack.enter_context(patch.object(runner,'DualSearch',Search))
-            stack.enter_context(patch.object(runner,'new_resident_search',Search))
+            resident_search=stack.enter_context(patch.object(runner,'new_resident_search',side_effect=Search))
+            packed_search=stack.enter_context(patch.object(runner,'new_snapshot_search',side_effect=Search))
             stack.enter_context(patch.object(runner,'prepare_share',side_effect=proof))
             stack.enter_context(patch('sys.argv',['mine_bounded','--host','synthetic.example','--port','9000',
-                '--login-file','unused','--module','unused','--report',str(report),'--seconds','3']+(['--commitment-module','unused-commitment']if gpu else [])+(['--cache-a']if cached else [])+(['--two-streams']if dual else [])+(['--resident-maps']if resident else [])))
+                '--login-file','unused','--module','unused','--report',str(report),'--seconds','3']+(['--commitment-module','unused-commitment']if gpu else [])+(['--cache-a']if cached else [])+(['--two-streams']if dual else [])+(['--resident-maps']if resident else [])+(['--packed-direct']if packed else [])))
             self.assertEqual(runner.main(),0)
             self.assertEqual(gpu_base.call_count,int(gpu))
+            self.assertEqual(packed_search.call_count,(1+int(rollover))if packed else 0)
+            self.assertEqual(resident_search.call_count,(1+int(rollover))if resident else 0)
+            if packed:self.assertTrue(all(k.get('direct')is True for k in search_kwargs))
             data=json.loads(report.read_text())
             self.assertEqual(data['commitment_backend'],'gpu-constant-v039'if gpu else 'cpu-streaming')
-            self.assertEqual(data['scan_backend'],'resident-maps-one-stream-v046'if resident else 'cached-a-two-streams-v042'if dual else 'cached-a-virtual-b-v040'if cached else 'validated-axis-production-virtual-v038')
-            self.assertEqual(data['submitted_shares'],1);self.assertEqual(data['pool_accepted_shares'],1)
-            self.assertTrue(data['worker']['joined']);self.assertEqual(data['work']['proofs_checked'],1)
+            self.assertEqual(data['scan_backend'],'packed-direct-one-stream-v049'if packed else 'resident-maps-one-stream-v046'if resident else 'cached-a-two-streams-v042'if dual else 'cached-a-virtual-b-v040'if cached else 'validated-axis-production-virtual-v038')
+            self.assertEqual(data['submitted_shares'],int(not no_hit));self.assertEqual(data['pool_accepted_shares'],int(not no_hit))
+            self.assertEqual(data['extranonce_worker_role_verified'],not no_hit)
+            self.assertTrue(data['worker']['joined']);self.assertEqual(data['work']['proofs_checked'],int(not no_hit))
             self.assertEqual(data['connection']['reports']['accepted'],1)
         self.assertTrue(stream.closed)
-        expected=['device-start']+(['full-domain','cache-close']if rollover else[])+['gpu-hit','proof-checked','cache-close','device-close']
+        expected=['device-start','cache-close','device-close']if no_hit else ['device-start']+(['full-domain','cache-close']if rollover else[])+['gpu-hit','proof-checked','cache-close','device-close']
         self.assertEqual(events,expected)
         self.assertEqual(data['work']['full_nonces'],int(rollover))
         self.assertEqual(data['work']['nonces_started'],1+int(rollover))

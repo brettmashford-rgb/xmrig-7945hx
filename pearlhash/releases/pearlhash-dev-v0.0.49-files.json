@@ -1,0 +1,30 @@
+{
+  "version": "0.0.49",
+  "scope": "bounded live integration of validated v048 packed direct scanning; unchanged v048 PTX and v039 commitment",
+  "files": [
+    {
+      "path": "tools/mine_bounded.py",
+      "repository_path": "pearlhash/tools/mine_bounded.py",
+      "bytes": 13733,
+      "sha256": "ba0dda6f7678b8255ffc4e9d6b0a3f0b87f9c76201caded2b08bd5808e8e7668"
+    },
+    {
+      "path": "tests/test_bounded_miner.py",
+      "repository_path": "pearlhash/tests/test_bounded_miner.py",
+      "bytes": 11457,
+      "sha256": "9ab59c6124f273160c160132e20327f15c608ef4e2959cc293eb0ce6cc03d818"
+    },
+    {
+      "path": "tests/test_install_v049.py",
+      "repository_path": "pearlhash/tests/test_install_v049.py",
+      "bytes": 6130,
+      "sha256": "1b09aaec2a666fa44044f24c96b17fb4d9909eca08dd3a7b42cb41fee6798b78"
+    },
+    {
+      "path": "docs/v049.md",
+      "repository_path": "pearlhash/docs/v049.md",
+      "bytes": 3487,
+      "sha256": "8849513ec0b65f03ac97e7d8e4e85a803ac3d8864b8112c43fa9078db5d2f40b"
+    }
+  ]
+}
