@@ -1,0 +1,28 @@
+{
+  "version": "0.0.57",
+  "compiler": "NVRTC 12.9.86",
+  "architecture": "compute_120",
+  "standard": "c++17",
+  "source": "gpu/b_transpose_scan.cu",
+  "entry": "b_quad_transpose_scan",
+  "argument_slots": 24,
+  "block_barriers": 0,
+  "static_mma_instructions": 2,
+  "static_shuffle_instructions": {
+    "quad5": 37,
+    "transpose": 29
+  },
+  "B_redistribution_shuffles_per_iteration": {
+    "quad5": 16,
+    "transpose": 8
+  },
+  "bytes": 797681,
+  "sha256": "8a7bdc7937a36c96ab8c68b3d9a079e92b110891c47fd1773eab3b1a17ea0b89",
+  "repeat_build_identical": true,
+  "shared_bytes_per_cta": 20480,
+  "host_targeted_tests": 88,
+  "host_exact_fragment_comparisons": 262144,
+  "gpu_validation": "pending rig execution",
+  "timing_rounds": 24,
+  "tiles_per_round_per_mode": 65536
+}

@@ -1,0 +1,72 @@
+{
+  "version": "0.0.57",
+  "scope": "offline two-stage B byte transpose, proof-gated paired timing against quad5",
+  "files": [
+    {
+      "path": "gpu/b_transpose.h",
+      "repository_path": "pearlhash/gpu/b_transpose.h",
+      "bytes": 452,
+      "sha256": "f47c4b33596258428aadb6b2202d401bde0fe1bf56851c0be6c707630de275aa"
+    },
+    {
+      "path": "gpu/b_transpose_scan.cu",
+      "repository_path": "pearlhash/gpu/b_transpose_scan.cu",
+      "bytes": 4747,
+      "sha256": "4fb857b2c5216e1c0f4c236754ba3f281118f94adf5b9209f852e97c57a360f6"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.57-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.57-scan-sm120.ptx",
+      "bytes": 797681,
+      "sha256": "8a7bdc7937a36c96ab8c68b3d9a079e92b110891c47fd1773eab3b1a17ea0b89"
+    },
+    {
+      "path": "tools/b_transpose_scan.py",
+      "repository_path": "pearlhash/tools/b_transpose_scan.py",
+      "bytes": 1112,
+      "sha256": "81b944db2428fbf9007a2e8d06f72e45f2396d4cdc09637001d51d77c75f3dbd"
+    },
+    {
+      "path": "tools/check_b_transpose_job.py",
+      "repository_path": "pearlhash/tools/check_b_transpose_job.py",
+      "bytes": 9906,
+      "sha256": "04824c3be63ef17a86e2ed82cf8cb0e32eae624565709eef420ad606ddfbfac1"
+    },
+    {
+      "path": "tools/compare_b_transpose_loops.py",
+      "repository_path": "pearlhash/tools/compare_b_transpose_loops.py",
+      "bytes": 9678,
+      "sha256": "bb1fd108b814b984f759439ab104ae95894265f62718728f5ebd9f9f6ccd133d"
+    },
+    {
+      "path": "tests/test_b_transpose.py",
+      "repository_path": "pearlhash/tests/test_b_transpose.py",
+      "bytes": 8321,
+      "sha256": "1e4881fb9a59cb1f12faf9064f790873aa15479332adb53b3dccded698f61c5e"
+    },
+    {
+      "path": "tests/test_compare_b_transpose_loops.py",
+      "repository_path": "pearlhash/tests/test_compare_b_transpose_loops.py",
+      "bytes": 2521,
+      "sha256": "fcbd6182959278c462559c42db7fc7fca262bba3dbe851e96bcc92d83f868267"
+    },
+    {
+      "path": "tests/test_install_v057.py",
+      "repository_path": "pearlhash/tests/test_install_v057.py",
+      "bytes": 7663,
+      "sha256": "2ff031c7957dcbef34d2fc815f2594e39e716fd4ccb666c7d3442c38aad3c062"
+    },
+    {
+      "path": "docs/v057.md",
+      "repository_path": "pearlhash/docs/v057.md",
+      "bytes": 4354,
+      "sha256": "5464a367b0c31510a5a19ee69f897042b41d49dcaf2dff62868c9cf6ae655727"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.57-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.57-build.json",
+      "bytes": 777,
+      "sha256": "60c82ad4719bb4cfdd13713dc836553ca783da8e1d73586659587a35bab3b2be"
+    }
+  ]
+}
