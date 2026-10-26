@@ -24,6 +24,20 @@ class RunnerTests(unittest.TestCase):
     def test_two_stream_option_uses_paired_search_and_truthful_metadata(self):
         self.run_attempt(False,gpu=True,cached=True,dual=True)
 
+    def test_resident_maps_uses_verified_search_and_truthful_metadata(self):
+        self.run_attempt(False,gpu=True,cached=True,resident=True)
+
+    def test_resident_maps_rolls_over_full_nonce(self):
+        self.run_attempt(True,gpu=True,cached=True,resident=True)
+
+    def test_incompatible_scan_flags_fail_before_any_pool_work(self):
+        with patch.object(runner,'PoolReceiver')as receiver:
+            for flags in (['--resident-maps'],['--resident-maps','--two-streams','--cache-a']):
+                with patch('sys.argv',['mine_bounded','--host','synthetic.example','--port','9000',
+                        '--login-file','unused','--module','unused','--report','unused']+flags):
+                    with self.assertRaises((ValueError,SystemExit)):runner.main()
+            receiver.assert_not_called()
+
     def test_gpu_base_option_uses_new_commitment_helper(self):
         self.run_attempt(False,gpu=True)
 
@@ -59,7 +73,7 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual([p['method']for p in stream.packets],['login'])
         self.assertTrue(stream.closed)
 
-    def run_attempt(self,rollover,gpu=False,cached=False,dual=False):
+    def run_attempt(self,rollover,gpu=False,cached=False,dual=False,resident=False):
         events=[];ready=threading.Event()
         class Stream:
             def __init__(self):self.packets=[];self.step=0;self.timeout=1;self.closed=False
@@ -115,14 +129,15 @@ class RunnerTests(unittest.TestCase):
             stack.enter_context(patch.object(runner,'ProductionCandidateScanner',Device))
             stack.enter_context(patch.object(runner,'NonceSearch',Search))
             stack.enter_context(patch.object(runner,'DualSearch',Search))
+            stack.enter_context(patch.object(runner,'new_resident_search',Search))
             stack.enter_context(patch.object(runner,'prepare_share',side_effect=proof))
             stack.enter_context(patch('sys.argv',['mine_bounded','--host','synthetic.example','--port','9000',
-                '--login-file','unused','--module','unused','--report',str(report),'--seconds','3']+(['--commitment-module','unused-commitment']if gpu else [])+(['--cache-a']if cached else [])+(['--two-streams']if dual else [])))
+                '--login-file','unused','--module','unused','--report',str(report),'--seconds','3']+(['--commitment-module','unused-commitment']if gpu else [])+(['--cache-a']if cached else [])+(['--two-streams']if dual else [])+(['--resident-maps']if resident else [])))
             self.assertEqual(runner.main(),0)
             self.assertEqual(gpu_base.call_count,int(gpu))
             data=json.loads(report.read_text())
             self.assertEqual(data['commitment_backend'],'gpu-constant-v039'if gpu else 'cpu-streaming')
-            self.assertEqual(data['scan_backend'],'cached-a-two-streams-v042'if dual else 'cached-a-virtual-b-v040'if cached else 'validated-axis-production-virtual-v038')
+            self.assertEqual(data['scan_backend'],'resident-maps-one-stream-v046'if resident else 'cached-a-two-streams-v042'if dual else 'cached-a-virtual-b-v040'if cached else 'validated-axis-production-virtual-v038')
             self.assertEqual(data['submitted_shares'],1);self.assertEqual(data['pool_accepted_shares'],1)
             self.assertTrue(data['worker']['joined']);self.assertEqual(data['work']['proofs_checked'],1)
             self.assertEqual(data['connection']['reports']['accepted'],1)

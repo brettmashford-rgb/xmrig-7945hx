@@ -1,0 +1,30 @@
+{
+  "version": "0.0.46",
+  "scope": "bounded live integration of validated v045 one-stream resident maps",
+  "files": [
+    {
+      "path": "tools/mine_bounded.py",
+      "repository_path": "pearlhash/tools/mine_bounded.py",
+      "bytes": 13179,
+      "sha256": "1896b114a68a8d61746c975eacb851d4f446a2c97b95b26e13eef0266b772951"
+    },
+    {
+      "path": "tests/test_bounded_miner.py",
+      "repository_path": "pearlhash/tests/test_bounded_miner.py",
+      "bytes": 9444,
+      "sha256": "c36f479f0a839f329ca22940ad6b376cac7e8ee7944178c064202f48697ec67f"
+    },
+    {
+      "path": "tests/test_install_v046.py",
+      "repository_path": "pearlhash/tests/test_install_v046.py",
+      "bytes": 4054,
+      "sha256": "f98cd9ee0ed2e6d30f7e67aba01d8ff19f3a9dde4949d518a64e793723ebc954"
+    },
+    {
+      "path": "docs/v046.md",
+      "repository_path": "pearlhash/docs/v046.md",
+      "bytes": 2696,
+      "sha256": "a890eebd61f8813c4de6582ef6657411026a0ef3755ded0997f2092c8c2665cb"
+    }
+  ]
+}
