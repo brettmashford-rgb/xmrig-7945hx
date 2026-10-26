@@ -1,0 +1,54 @@
+{
+  "version": "0.0.61",
+  "scope": "offline verified A frontier and identical nonce preparation; unchanged v060 GPU scanner",
+  "files": [
+    {
+      "path": "tools/nonce_cache.py",
+      "repository_path": "pearlhash/tools/nonce_cache.py",
+      "bytes": 5462,
+      "sha256": "1e34b7afa6c0f0c53028f81cb77b818397d2c50129ea164b8d39d995b9e5799c"
+    },
+    {
+      "path": "tools/check_nonce_cache_job.py",
+      "repository_path": "pearlhash/tools/check_nonce_cache_job.py",
+      "bytes": 6472,
+      "sha256": "bbd9fa009ebe976bf1cd97fa38767054d1bae3cbb271e9a12ab1de0c9f643010"
+    },
+    {
+      "path": "tools/compare_nonce_cache.py",
+      "repository_path": "pearlhash/tools/compare_nonce_cache.py",
+      "bytes": 4135,
+      "sha256": "de1f1186cfd0c193f30fd6a75273673d88f201c6e8310c00c81847af08afe3b0"
+    },
+    {
+      "path": "tests/test_nonce_cache.py",
+      "repository_path": "pearlhash/tests/test_nonce_cache.py",
+      "bytes": 4709,
+      "sha256": "1f5f0fccc0b429d4318779621fece5744d8246029cead9cd4b59cdb7c7638e2f"
+    },
+    {
+      "path": "tests/test_compare_nonce_cache.py",
+      "repository_path": "pearlhash/tests/test_compare_nonce_cache.py",
+      "bytes": 1303,
+      "sha256": "9906e93a4d6c98dbeade8c0c81a31e713582960a8b4fde1a46e902029c6729a8"
+    },
+    {
+      "path": "tests/test_install_v061.py",
+      "repository_path": "pearlhash/tests/test_install_v061.py",
+      "bytes": 7494,
+      "sha256": "169ea57d83d88e38bcc0279e9f0ce8975091f71ffbd28b32221821c7f2c283fc"
+    },
+    {
+      "path": "docs/v061.md",
+      "repository_path": "pearlhash/docs/v061.md",
+      "bytes": 4951,
+      "sha256": "9bebb8b9334f78607f9f4d0ccf348f6f7171195c6097ecc23956c01e7bee8bf6"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.61-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.61-build.json",
+      "bytes": 1144,
+      "sha256": "6c74a3e854d67cafb1864e7b98ed56f54c7af3b874b90c42e5639d8de3a0817a"
+    }
+  ]
+}

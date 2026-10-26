@@ -1,0 +1,28 @@
+{
+  "version": "0.0.61",
+  "scope": "offline verified A frontier and identical nonce preparation; unchanged v060 GPU scanner",
+  "reused_ptx": "releases/pearlhash-dev-v0.0.60-scan-sm120.ptx",
+  "reused_ptx_sha256": "96e43e211558338558a61f9378d0831a93d98502d8e41010f71e8fb58c2ae679",
+  "new_gpu_kernel": false,
+  "production_A_leaves": 163872,
+  "production_last_leaf_parents": 7,
+  "host_targeted_tests": 58,
+  "development_production_contexts_identical": 20,
+  "development_CPU_nonce_comparison": {
+    "rounds": 20,
+    "median_seconds": {
+      "full-tree-v060": 0.37255375050062867,
+      "frontier-v061": 0.00031207599931804
+    },
+    "cache_build_seconds": 0.35848519099999976,
+    "speedup_nonce_preparation": 1193.7917408411633,
+    "total_seconds_including_cache_build": {
+      "full-tree-v060": 7.537031889005448,
+      "frontier-v061": 0.3658520210010465
+    },
+    "speedup_including_cache_build": 20.601312706658213,
+    "preferred": "frontier-v061",
+    "scope": "nonce preparation only; not GPU search throughput or whole-miner speedup"
+  },
+  "rig_validation": "cached-nonce GPU/official proof gates and rig timing pending"
+}
