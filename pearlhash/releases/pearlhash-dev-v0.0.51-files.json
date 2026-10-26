@@ -1,0 +1,30 @@
+{
+  "version": "0.0.51",
+  "scope": "bounded live integration of validated v050 lean direct scanning; unchanged v048 PTX and v039 GPU B commitment",
+  "files": [
+    {
+      "path": "tools/mine_bounded.py",
+      "repository_path": "pearlhash/tools/mine_bounded.py",
+      "bytes": 14262,
+      "sha256": "6d25d5b84f252955c0074f3c52e3987767acb06baf950205780951e21e136ad6"
+    },
+    {
+      "path": "tests/test_bounded_miner.py",
+      "repository_path": "pearlhash/tests/test_bounded_miner.py",
+      "bytes": 12447,
+      "sha256": "cda0a72a2e4fe1cb4a97667d00a71db59241fc9f35214e52caa0e39fb7c3707f"
+    },
+    {
+      "path": "tests/test_install_v051.py",
+      "repository_path": "pearlhash/tests/test_install_v051.py",
+      "bytes": 6995,
+      "sha256": "bdd838911a34ff3c22b3db5b873378bb8784f9255f9d3243431b18133ab6ee38"
+    },
+    {
+      "path": "docs/v051.md",
+      "repository_path": "pearlhash/docs/v051.md",
+      "bytes": 3654,
+      "sha256": "66920f6338c3ed52c1fe96bdcc3bf6b0310a49e73ff8522eda67d14b53ac89e3"
+    }
+  ]
+}
