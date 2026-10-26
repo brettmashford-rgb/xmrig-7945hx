@@ -1,0 +1,13 @@
+{
+  "compiler": "NVRTC 12.9.86",
+  "architecture": "compute_120",
+  "standard": "c++17",
+  "source": "gpu/direct_resident_scan.cu",
+  "new_entry": "resident_direct_cached_a_scan",
+  "bytes": 654498,
+  "sha256": "9b1da0c6879d4fe91907f151ab0fa02267e7c3eca8c24f3c9a473b65b6e856f4",
+  "repeat_build_identical": true,
+  "new_entry_block_barriers": 0,
+  "host_targeted_tests": 27,
+  "gpu_validation": "pending rig execution"
+}

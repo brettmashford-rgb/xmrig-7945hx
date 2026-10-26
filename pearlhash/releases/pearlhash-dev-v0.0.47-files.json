@@ -1,0 +1,72 @@
+{
+  "version": "0.0.47",
+  "scope": "offline direct resident-axis scanner correctness/proof gate and controlled comparison",
+  "files": [
+    {
+      "path": "gpu/direct_axes.h",
+      "repository_path": "pearlhash/gpu/direct_axes.h",
+      "bytes": 426,
+      "sha256": "757522baf579b117f3279c3f53da612fe7b160e020f6c67eabb051e345c28d0d"
+    },
+    {
+      "path": "gpu/direct_resident_scan.cu",
+      "repository_path": "pearlhash/gpu/direct_resident_scan.cu",
+      "bytes": 3648,
+      "sha256": "1cc10afbf4c5ead6d94c57d9faf17e086f557c8675751e2707a65f92688bebaa"
+    },
+    {
+      "path": "tools/resident_scan.py",
+      "repository_path": "pearlhash/tools/resident_scan.py",
+      "bytes": 7683,
+      "sha256": "4f80bf552ba387a936158a3e3f66377721bc0214c6803ca9729e61cdab1da4d6"
+    },
+    {
+      "path": "tools/direct_resident.py",
+      "repository_path": "pearlhash/tools/direct_resident.py",
+      "bytes": 3483,
+      "sha256": "bdbdec81d3a81d58c1a47555101d5905f6bda3c2eff17982a83d1e49bec13c7d"
+    },
+    {
+      "path": "tools/check_direct_job.py",
+      "repository_path": "pearlhash/tools/check_direct_job.py",
+      "bytes": 8611,
+      "sha256": "55967b1291a01919f4c47de8f2f00a943b5c62ac1ff7e9c273096e9d038e8df1"
+    },
+    {
+      "path": "tools/compare_direct_loops.py",
+      "repository_path": "pearlhash/tools/compare_direct_loops.py",
+      "bytes": 8451,
+      "sha256": "d6a2a02c353497f892f329fedb2a05b4f4df5167b2acd15c28d6378f1ef585af"
+    },
+    {
+      "path": "tests/test_direct_resident.py",
+      "repository_path": "pearlhash/tests/test_direct_resident.py",
+      "bytes": 4697,
+      "sha256": "5ef6840e6d2f0c3df54c0b9044c69833b2c3fae7aef60380f000cf83de272e17"
+    },
+    {
+      "path": "tests/test_install_v047.py",
+      "repository_path": "pearlhash/tests/test_install_v047.py",
+      "bytes": 3885,
+      "sha256": "82835e425d492684bb703f0daa6805a8e55255520b5d6edb75430ce4f5c70811"
+    },
+    {
+      "path": "docs/v047.md",
+      "repository_path": "pearlhash/docs/v047.md",
+      "bytes": 3011,
+      "sha256": "17182e23f9e2d08ba2ba4cbc98a2d93c62bba8bd1eeb67b7481142826946b32c"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.47-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.47-build.json",
+      "bytes": 421,
+      "sha256": "e56908d7f97c19522aa5caa6b3f3e988aeb6f10dd099d35ea98a71c9a34e9311"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.47-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.47-scan-sm120.ptx",
+      "bytes": 654498,
+      "sha256": "9b1da0c6879d4fe91907f151ab0fa02267e7c3eca8c24f3c9a473b65b6e856f4"
+    }
+  ]
+}
