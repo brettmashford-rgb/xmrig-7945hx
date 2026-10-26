@@ -1,0 +1,72 @@
+{
+  "version": "0.0.60",
+  "scope": "offline two-tile B reuse with explicit canonical mapping, proof gates and same-set three-mode comparison versus v059",
+  "files": [
+    {
+      "path": "gpu/shared_b_axes.h",
+      "repository_path": "pearlhash/gpu/shared_b_axes.h",
+      "bytes": 771,
+      "sha256": "ce4f015c6f7ceac7f4200ffbd3af1c6859261a97a6d7e7f9db1443807346921d"
+    },
+    {
+      "path": "gpu/shared_b_scan.cu",
+      "repository_path": "pearlhash/gpu/shared_b_scan.cu",
+      "bytes": 8133,
+      "sha256": "eb792bbed42de7d14aa10c06f8967254227ecf45ce17078edff305722f74edd6"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.60-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.60-scan-sm120.ptx",
+      "bytes": 974833,
+      "sha256": "96e43e211558338558a61f9378d0831a93d98502d8e41010f71e8fb58c2ae679"
+    },
+    {
+      "path": "tools/shared_b_scan.py",
+      "repository_path": "pearlhash/tools/shared_b_scan.py",
+      "bytes": 6441,
+      "sha256": "d89dd54269be5aee591f0c5060bde177ed4fec176e37bfcd247ca238c9cd6dd7"
+    },
+    {
+      "path": "tools/check_shared_b_job.py",
+      "repository_path": "pearlhash/tools/check_shared_b_job.py",
+      "bytes": 13585,
+      "sha256": "deb64c9c0e0e11681434053c46d9323d213bda166be61ade0f8ff481b63bc0f7"
+    },
+    {
+      "path": "tools/compare_shared_b_loops.py",
+      "repository_path": "pearlhash/tools/compare_shared_b_loops.py",
+      "bytes": 10002,
+      "sha256": "ac7b4c570849b3d3dabe027cac8b5b0c60a18fdc439b07339498dc8bf3222732"
+    },
+    {
+      "path": "tests/test_shared_b.py",
+      "repository_path": "pearlhash/tests/test_shared_b.py",
+      "bytes": 13373,
+      "sha256": "4bde52d7e65fb60f05cdb97495646ed6898cea24f94b78b70e800c6cc14fff83"
+    },
+    {
+      "path": "tests/test_compare_shared_b_loops.py",
+      "repository_path": "pearlhash/tests/test_compare_shared_b_loops.py",
+      "bytes": 1867,
+      "sha256": "793294e7d7bf85212c188d6f8619e37aebbe9460b95caafb29f9d3627ad2d54c"
+    },
+    {
+      "path": "tests/test_install_v060.py",
+      "repository_path": "pearlhash/tests/test_install_v060.py",
+      "bytes": 10146,
+      "sha256": "07f40ae723c8d3009150dacfdda58939dbe039bb2524386c19014fa3c87528c0"
+    },
+    {
+      "path": "docs/v060.md",
+      "repository_path": "pearlhash/docs/v060.md",
+      "bytes": 5520,
+      "sha256": "82fe35e3c1202b05a7a7a396a471b6bc06f4be1dcec82ebf41261eea4fd0e047"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.60-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.60-build.json",
+      "bytes": 962,
+      "sha256": "846ed4d3ec8ceef9ae8791e6d9215caf0103c97bf1022cbf5c2c3cc7b781770f"
+    }
+  ]
+}

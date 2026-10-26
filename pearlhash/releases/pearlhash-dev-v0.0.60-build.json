@@ -1,0 +1,32 @@
+{
+  "version": "0.0.60",
+  "compiler": "NVRTC 12.9.86",
+  "architecture": "compute_120",
+  "standard": "c++17",
+  "source": "gpu/shared_b_scan.cu",
+  "entries": {
+    "shared_b_order_control_scan": {
+      "argument_slots": 24,
+      "block_barriers": 0,
+      "static_mma_instructions": 2,
+      "static_shuffle_instructions": 29
+    },
+    "shared_b_pair_scan": {
+      "argument_slots": 24,
+      "block_barriers": 0,
+      "static_mma_instructions": 4,
+      "static_shuffle_instructions": 50
+    }
+  },
+  "control": "b_quad_transpose6_scan",
+  "bytes": 974833,
+  "sha256": "96e43e211558338558a61f9378d0831a93d98502d8e41010f71e8fb58c2ae679",
+  "repeat_build_identical": true,
+  "shared_bytes_per_cta": 24576,
+  "host_targeted_tests": 116,
+  "exhaustive_canonical_mapping_tiles": 8388608,
+  "gpu_validation": "pending rig execution",
+  "timing_rounds": 24,
+  "tiles_per_round_per_mode": 65536,
+  "timed_canonical_sets": "identical whole row-pair intervals"
+}
