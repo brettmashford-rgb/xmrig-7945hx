@@ -1,0 +1,11 @@
+{
+  "compiler": "NVRTC 12.9.86",
+  "architecture": "compute_120",
+  "standard": "c++17",
+  "source": "gpu/resident_tile_scan.cu",
+  "new_entry": "resident_query_descriptors",
+  "bytes": 606048,
+  "sha256": "811b8da908d84d78ca4bcd6c340350a34ee616581b816df1da698f3cfd28b7bf",
+  "repeat_build_identical": true,
+  "new_entry_block_barriers": 0
+}

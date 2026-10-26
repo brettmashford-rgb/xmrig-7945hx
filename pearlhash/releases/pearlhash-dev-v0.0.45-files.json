@@ -1,0 +1,66 @@
+{
+  "version": "0.0.45",
+  "scope": "resident canonical maps and GPU descriptor builder; offline fresh proof and one-stream comparison",
+  "files": [
+    {
+      "path": "gpu/resident_descriptors.h",
+      "repository_path": "pearlhash/gpu/resident_descriptors.h",
+      "bytes": 510,
+      "sha256": "39e6d622ef001dc72e388c1778d65cb5d4479785bbda29700fe5aa8f4bcffb10"
+    },
+    {
+      "path": "gpu/resident_tile_scan.cu",
+      "repository_path": "pearlhash/gpu/resident_tile_scan.cu",
+      "bytes": 683,
+      "sha256": "d9cda37e72bd78970fa90e7c3ae9eed6eb7a48093d330a7ea9bd4c453e4f5afe"
+    },
+    {
+      "path": "tools/resident_scan.py",
+      "repository_path": "pearlhash/tools/resident_scan.py",
+      "bytes": 7646,
+      "sha256": "3a757a6b49838e705415dc78061ce627fb0d84d1c56060610ab366cc2d64d2ae"
+    },
+    {
+      "path": "tools/check_resident_job.py",
+      "repository_path": "pearlhash/tools/check_resident_job.py",
+      "bytes": 8562,
+      "sha256": "fbb52b9984cf4727de3da83967f81ddf37d37614654e87968ca6d0c3e743c17c"
+    },
+    {
+      "path": "tools/compare_resident_loops.py",
+      "repository_path": "pearlhash/tools/compare_resident_loops.py",
+      "bytes": 8472,
+      "sha256": "560a7132aece5e55bb17ea72b3941a91d980566538fbe829ae085aaaa1ec2f6b"
+    },
+    {
+      "path": "tests/test_resident_scan.py",
+      "repository_path": "pearlhash/tests/test_resident_scan.py",
+      "bytes": 4423,
+      "sha256": "c6a0adbf564e8d12e586ff7da3b15285905fcfe1dadf56cf04829640beec5fb8"
+    },
+    {
+      "path": "tests/test_install_v045.py",
+      "repository_path": "pearlhash/tests/test_install_v045.py",
+      "bytes": 3955,
+      "sha256": "807c2ecdd19c01372c357e0c86214400b419af24416ec48024a191eedbb26f22"
+    },
+    {
+      "path": "docs/v045.md",
+      "repository_path": "pearlhash/docs/v045.md",
+      "bytes": 3430,
+      "sha256": "10f0b16e9cb01f7bb7eb93d28db3335b99b0b483acc8e8e0f717eccf149d213a"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.45-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.45-scan-sm120.ptx",
+      "bytes": 606048,
+      "sha256": "811b8da908d84d78ca4bcd6c340350a34ee616581b816df1da698f3cfd28b7bf"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.45-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.45-build.json",
+      "bytes": 342,
+      "sha256": "9789655d76dbb294a856a35c3ba686710d9dc37848d2a2df3d3bcfc5820c8229"
+    }
+  ]
+}
