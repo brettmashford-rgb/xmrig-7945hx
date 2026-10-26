@@ -1,0 +1,48 @@
+{
+  "version": "0.0.50",
+  "scope": "offline stream-ordered status reset and constant-time uniform-target host path; reuse unchanged v048 PTX",
+  "files": [
+    {
+      "path": "tools/lean_scan.py",
+      "repository_path": "pearlhash/tools/lean_scan.py",
+      "bytes": 8233,
+      "sha256": "46928d79e19e54150f73731352cb25155b7de77ab25249b0b0f22acae2cc7588"
+    },
+    {
+      "path": "tools/check_lean_job.py",
+      "repository_path": "pearlhash/tools/check_lean_job.py",
+      "bytes": 10850,
+      "sha256": "5b1853dd4f82ee8de30db135cf89b2aa45603fad851037170ccc6c6a10607601"
+    },
+    {
+      "path": "tools/compare_lean_loops.py",
+      "repository_path": "pearlhash/tools/compare_lean_loops.py",
+      "bytes": 9364,
+      "sha256": "c6d0e5c49ac8e7720647f10f6d3ad453355639ef95caa1e0463248a4c60c6ed6"
+    },
+    {
+      "path": "tests/test_lean_scan.py",
+      "repository_path": "pearlhash/tests/test_lean_scan.py",
+      "bytes": 10794,
+      "sha256": "13fbc50cb86a0ec20813267142cbf7c7983fc4dd72e3cd3481b45b8067a98b42"
+    },
+    {
+      "path": "tests/test_compare_lean_loops.py",
+      "repository_path": "pearlhash/tests/test_compare_lean_loops.py",
+      "bytes": 1863,
+      "sha256": "5e1e9211b1fe093ee2f42d3896609c34ac505dae993030b9827778285307c5b3"
+    },
+    {
+      "path": "tests/test_install_v050.py",
+      "repository_path": "pearlhash/tests/test_install_v050.py",
+      "bytes": 4585,
+      "sha256": "169d268b023865ff669e8be898eea3a9c25e5c5e0eb96a2f93209f18cd753069"
+    },
+    {
+      "path": "docs/v050.md",
+      "repository_path": "pearlhash/docs/v050.md",
+      "bytes": 4341,
+      "sha256": "3a88f9646b58bcc69a9472574111de0ea3419ba0d26534f671788003d0efa947"
+    }
+  ]
+}
