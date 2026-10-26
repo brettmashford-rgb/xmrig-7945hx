@@ -1,0 +1,66 @@
+{
+  "version": "0.0.53",
+  "scope": "offline quad6/quad7 shared-memory padding sweep against validated quad5, with correctness/proof gates",
+  "files": [
+    {
+      "path": "gpu/b_stride_scan.cu",
+      "repository_path": "pearlhash/gpu/b_stride_scan.cu",
+      "bytes": 1036,
+      "sha256": "5d626db9c76c4819c17e9c39ecf85d10d41823b1bd8f792f51cd2f9d0a2f8125"
+    },
+    {
+      "path": "tools/b_stride_scan.py",
+      "repository_path": "pearlhash/tools/b_stride_scan.py",
+      "bytes": 1283,
+      "sha256": "0771d70df130a7461b190bc57401b48d8935285949d910db1a0129abe690f70a"
+    },
+    {
+      "path": "tools/check_b_stride_job.py",
+      "repository_path": "pearlhash/tools/check_b_stride_job.py",
+      "bytes": 11190,
+      "sha256": "721f24c45af00945170c4ba710be77d2fbd5e9bd2c9c7b39c4cfbd68f0e6bb0d"
+    },
+    {
+      "path": "tools/compare_b_stride_loops.py",
+      "repository_path": "pearlhash/tools/compare_b_stride_loops.py",
+      "bytes": 9390,
+      "sha256": "5042d81865bd25af56b16fe1981b7651c902c9c6eb4d234ee15bc4ad70bdcbb4"
+    },
+    {
+      "path": "tests/test_b_stride.py",
+      "repository_path": "pearlhash/tests/test_b_stride.py",
+      "bytes": 5206,
+      "sha256": "0008229303fd52feb4c3817a9367ccdf174733c3b415db37d87257b41f59d146"
+    },
+    {
+      "path": "tests/test_compare_b_stride_loops.py",
+      "repository_path": "pearlhash/tests/test_compare_b_stride_loops.py",
+      "bytes": 1867,
+      "sha256": "739390bc8d4287cdfd1782aaeefa56fd6ae0bcd1ebaece8cba1553df4fc5c2e5"
+    },
+    {
+      "path": "tests/test_install_v053.py",
+      "repository_path": "pearlhash/tests/test_install_v053.py",
+      "bytes": 5858,
+      "sha256": "a736ce76f99088b6f9db4e6617f7d62ae63ed6f67fa63dfed5c7d1596f234c0a"
+    },
+    {
+      "path": "docs/v053.md",
+      "repository_path": "pearlhash/docs/v053.md",
+      "bytes": 4137,
+      "sha256": "41b193217f4df69b816e92a7f75d74805f2cd7c987b4d6ddeb69a8ad45c72bb5"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.53-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.53-build.json",
+      "bytes": 535,
+      "sha256": "40a17b6d8ee92ffe37ad261f7ad871493a82c6482bd3731f5e0110e715d01602"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.53-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.53-scan-sm120.ptx",
+      "bytes": 847201,
+      "sha256": "9479e23f274c0c1beded73c2ea1dacd844d7f9e81917702e3464743f0794404c"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "compiler": "NVRTC 12.9.86",
+  "architecture": "compute_120",
+  "standard": "c++17",
+  "source": "gpu/b_stride_scan.cu",
+  "new_entries": [
+    "b_quad_stride6_scan",
+    "b_quad_stride7_scan"
+  ],
+  "bytes": 847201,
+  "sha256": "9479e23f274c0c1beded73c2ea1dacd844d7f9e81917702e3464743f0794404c",
+  "repeat_build_identical": true,
+  "new_entry_block_barriers": 0,
+  "host_targeted_tests": 85,
+  "gpu_validation": "pending rig execution",
+  "shared_bytes_per_cta": {
+    "quad5": 20480,
+    "quad6": 24576,
+    "quad7": 28672
+  }
+}
