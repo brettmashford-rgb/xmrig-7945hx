@@ -1,0 +1,21 @@
+{
+  "version": "0.0.56",
+  "compiler": "NVRTC 12.9.86",
+  "architecture": "compute_120",
+  "standard": "c++17",
+  "source": "gpu/early_only_scan.cu",
+  "reused_loader_source": "gpu/b_loop_scan.cu",
+  "entry": "b_quad_early_only_scan",
+  "argument_slots": 24,
+  "block_barriers": 0,
+  "static_mma_instructions": 2,
+  "bytes": 941179,
+  "sha256": "a343d1aa5a59ff64d4e4c7949c8376224fc69ae852504482d965ff4466bd1ae9",
+  "repeat_build_identical": true,
+  "shared_bytes_per_cta": 20480,
+  "host_targeted_tests": 86,
+  "gpu_validation": "pending rig execution",
+  "timing_rounds": 24,
+  "tiles_per_round_per_mode": 65536,
+  "grouping": false
+}

@@ -1,0 +1,66 @@
+{
+  "version": "0.0.56",
+  "scope": "offline early A/B preparation alone, original ungrouped loop, proof-gated paired timing versus quad5",
+  "files": [
+    {
+      "path": "gpu/early_only_scan.cu",
+      "repository_path": "pearlhash/gpu/early_only_scan.cu",
+      "bytes": 3761,
+      "sha256": "0ad538c6ecb4c7581bc9e862fe89f632fd55337cf83da7c61fdfa0630ccdbd42"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.56-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.56-scan-sm120.ptx",
+      "bytes": 941179,
+      "sha256": "a343d1aa5a59ff64d4e4c7949c8376224fc69ae852504482d965ff4466bd1ae9"
+    },
+    {
+      "path": "tools/early_only_scan.py",
+      "repository_path": "pearlhash/tools/early_only_scan.py",
+      "bytes": 1097,
+      "sha256": "7ca62830a0a9f7ff172c01c4170e7c9e3a9cc5d1b865fbbe56a70aa92e7e89b9"
+    },
+    {
+      "path": "tools/check_early_only_job.py",
+      "repository_path": "pearlhash/tools/check_early_only_job.py",
+      "bytes": 9894,
+      "sha256": "92009cc40a9c9ae7509d2a9bc51d2a5cd42af93e1c39671d1d8bfa8e9c680b47"
+    },
+    {
+      "path": "tools/compare_early_only_loops.py",
+      "repository_path": "pearlhash/tools/compare_early_only_loops.py",
+      "bytes": 9677,
+      "sha256": "6a8be6e6b3c7478cf2f83dbe852276b00b95ec28beec5359028d37f51b005699"
+    },
+    {
+      "path": "tests/test_early_only.py",
+      "repository_path": "pearlhash/tests/test_early_only.py",
+      "bytes": 6099,
+      "sha256": "d480f4183b992d1a31c0e952636e951901a403271dd9dee0005e54e007f466ca"
+    },
+    {
+      "path": "tests/test_compare_early_only_loops.py",
+      "repository_path": "pearlhash/tests/test_compare_early_only_loops.py",
+      "bytes": 2519,
+      "sha256": "66db368f01b949955a857625e0a1fe938f8918f440abb383bccdb341702a8306"
+    },
+    {
+      "path": "tests/test_install_v056.py",
+      "repository_path": "pearlhash/tests/test_install_v056.py",
+      "bytes": 7268,
+      "sha256": "d18133457f9fcb7c0b4b62779f376a172cddee57418bbe7e53540b9541457ed9"
+    },
+    {
+      "path": "docs/v056.md",
+      "repository_path": "pearlhash/docs/v056.md",
+      "bytes": 4114,
+      "sha256": "eae10e5328d768ac35cee6085db154112a06c13589a51a5003646355b967e99c"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.56-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.56-build.json",
+      "bytes": 636,
+      "sha256": "629d2f49c65cf1547819d91bdaa867d69df31b93ab5ea3ce3861bce9a49b31de"
+    }
+  ]
+}
