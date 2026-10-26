@@ -1,0 +1,35 @@
+{
+  "version": "0.0.58",
+  "compiler": "NVRTC 12.9.86",
+  "architecture": "compute_120",
+  "standard": "c++17",
+  "source": "gpu/b_bias_scan.cu",
+  "entry": "b_quad_biased_scan",
+  "control": "b_quad_transpose_scan",
+  "argument_slots": 24,
+  "block_barriers": 0,
+  "static_mma_instructions": 2,
+  "static_shuffle_instructions": 29,
+  "bytes": 841996,
+  "sha256": "1a93f82bab8dc35b9dd64d52449b5e9c2c3f1bdd49b491f768630219b641d2ba",
+  "repeat_build_identical": true,
+  "shared_bytes_per_cta": 20480,
+  "host_targeted_tests": 93,
+  "host_valid_byte_pair_cases": 4096,
+  "host_exact_fragment_comparisons": 262144,
+  "uniform_noise_range": [
+    -32,
+    31
+  ],
+  "biased_cache_range": [
+    0,
+    63
+  ],
+  "B_value_range": [
+    1,
+    127
+  ],
+  "gpu_validation": "pending rig execution",
+  "timing_rounds": 24,
+  "tiles_per_round_per_mode": 65536
+}

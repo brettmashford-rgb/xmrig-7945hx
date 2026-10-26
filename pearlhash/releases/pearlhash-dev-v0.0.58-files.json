@@ -1,0 +1,72 @@
+{
+  "version": "0.0.58",
+  "scope": "offline biased six-bit B arithmetic on v057 transpose, proof-gated paired comparison versus v057",
+  "files": [
+    {
+      "path": "gpu/b_bias.h",
+      "repository_path": "pearlhash/gpu/b_bias.h",
+      "bytes": 610,
+      "sha256": "46ee6262eba4535256d19f0fcb76033c29a9b0d56d3dc8e919363275867090ac"
+    },
+    {
+      "path": "gpu/b_bias_scan.cu",
+      "repository_path": "pearlhash/gpu/b_bias_scan.cu",
+      "bytes": 4419,
+      "sha256": "e4d93628c7238ce1c87450d0b131bc039c81e0bbc5adace84dacd7445afc9a8e"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.58-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.58-scan-sm120.ptx",
+      "bytes": 841996,
+      "sha256": "1a93f82bab8dc35b9dd64d52449b5e9c2c3f1bdd49b491f768630219b641d2ba"
+    },
+    {
+      "path": "tools/b_bias_scan.py",
+      "repository_path": "pearlhash/tools/b_bias_scan.py",
+      "bytes": 1117,
+      "sha256": "f439d6cd77af06d4d4475d3fd985d0cb9fe970bf5335515e072df2353777d651"
+    },
+    {
+      "path": "tools/check_b_bias_job.py",
+      "repository_path": "pearlhash/tools/check_b_bias_job.py",
+      "bytes": 9900,
+      "sha256": "8fb60bf4a3cb3c7313c8ecbc7de73651d3ddbfc5233a07cec658ad2826966fac"
+    },
+    {
+      "path": "tools/compare_b_bias_loops.py",
+      "repository_path": "pearlhash/tools/compare_b_bias_loops.py",
+      "bytes": 9624,
+      "sha256": "2c69de29249541f58014ac2a2c2af07cbc3361f2527cc62bc99f0ea738129056"
+    },
+    {
+      "path": "tests/test_b_bias.py",
+      "repository_path": "pearlhash/tests/test_b_bias.py",
+      "bytes": 9438,
+      "sha256": "45e0f306616a338c6bc5303d6838fc0add81450b916b0a97b76997701ce9b176"
+    },
+    {
+      "path": "tests/test_compare_b_bias_loops.py",
+      "repository_path": "pearlhash/tests/test_compare_b_bias_loops.py",
+      "bytes": 2524,
+      "sha256": "0534b43bfa3687f4eb6418feb2b808a8d2f8ed60d05b6b8fab39349b12f965a2"
+    },
+    {
+      "path": "tests/test_install_v058.py",
+      "repository_path": "pearlhash/tests/test_install_v058.py",
+      "bytes": 8621,
+      "sha256": "acf5ac0642caec843c1dcfbbc591a4e1b212c7d1b73bb4ca9d075a9ad265e75b"
+    },
+    {
+      "path": "docs/v058.md",
+      "repository_path": "pearlhash/docs/v058.md",
+      "bytes": 4580,
+      "sha256": "d6e77e366794a6a21da50a544da65debcf0b6d1c2c561ee36113506fe2b5fb2f"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.58-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.58-build.json",
+      "bytes": 851,
+      "sha256": "8060e3811f1511dda4b1ab23473d28b35481864e77a0adf7f586678160735280"
+    }
+  ]
+}
