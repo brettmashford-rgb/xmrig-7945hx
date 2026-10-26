@@ -1,23 +1,24 @@
 {
   "schema": "pearlhash-development-baseline-1",
   "offline_baseline": {
-    "version": "0.0.59",
-    "release_commit": "673fa666f4025ef5804714ae7c5323d416182825",
-    "core_commit": "55216c9b4d3af823de90216b2d725a75e773b20a",
-    "kernel": "b_quad_transpose6_scan",
-    "ptx": "releases/pearlhash-dev-v0.0.59-scan-sm120.ptx",
-    "ptx_sha256": "ea4dcc54a2ca3033b5e3fb3d73a3e33b3ff596985de5ae4ca9acb0ca82ce3395",
-    "release_manifest_sha256": "a16862b27e7d2dc5266777de50eb4f8031e9d628e58bda912a8a3ed19ff983d6",
-    "rig_correctness_and_proof_gate": "passed before completed offline benchmark",
+    "version": "0.0.60",
+    "release_commit": "f41da53362463cc32e4f45452782ba88bf542ce6",
+    "core_commit": "82cf5f1385e719cc51891c39abbb1d658d60ddea",
+    "kernel": "shared_b_pair_scan",
+    "ptx": "releases/pearlhash-dev-v0.0.60-scan-sm120.ptx",
+    "ptx_sha256": "96e43e211558338558a61f9378d0831a93d98502d8e41010f71e8fb58c2ae679",
+    "release_manifest_sha256": "187d3f0f603b03572b61b1a8a6e99fc65d4f01064d8904697e0d270a47bd29af",
+    "rig_correctness_and_proof_gate": "passed full canonical mapping, transcript/queue/guard gates and two fresh official CPU verifier proofs",
     "rounds": 24,
     "unique_timed_tiles_per_mode": 1572864,
-    "median_tiles_per_second": 888491.1294795894,
-    "control_v057_tiles_per_second": 855774.1726578745,
-    "speedup_over_v057": 1.0382308298930103,
-    "registers_per_thread": 40,
+    "median_tiles_per_second": 1070404.5898163747,
+    "control_v059_tiles_per_second": 881361.3056194411,
+    "order_only_tiles_per_second": 993695.7197409202,
+    "speedup_over_v059": 1.2144901109132193,
+    "registers_per_thread": 56,
     "static_shared_bytes": 24576,
     "local_bytes_per_thread": 0,
-    "driver_calls_and_bytes": "unchanged versus control",
+    "driver_calls_and_bytes": "unchanged versus controls",
     "live_integrated": false
   },
   "last_live_validated": {
@@ -32,5 +33,5 @@
   },
   "pool_acceptance_proven": false,
   "extranonce_worker_mapping_proven": false,
-  "development_policy": "Use v059 as the next offline control; bank validated gains and combine them into a later bounded live update."
+  "development_policy": "Use v060 shared-B as the offline GPU control; v061 nonce frontier is experimental until its rig gates and timing complete. Bank validated gains for a later bounded live update."
 }
