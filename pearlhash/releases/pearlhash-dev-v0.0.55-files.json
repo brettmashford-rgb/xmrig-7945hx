@@ -1,0 +1,66 @@
+{
+  "version": "0.0.55",
+  "scope": "offline quad5 grouped iteration and grouped early operand experiments with two separate paired comparisons",
+  "files": [
+    {
+      "path": "gpu/b_loop_scan.cu",
+      "repository_path": "pearlhash/gpu/b_loop_scan.cu",
+      "bytes": 5145,
+      "sha256": "9774f81b8a7746791b7885e7c7b3987533c274850fdb2960a0662060b6e9f337"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.55-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.55-scan-sm120.ptx",
+      "bytes": 886696,
+      "sha256": "cbc40557515fd547021abf192422b93fa47c4164280fc0eaff08ca58e850aaf3"
+    },
+    {
+      "path": "tools/b_loop_scan.py",
+      "repository_path": "pearlhash/tools/b_loop_scan.py",
+      "bytes": 1327,
+      "sha256": "f55cf211a7d62ca6f31dc819694a5be8f0d362e083b3a0879f6c1826a823e439"
+    },
+    {
+      "path": "tools/check_b_loop_job.py",
+      "repository_path": "pearlhash/tools/check_b_loop_job.py",
+      "bytes": 11207,
+      "sha256": "e43c39f9a75bab89991c544aec6bfd1144bab47abd91c9c755ba4a0ef5c3f426"
+    },
+    {
+      "path": "tools/compare_b_loop_loops.py",
+      "repository_path": "pearlhash/tools/compare_b_loop_loops.py",
+      "bytes": 9749,
+      "sha256": "af9d30f3130cc49a3b57c3b23f4f1663ba7562b117f84b7a7341e285e09c3e28"
+    },
+    {
+      "path": "tests/test_b_loop.py",
+      "repository_path": "pearlhash/tests/test_b_loop.py",
+      "bytes": 6151,
+      "sha256": "133fab7de8fdd48648bdde394fdf4a8b32332c58abe4b1c6b2464378ae0fda32"
+    },
+    {
+      "path": "tests/test_compare_b_loop_loops.py",
+      "repository_path": "pearlhash/tests/test_compare_b_loop_loops.py",
+      "bytes": 2516,
+      "sha256": "2c71203749206c9d2629404fc6af14fbc4005979a2a8ae2f464678ab89bfb4ef"
+    },
+    {
+      "path": "tests/test_install_v055.py",
+      "repository_path": "pearlhash/tests/test_install_v055.py",
+      "bytes": 8987,
+      "sha256": "3189690a7f0fcfcf1b70e109ac73404b78ff7be43e3374cadfd056a1a2b5ede8"
+    },
+    {
+      "path": "docs/v055.md",
+      "repository_path": "pearlhash/docs/v055.md",
+      "bytes": 4401,
+      "sha256": "bd760ef839f9a4945aa1763aeb150fefecc6e57c40762b18664183bd54d7d0b1"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.55-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.55-build.json",
+      "bytes": 844,
+      "sha256": "d87a83b14aa64cac148821acdd868f27c3ee3479ef7ff5d4606df65aea1236bc"
+    }
+  ]
+}

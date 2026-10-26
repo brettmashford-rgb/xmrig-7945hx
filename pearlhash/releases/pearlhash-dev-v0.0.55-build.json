@@ -1,0 +1,31 @@
+{
+  "version": "0.0.55",
+  "compiler": "NVRTC 12.9.86",
+  "architecture": "compute_120",
+  "standard": "c++17",
+  "source": "gpu/b_loop_scan.cu",
+  "bytes": 886696,
+  "sha256": "cbc40557515fd547021abf192422b93fa47c4164280fc0eaff08ca58e850aaf3",
+  "repeat_build_identical": true,
+  "entries": {
+    "b_quad_grouped_scan": {
+      "argument_slots": 24,
+      "block_barriers": 0,
+      "static_mma_instructions": 8
+    },
+    "b_quad_early_scan": {
+      "argument_slots": 24,
+      "block_barriers": 0,
+      "static_mma_instructions": 8
+    }
+  },
+  "shared_bytes_per_cta": 20480,
+  "host_targeted_tests": 92,
+  "gpu_validation": "pending rig execution",
+  "tests": [
+    "quad5 versus grouped iterations",
+    "quad5 versus grouped iterations plus early A/B operands"
+  ],
+  "timing_rounds_per_test": 24,
+  "tiles_per_round_per_mode": 65536
+}
