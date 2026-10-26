@@ -1,0 +1,13 @@
+{
+  "compiler": "NVRTC 12.9.86",
+  "architecture": "compute_120",
+  "standard": "c++17",
+  "source": "gpu/snapshot_scan.cu",
+  "new_entry": "resident_guard_snapshot",
+  "bytes": 657078,
+  "sha256": "265baca48f8352b7b06013c28f2361e816a539f6e01d513f1cfeb2bae687c118",
+  "repeat_build_identical": true,
+  "new_entry_block_barriers": 0,
+  "host_targeted_tests": 46,
+  "gpu_validation": "pending rig execution"
+}
