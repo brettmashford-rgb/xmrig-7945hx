@@ -1,0 +1,66 @@
+{
+  "version": "0.0.59",
+  "scope": "offline stride-six padding retest on v057 transpose with proof-gated paired comparison",
+  "files": [
+    {
+      "path": "gpu/transpose6_scan.cu",
+      "repository_path": "pearlhash/gpu/transpose6_scan.cu",
+      "bytes": 4406,
+      "sha256": "281485a694ff4e926520410233ef309a0a2254ab4d013de0e5826327f877de98"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.59-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.59-scan-sm120.ptx",
+      "bytes": 843434,
+      "sha256": "ea4dcc54a2ca3033b5e3fb3d73a3e33b3ff596985de5ae4ca9acb0ca82ce3395"
+    },
+    {
+      "path": "tools/transpose6_scan.py",
+      "repository_path": "pearlhash/tools/transpose6_scan.py",
+      "bytes": 1139,
+      "sha256": "9d88e1e6aa1eaa42b431c4932d735dc58d11b1bd79dc02fc9da82a53300c7136"
+    },
+    {
+      "path": "tools/check_transpose6_job.py",
+      "repository_path": "pearlhash/tools/check_transpose6_job.py",
+      "bytes": 9962,
+      "sha256": "11ffd93cddd8f7d3a1231cbf1f81762900d6e8b409c065936a460111ff9bec12"
+    },
+    {
+      "path": "tools/compare_transpose6_loops.py",
+      "repository_path": "pearlhash/tools/compare_transpose6_loops.py",
+      "bytes": 9672,
+      "sha256": "6f73eaaabd661af63fc72c8e286473d6d31ca1d5f10f0aee7269b83afb2b4c65"
+    },
+    {
+      "path": "tests/test_transpose6.py",
+      "repository_path": "pearlhash/tests/test_transpose6.py",
+      "bytes": 8304,
+      "sha256": "2b4ac46e01004271e374c74dcfbb03f9d88afdcdf8e2d09f395789697b995c29"
+    },
+    {
+      "path": "tests/test_compare_transpose6_loops.py",
+      "repository_path": "pearlhash/tests/test_compare_transpose6_loops.py",
+      "bytes": 2530,
+      "sha256": "db0556012e531ad9cd5f12fb1ff3dc5cb44cb99bfdf08b82fe09778dd6d3df89"
+    },
+    {
+      "path": "tests/test_install_v059.py",
+      "repository_path": "pearlhash/tests/test_install_v059.py",
+      "bytes": 9013,
+      "sha256": "3d55e13b9bef3ffd9d43e3127f5169fbbcdee6781031252adb8e24d8a99b2b81"
+    },
+    {
+      "path": "docs/v059.md",
+      "repository_path": "pearlhash/docs/v059.md",
+      "bytes": 4328,
+      "sha256": "b1bc160aa4e1b95f69279bbb5bffbaba04062fca64f5221ff1065441ff20223f"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.59-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.59-build.json",
+      "bytes": 727,
+      "sha256": "7191aa51d62a57b5229341fb6c38ade223b8c7e2f0f705ffd8e11214e2ea0fc8"
+    }
+  ]
+}
