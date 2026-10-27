@@ -72,7 +72,7 @@ class ResidentDispatch(StreamDispatch):
 
 class ResidentBackend:
     dispatch_type=ResidentDispatch
-    def __init__(self,profile,device,*,plan,bound,current_generation=None,on_close=None):
+    def __init__(self,profile,device,*,plan,bound,current_generation=None,on_close=None,tables_factory=None):
         if (not isinstance(device,ProductionCandidateScanner)or type(plan)is not FastPlan
                 or plan.profile!=(profile.m,profile.n,profile.k,profile.rank,profile.fill)):
             raise ValueError('production scanner and matching immutable plan required')
@@ -81,7 +81,7 @@ class ResidentBackend:
         self.closed=False;self.tables=self.cache=self.dispatch=None;self.batch=self.prepared=None;self.generation=None
         self.preparations=0;self.dispatches=0;self.prepare_seconds=0.;self.scan_seconds=0.;self.buffer_allocations=0;self.buffer_bytes=0
         try:
-            self.tables=VirtualTables(device,profile);self.cache=CachedA(self.tables)
+            self.tables=(VirtualTables if tables_factory is None else tables_factory)(device,profile);self.cache=CachedA(self.tables)
             self.dispatch=self.dispatch_type(device,self.tables,self.cache,plan,bound)
             self.buffer_allocations=len(self.dispatch.owned);self.buffer_bytes=sum(buf[2]+32 for buf in self.dispatch.buffers)
         except BaseException:self.close();raise

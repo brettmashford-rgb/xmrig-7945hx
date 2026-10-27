@@ -33,5 +33,26 @@
   },
   "pool_acceptance_proven": false,
   "extranonce_worker_mapping_proven": false,
-  "development_policy": "Use v060 shared-B as the offline GPU control; v061 nonce frontier is experimental until its rig gates and timing complete. Bank validated gains for a later bounded live update."
+  "development_policy": "Bank verified offline gains. The v062 launcher gates its five-minute live run on fresh rig correctness/proof/lifecycle checks. Genuine custom pool acceptance remains unproven.",
+  "validated_nonce_preparation": {
+    "version": "0.0.61",
+    "release_commit": "d80ab6c73780dc3a9542d065e12ff5e106335fae",
+    "rig_proof_checks": "passed",
+    "contexts_identical": 20,
+    "median_full_tree_seconds": 0.5750981985183898,
+    "median_frontier_seconds": 0.0006308129813987762,
+    "cache_build_seconds": 0.5743930325986315,
+    "speedup_including_cache_build": 19.584461003822412,
+    "scope": "nonce preparation only; unchanged GPU tiles per second"
+  },
+  "pending_live_package": {
+    "version": "0.0.62",
+    "changes": [
+      "v060 shared-B scanner integration",
+      "v061 verified nonce frontier integration",
+      "job-owned B noise/permutation table reuse"
+    ],
+    "rig_preflight": "pending",
+    "live_run": "pending"
+  }
 }

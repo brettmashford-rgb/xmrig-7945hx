@@ -1,0 +1,12 @@
+{
+  "version": "0.0.62",
+  "changes": "job-owned B uniform/permutation cache; bounded v060/v061 live integration",
+  "gpu_module": "reuse verified installed releases/pearlhash-dev-v0.0.60-scan-sm120.ptx",
+  "gpu_module_sha256": "96e43e211558338558a61f9378d0831a93d98502d8e41010f71e8fb58c2ae679",
+  "new_ptx": false,
+  "new_native_archive": false,
+  "host_tests": 96,
+  "rig_preflight": "pending",
+  "live_test": "pending",
+  "pool_acceptance_proven": false
+}

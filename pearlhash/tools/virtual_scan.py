@@ -51,14 +51,20 @@ def global_reference(profile,queries):
 
 class VirtualTables:
     """Own only this cache's allocations; queries never upload signal matrices."""
-    def __init__(self,device,profile):
+    def __init__(self,device,profile,*,b_cache=None):
         self.device=device;self.profile=profile;self.payload=table_payload(profile)
         self.owned=[];self.closed=False;self.checked={'A':set(),'B':set()}
-        self.buffers={}
+        self.buffers={};self.b_cache=None
         try:
-            self.key_a=self.allocate(profile.seed_a);self.key_b=self.allocate(profile.seed_b)
+            self.key_a=self.allocate(profile.seed_a)
+            if b_cache is None:self.key_b=self.allocate(profile.seed_b)
+            else:
+                b_cache.acquire(device,profile);self.b_cache=b_cache
+                self.key_b=b_cache.key_b;self.buffers['B']=b_cache.buffer
+                self.checked['B']=b_cache.checked
             self.tail=self.allocate(profile.tail)
             for side,rows,key,label in (('A',profile.m,self.key_a,b'A_tensor'),('B',profile.n,self.key_b,b'B_tensor')):
+                if side=='B'and b_cache is not None:continue
                 raw,u=self.guarded(rows*profile.rank);praw,p=self.guarded(profile.k*4)
                 self.buffers[side]=(raw,u,praw,p,rows)
                 blocks=rows*profile.rank//32;domain=C.c_uint(int.from_bytes(label[:4],'little'))
@@ -109,6 +115,7 @@ class VirtualTables:
         if not self.closed:
             for pointer in reversed(self.owned):self.device.release(pointer)
             self.owned.clear();self.closed=True
+            if self.b_cache is not None:self.b_cache.release();self.b_cache=None
 
 
 class VirtualScanner(TileScanner):

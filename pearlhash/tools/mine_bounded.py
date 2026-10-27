@@ -34,6 +34,8 @@ from tools.snapshot_scan import new_snapshot_search
 from tools.lean_scan import new_lean_search
 from tools.b_quad_scan import new_b_quad_search
 from tools.dual_search import DualSearch
+from tools.job_b_tables import JobBTables,new_job_b_search
+from tools.nonce_cache import NonceCommitmentCache,prepare_cached_nonce
 
 
 def main():
@@ -45,6 +47,7 @@ def main():
     parser.add_argument('--report',type=Path,required=True)
     parser.add_argument('--seconds',type=int,default=300)
     scan_choice=parser.add_mutually_exclusive_group()
+    scan_choice.add_argument('--job-b-cache',action='store_true',help='shared-B v60 scanner, cached nonce roots and job-resident B tables')
     scan_choice.add_argument('--quad5',action='store_true',help='validated four-row packed B scan with shared stride five')
     scan_choice.add_argument('--lean-direct',action='store_true',help='validated uniform-target direct scan with stream-ordered status reset')
     scan_choice.add_argument('--packed-direct',action='store_true',help='validated direct resident maps with packed status and all guards')
@@ -54,12 +57,12 @@ def main():
     parser.add_argument('--observe-target',action='store_true',help='receive one target, no GPU work or submission')
     args=parser.parse_args()
     if not 1<=args.seconds<=300:raise ValueError('bounded receive duration required')
-    if (args.two_streams or args.resident_maps or args.packed_direct or args.lean_direct or args.quad5)and not args.cache_a:raise ValueError('selected scan path requires --cache-a')
+    if (args.two_streams or args.resident_maps or args.packed_direct or args.lean_direct or args.quad5 or args.job_b_cache)and not args.cache_a:raise ValueError('selected scan path requires --cache-a')
     p=MiningProfile(5121,262144,32768,128,PeriodicPattern(bytes.fromhex('000103040000')),
                     PeriodicPattern(bytes.fromhex('000103010103')))
     session=PoolSession(p,cert_version=3);gate=SubmissionGate(session,max_pending=1)
     stop=threading.Event();heartbeat_done=threading.Event();lock=threading.Lock()
-    backend_reports=[]
+    backend_reports=[];job_b_reports=[]
     state={'tiles':0,'nonces_started':0,'full_nonces':0,'proofs_checked':0,'stage':'waiting for job'}
     telemetry=WorkTelemetry()
     started=time.monotonic();base_cache=[None];last_report=[0.0];last_progress=[0.0]
@@ -91,13 +94,21 @@ def main():
                 base_cache[0]=base
         finally:telemetry.seconds(job,'base',time.monotonic()-base_started)
         require_current(job,current)
-        device=ProductionCandidateScanner()
+        device=ProductionCandidateScanner();b_owner=None;nonce_cache=None
         try:
             device.start(args.module)
+            if args.job_b_cache:
+                prepared_started=time.monotonic()
+                progress('Building the verified A frontier once for this live job.')
+                try:nonce_cache=NonceCommitmentCache.build(job,current)
+                finally:telemetry.seconds(job,'nonce',time.monotonic()-prepared_started)
             while current(job):
                 progress('Preparing a fresh nonce; assigned extranonce is the worker-nonce hypothesis.')
                 nonce_started=time.monotonic()
-                try:context=prepare_nonce(job,base,job.assigned_extranonce,secrets.token_bytes(8),current)
+                try:
+                    miner=secrets.token_bytes(8)
+                    context=(prepare_cached_nonce(job,base,job.assigned_extranonce,miner,current,nonce_cache)
+                        if args.job_b_cache else prepare_nonce(job,base,job.assigned_extranonce,miner,current))
                 finally:telemetry.seconds(job,'nonce',time.monotonic()-nonce_started)
                 telemetry.add(job,nonces=1)
                 with lock:state['nonces_started']+=1
@@ -109,8 +120,10 @@ def main():
                     return (CachedABackend if args.cache_a else FastCandidateBackend)(profile,device,plan=plan,bound=bound,
                         current_generation=generation,on_close=backend_reports.append)
                 try:
-                    plan=None if (args.two_streams or args.resident_maps or args.packed_direct or args.lean_direct or args.quad5)else FastPlan.from_job(job)
-                    search=(new_b_quad_search(context,device,current,padded=True,on_close=backend_reports.append)if args.quad5 else
+                    plan=None if (args.two_streams or args.resident_maps or args.packed_direct or args.lean_direct or args.quad5 or args.job_b_cache)else FastPlan.from_job(job)
+                    if args.job_b_cache and b_owner is None:b_owner=JobBTables(device,context,current)
+                    search=(new_job_b_search(context,device,current,b_owner,on_close=backend_reports.append)if args.job_b_cache else
+                            new_b_quad_search(context,device,current,padded=True,on_close=backend_reports.append)if args.quad5 else
                             new_lean_search(context,device,current,lean=True,on_close=backend_reports.append)if args.lean_direct else
                             new_snapshot_search(context,device,current,direct=True,on_close=backend_reports.append)if args.packed_direct else
                             new_resident_search(context,device,current,on_close=backend_reports.append)if args.resident_maps else
@@ -150,7 +163,11 @@ def main():
                     with lock:state['full_nonces']+=1
                 require_current(job,current)
             require_current(job,current)
-        finally:device.close()
+        finally:
+            try:
+                if b_owner is not None:
+                    b_owner.close();job_b_reports.append(b_owner.stats())
+            finally:device.close()
     def verdict(result):
         print('POOL SHARE VERDICT:',result.outcome,'status:',result.status,flush=True)
         stop.set()
@@ -160,8 +177,8 @@ def main():
         print(f'Live target: {job.share_bound.bit_length()} scaled bits; mean {expected:.6g} tiles per candidate under uniform-digest model.',flush=True)
         if args.observe_target:stop.set()
         else:worker.publish(job)
-    receiver=PoolReceiver(session,args.host,args.port,saved_wallet(args.login_file),'5060-independent-v054',
-                          agent='pearlhash-independent/0.0.54')
+    receiver=PoolReceiver(session,args.host,args.port,saved_wallet(args.login_file),'5060-independent-v062',
+                          agent='pearlhash-independent/0.0.62')
     worker=LatestJobWorker(session,process,lambda job,result:None,stop=stop)
     fd=os.open(args.report,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
     beat=threading.Thread(target=heartbeat,name='pearlhash-progress',daemon=True)
@@ -184,8 +201,8 @@ def main():
         stats=gate.stats()
         report={'complete':error is None,'receiver':asdict(received)if received else None,
                 'worker':worker.stats(),'work':work,'connection':stats,'error':error,
-                'telemetry':telemetry.snapshot(),'scan_backend':'quad5-one-stream-v054'if args.quad5 else 'lean-direct-one-stream-v051'if args.lean_direct else 'packed-direct-one-stream-v049'if args.packed_direct else 'resident-maps-one-stream-v046'if args.resident_maps else 'cached-a-two-streams-v042'if args.two_streams else 'cached-a-virtual-b-v040'if args.cache_a else 'validated-axis-production-virtual-v038',
-                'backend_lifecycle':backend_reports,
+                'telemetry':telemetry.snapshot(),'scan_backend':'shared-B-job-cache-one-stream-v062'if args.job_b_cache else 'quad5-one-stream-v054'if args.quad5 else 'lean-direct-one-stream-v051'if args.lean_direct else 'packed-direct-one-stream-v049'if args.packed_direct else 'resident-maps-one-stream-v046'if args.resident_maps else 'cached-a-two-streams-v042'if args.two_streams else 'cached-a-virtual-b-v040'if args.cache_a else 'validated-axis-production-virtual-v038',
+                'backend_lifecycle':backend_reports,'job_b_lifecycle':job_b_reports,
                 'commitment_backend':'gpu-constant-v039'if args.commitment_module else 'cpu-streaming',
                 'submitted_shares':stats['sent'],'pool_accepted_shares':stats['accepted'],
                 'extranonce_worker_role_verified':stats['accepted']>0,
@@ -203,6 +220,10 @@ def main():
     print('Reusable dispatch totals:',{key:sum(row[key]for row in backend_reports)
           for key in ('prepared_batches','dispatches','dispatch_buffer_allocations')},flush=True)
     if args.two_streams:print('Completed stream pairs:',sum(row.get('stream_pairs',0)for row in backend_reports),flush=True)
+    if args.job_b_cache:
+        print('Job B cache totals:',{key:sum(row[key]for row in job_b_reports)for key in
+            ('b_table_builds','b_table_leases','b_table_generated_bytes','b_table_setup_seconds')},flush=True)
+        print('Shared B cached windows:',sum(row['dispatches']for row in backend_reports),flush=True)
     if args.quad5:print('Quad5 windows:',sum(row['dispatches']for row in backend_reports),flush=True)
     if args.lean_direct:print('Lean direct windows:',sum(row['dispatches']for row in backend_reports),flush=True)
     if args.packed_direct:print('Packed direct windows:',sum(row['dispatches']for row in backend_reports),flush=True)

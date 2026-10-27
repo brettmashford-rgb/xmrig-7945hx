@@ -1,0 +1,72 @@
+{
+  "version": "0.0.62",
+  "scope": "job-owned B reuse, rig proof gates and one bounded live integration attempt",
+  "files": [
+    {
+      "path": "tools/job_b_tables.py",
+      "repository_path": "pearlhash/tools/job_b_tables.py",
+      "bytes": 3991,
+      "sha256": "ff830037f7be917c8e54e8980b6611326eb200b23c7df8e057019ce2ca489fb8"
+    },
+    {
+      "path": "tools/check_job_b_cache.py",
+      "repository_path": "pearlhash/tools/check_job_b_cache.py",
+      "bytes": 10779,
+      "sha256": "b8cef86aa03b59393153840d5c8a819159e233a88226c72bebdd45d7890a7d7c"
+    },
+    {
+      "path": "tools/virtual_scan.py",
+      "repository_path": "pearlhash/tools/virtual_scan.py",
+      "bytes": 10656,
+      "sha256": "6ef5798404ad4d4102994ab019febce549ab67e29468d9164b569ab624bd5680"
+    },
+    {
+      "path": "tools/resident_scan.py",
+      "repository_path": "pearlhash/tools/resident_scan.py",
+      "bytes": 7751,
+      "sha256": "df0d0600dd6720cf5c10ae4d6fb444a1e259a98215a88ab04abccc0b10f3bcd9"
+    },
+    {
+      "path": "tools/mine_bounded.py",
+      "repository_path": "pearlhash/tools/mine_bounded.py",
+      "bytes": 16418,
+      "sha256": "1986f3426bd607e56aadc922895a254f113a9eb4c36dfd6cdff5162722a92b5c"
+    },
+    {
+      "path": "tests/test_job_b_tables.py",
+      "repository_path": "pearlhash/tests/test_job_b_tables.py",
+      "bytes": 6300,
+      "sha256": "5d16c40e58d48870f4259f413a9ffd43101da74c99c96d38bcab516a7454318f"
+    },
+    {
+      "path": "tests/test_install_v062.py",
+      "repository_path": "pearlhash/tests/test_install_v062.py",
+      "bytes": 9246,
+      "sha256": "fcc612efbd74e554478879264cf73272d7488f8ce4c9261d441cd686bd56c134"
+    },
+    {
+      "path": "tests/test_bounded_miner.py",
+      "repository_path": "pearlhash/tests/test_bounded_miner.py",
+      "bytes": 15014,
+      "sha256": "9646ad906b585830008ce4d4a530835e9a028644c00a894e92e15c6fe36234fb"
+    },
+    {
+      "path": "docs/v062.md",
+      "repository_path": "pearlhash/docs/v062.md",
+      "bytes": 2781,
+      "sha256": "7fccb4d1f89ffa980239973a354c5e7515b41ed4543596e0ae4b2234d8b3bba3"
+    },
+    {
+      "path": "docs/development-baseline.json",
+      "repository_path": "pearlhash/docs/development-baseline.json",
+      "bytes": 2449,
+      "sha256": "e540591187b0fc4236007fe454a047934007487cb082d1e2644210f0c015d540"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.62-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.62-build.json",
+      "bytes": 459,
+      "sha256": "78effa344ac7158c08e58d196c92c8ac5c75f06d7978864cfda32a317dd7d1b2"
+    }
+  ]
+}
