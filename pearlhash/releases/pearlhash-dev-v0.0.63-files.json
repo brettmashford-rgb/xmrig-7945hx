@@ -1,0 +1,66 @@
+{
+  "version": "0.0.63",
+  "scope": "offline native warp XOR versus v060, independent of v062 completion",
+  "files": [
+    {
+      "path": "gpu/redux_b_scan.cu",
+      "repository_path": "pearlhash/gpu/redux_b_scan.cu",
+      "bytes": 3552,
+      "sha256": "e9ba82fd691fd3f294d1c80a217a70dd4ba064d92199bc7ba109060c06405122"
+    },
+    {
+      "path": "tools/redux_b_scan.py",
+      "repository_path": "pearlhash/tools/redux_b_scan.py",
+      "bytes": 971,
+      "sha256": "ea9577be62e96ef9b429cdd65ef5cdfef5bf35a1eec8ef6457c2676d11f6cc26"
+    },
+    {
+      "path": "tools/check_redux_b_job.py",
+      "repository_path": "pearlhash/tools/check_redux_b_job.py",
+      "bytes": 10197,
+      "sha256": "f74f0c45fe4c490570e1ee49713e812b19c01a694ea942837e9a24b944fac316"
+    },
+    {
+      "path": "tools/compare_redux_b_loops.py",
+      "repository_path": "pearlhash/tools/compare_redux_b_loops.py",
+      "bytes": 9757,
+      "sha256": "520ffc82c5ba4d1fd190e3b0ca077c9b41302b646b9db24501e85114a706b332"
+    },
+    {
+      "path": "tests/test_redux_b.py",
+      "repository_path": "pearlhash/tests/test_redux_b.py",
+      "bytes": 6777,
+      "sha256": "a2abcf8647b125981d5a6c7925ead28692f54a6f4a358c5cfae68c1019cfc9d9"
+    },
+    {
+      "path": "tests/test_compare_redux_b_loops.py",
+      "repository_path": "pearlhash/tests/test_compare_redux_b_loops.py",
+      "bytes": 1754,
+      "sha256": "337e36633b5f7fc91f7638050beb9d21faa14f005c12e594db6543d5eb73c8a2"
+    },
+    {
+      "path": "tests/test_install_v063.py",
+      "repository_path": "pearlhash/tests/test_install_v063.py",
+      "bytes": 9367,
+      "sha256": "33b4fc35f0ff6dee3e22afc7045e0264bf0eff38054cb4df5a1ea86a768a129d"
+    },
+    {
+      "path": "docs/v063.md",
+      "repository_path": "pearlhash/docs/v063.md",
+      "bytes": 3190,
+      "sha256": "34ee865d970801eb09e41b6e1db5ff55a8ffa7faeeb150f483942ffb9f7866ed"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.63-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.63-build.json",
+      "bytes": 710,
+      "sha256": "5b0f17bf8868a29d9afaf9c721c69200598b3aed8628df3d03063299993c636d"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.63-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.63-scan-sm120.ptx",
+      "bytes": 1059349,
+      "sha256": "1eb33dff7df59e3577d80ccfb19f7e324a37ba3a6ace512e02570167f9c46ba8"
+    }
+  ]
+}

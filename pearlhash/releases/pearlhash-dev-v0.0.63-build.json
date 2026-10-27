@@ -1,0 +1,22 @@
+{
+  "version": "0.0.63",
+  "compiler": "NVRTC 12.9.86",
+  "architecture": "compute_120",
+  "standard": "c++17",
+  "source": "gpu/redux_b_scan.cu",
+  "entry": "shared_b_redux_scan",
+  "control_entry": "shared_b_pair_scan",
+  "ptx_bytes": 1059349,
+  "ptx_sha256": "1eb33dff7df59e3577d80ccfb19f7e324a37ba3a6ace512e02570167f9c46ba8",
+  "entry_block_barriers": 0,
+  "entry_abi_slots": 24,
+  "static_native_xor_instructions": 2,
+  "static_shuffles_removed": 10,
+  "repeat_build_identical": true,
+  "host_tests": 63,
+  "rig_preflight": "pending",
+  "rig_benchmark": "pending",
+  "pool_connection": false,
+  "v062_completion_required": false,
+  "scope": "offline isolated GPU reduction experiment; no speedup claim"
+}
