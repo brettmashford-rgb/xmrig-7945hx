@@ -1,0 +1,33 @@
+{
+  "version": "0.0.64",
+  "compiler": "NVRTC 12.9.86",
+  "architecture": "compute_120",
+  "standard": "c++17",
+  "source": "gpu/four_tile_scan.cu",
+  "entries": [
+    "four_tile_share_scan",
+    "four_tile_packed_scan"
+  ],
+  "control_entry": "shared_b_pair_scan",
+  "ptx_bytes": 1298024,
+  "ptx_sha256": "4c1e0cc409d14dd34b32192aa470f1576b55b73a8db56213aff7c04ef73ed0c4",
+  "entry_block_barriers": 0,
+  "entry_abi_slots": 24,
+  "mma_instructions_per_four_tiles_per_K32": {
+    "v060": 8,
+    "four_share": 8,
+    "packed_four": 6
+  },
+  "B_reconstructions_per_four_tiles_per_K32": {
+    "v060": 2,
+    "four_share": 1,
+    "packed_four": 1
+  },
+  "repeat_build_identical": true,
+  "host_tests": 73,
+  "rig_preflight": "pending",
+  "rig_benchmark": "pending",
+  "pool_connection": false,
+  "v062_or_v063_completion_required": false,
+  "scope": "offline structural GPU experiment; no speedup or pool acceptance claim"
+}

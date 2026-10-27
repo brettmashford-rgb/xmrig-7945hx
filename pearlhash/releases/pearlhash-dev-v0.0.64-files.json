@@ -1,0 +1,72 @@
+{
+  "version": "0.0.64",
+  "scope": "offline v060 versus four-tile sharing versus 40-row packing; independent of pending v062/v063",
+  "files": [
+    {
+      "path": "gpu/four_tile_axes.h",
+      "repository_path": "pearlhash/gpu/four_tile_axes.h",
+      "bytes": 1115,
+      "sha256": "cbec76614cdb544de26a62f484eefc76959e72d89e00e129be20df31cffc1733"
+    },
+    {
+      "path": "gpu/four_tile_scan.cu",
+      "repository_path": "pearlhash/gpu/four_tile_scan.cu",
+      "bytes": 10445,
+      "sha256": "cb6624a1bdaeb089e1d6dfd13cf74bc057dfc4456fe45fdf06a78c76ede28c3f"
+    },
+    {
+      "path": "tools/four_tile_scan.py",
+      "repository_path": "pearlhash/tools/four_tile_scan.py",
+      "bytes": 6444,
+      "sha256": "f179b7639fc7b0a839aee66a3d4483e2928b978945337a5f6436371a6ad03f54"
+    },
+    {
+      "path": "tools/check_four_tile_job.py",
+      "repository_path": "pearlhash/tools/check_four_tile_job.py",
+      "bytes": 13294,
+      "sha256": "b98946bd743a20d8419840e6b364532197bc3b9931c04f9d60f11c260e09a379"
+    },
+    {
+      "path": "tools/compare_four_tile_loops.py",
+      "repository_path": "pearlhash/tools/compare_four_tile_loops.py",
+      "bytes": 10037,
+      "sha256": "5efd5645911b1c886e238b4f84c7e7d26541cf390939102e83dedbe82695485d"
+    },
+    {
+      "path": "tests/test_four_tile.py",
+      "repository_path": "pearlhash/tests/test_four_tile.py",
+      "bytes": 12219,
+      "sha256": "0ac2deff7d9528e77d2a7ae43cfd788cd23f2a63ad6545a5c6da8be13c272c9a"
+    },
+    {
+      "path": "tests/test_compare_four_tile_loops.py",
+      "repository_path": "pearlhash/tests/test_compare_four_tile_loops.py",
+      "bytes": 1868,
+      "sha256": "b9ff5ab9999015fa2e98f712e709b2293b993a897d1dfd732e9b5bda94b66925"
+    },
+    {
+      "path": "tests/test_install_v064.py",
+      "repository_path": "pearlhash/tests/test_install_v064.py",
+      "bytes": 9432,
+      "sha256": "6941291d6587274ab6e1ece76b472e717994e3f57c928141db7144f280ad5794"
+    },
+    {
+      "path": "docs/v064.md",
+      "repository_path": "pearlhash/docs/v064.md",
+      "bytes": 4049,
+      "sha256": "4604d56c0b3b1d4e0f11ec7ab9b4535d3212b371ef1690804c51c287f24217b6"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.64-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.64-build.json",
+      "bytes": 920,
+      "sha256": "27b5bd050b47e64741746cf09a3cbe70ef9aa9931ad43aa12933e534fd482f2e"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.64-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.64-scan-sm120.ptx",
+      "bytes": 1298024,
+      "sha256": "4c1e0cc409d14dd34b32192aa470f1576b55b73a8db56213aff7c04ef73ed0c4"
+    }
+  ]
+}
