@@ -1,0 +1,72 @@
+{
+  "version": "0.0.67",
+  "scope": "offline sequential epilogue and native XOR comparison; v066 live unchanged",
+  "files": [
+    {
+      "path": "gpu/serial_emit_scan.cu",
+      "repository_path": "pearlhash/gpu/serial_emit_scan.cu",
+      "bytes": 12560,
+      "sha256": "d655ca9048c89017247fd3d4c48ac70ddf82b4512e39c6698dbb04c9f309e499"
+    },
+    {
+      "path": "tools/serial_emit.py",
+      "repository_path": "pearlhash/tools/serial_emit.py",
+      "bytes": 1685,
+      "sha256": "e605398658e21ce8d43b07d4eafa36d4b7ef6c06fcc5043d22dcecbbe040d960"
+    },
+    {
+      "path": "tools/check_serial_emit.py",
+      "repository_path": "pearlhash/tools/check_serial_emit.py",
+      "bytes": 12129,
+      "sha256": "3a633d7869a6df971ba319815688dec5e2de771c0eec4629d95fa22b368af936"
+    },
+    {
+      "path": "tools/compare_serial_emit.py",
+      "repository_path": "pearlhash/tools/compare_serial_emit.py",
+      "bytes": 10238,
+      "sha256": "b4ba6d00f5b1f0ef2e394ca2564ae8010f0100533362a4ec7e09cb80d53af119"
+    },
+    {
+      "path": "tests/test_serial_emit.py",
+      "repository_path": "pearlhash/tests/test_serial_emit.py",
+      "bytes": 8689,
+      "sha256": "26bb0ef1cccc5d7ff4a6917898c06611fa40e5e16f1028c0e7e9ad21685c9cd8"
+    },
+    {
+      "path": "tests/test_serial_contract.py",
+      "repository_path": "pearlhash/tests/test_serial_contract.py",
+      "bytes": 3666,
+      "sha256": "ecdbb84148ea270212b1184628e3f92772d6d403b7df063b5a96cd4fd5a63a10"
+    },
+    {
+      "path": "tests/test_install_v067.py",
+      "repository_path": "pearlhash/tests/test_install_v067.py",
+      "bytes": 15074,
+      "sha256": "e823df13f1a1280f09300e549d270d02d6bb6c44a5110a63450371c509e94603"
+    },
+    {
+      "path": "docs/v067.md",
+      "repository_path": "pearlhash/docs/v067.md",
+      "bytes": 3858,
+      "sha256": "d6196746fda5c285e9e3fc8531186c00ff9b820c4023c47ac28356b7607f81d0"
+    },
+    {
+      "path": "docs/development-baseline.json",
+      "repository_path": "pearlhash/docs/development-baseline.json",
+      "bytes": 3631,
+      "sha256": "d30138c13dfa802c299d1d8c4812122b8792e21d7a4a1e3897ad2d4d60250f5a"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.67-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.67-build.json",
+      "bytes": 4675,
+      "sha256": "19d3a4e2779acd0a2996865fc1202b41fb4d8b670621d2a7a4369e4e67c763e8"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.67-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.67-scan-sm120.ptx",
+      "bytes": 1603769,
+      "sha256": "0aefbef6e067420d0f2eb76e2e58fc148080e242f4cba94e868708245c79380e"
+    }
+  ]
+}

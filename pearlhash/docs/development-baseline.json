@@ -19,33 +19,36 @@
     "static_shared_bytes": 24576,
     "local_bytes_per_thread": 0,
     "driver_calls_and_bytes": "unchanged versus controls",
-    "live_integrated": false
+    "live_integrated": true
   },
   "last_live_validated": {
-    "version": "0.0.62",
-    "release_commit": "6e79004fedcb3331a9ccf2d27eadd0a08f6f9b8a",
-    "scan_backend": "shared-B-job-cache-one-stream-v062",
-    "tiles": 311144448,
-    "nonces_started": 38,
-    "full_nonces": 34,
+    "version": "0.0.66",
+    "release_commit": "bc366c57da159c47e6171fe3761c5f52adefb8de",
+    "scan_backend": "packed-four-geometry-one-stream-v066",
+    "tiles": 459669504,
+    "nonces_started": 56,
+    "full_nonces": 54,
     "submitted_shares": 0,
     "accepted_shares": 0,
     "worker_joined": true,
     "stage_seconds": {
-      "base": 1.438,
-      "nonce": 2.355,
-      "cache": 12.857,
-      "search": 281.071,
+      "base": 0.764,
+      "nonce": 1.193,
+      "cache": 1.837,
+      "search": 294.24,
       "proof": 0.0
     },
-    "B_table_builds": 4,
-    "B_table_leases": 38,
+    "B_table_builds": 2,
+    "B_table_leases": 56,
+    "geometry_builds": 2,
+    "geometry_leases": 56,
+    "map_upload_bytes": 4325376,
     "exit_code": 0,
     "WildRig_restarted": true
   },
   "pool_acceptance_proven": false,
   "extranonce_worker_mapping_proven": false,
-  "development_policy": "Use v062 as the last validated live baseline; combine rig-validated v064/v065 in gated bounded v066. Keep v063 for separate combined retesting. Genuine custom pool acceptance remains unproven.",
+  "development_policy": "Use v066 as last validated live baseline. v067 is an offline three-way epilogue/native-XOR experiment pending rig results. Genuine custom pool acceptance remains unproven.",
   "validated_nonce_preparation": {
     "version": "0.0.61",
     "release_commit": "d80ab6c73780dc3a9542d065e12ff5e106335fae",
@@ -77,14 +80,14 @@
     "overall_timing_gain": "not transcribed: uploaded screenshot crops the total comparison; full rig JSON is installer-gated",
     "whole_miner_speedup_claimed": false
   },
-  "pending_live_package": {
-    "version": "0.0.66",
-    "changes": [
-      "v064 packed-four scanner",
-      "v065 cached CPU plan/GPU maps",
-      "v062 verified nonce frontier and B ownership"
+  "pending_offline_package": {
+    "version": "0.0.67",
+    "modes": [
+      "packed-v066",
+      "serial-v067",
+      "serial-redux-v067"
     ],
-    "rig_combined_preflight": "pending",
-    "live_run": "pending"
+    "rig_correctness": "pending",
+    "rig_performance": "pending"
   }
 }
