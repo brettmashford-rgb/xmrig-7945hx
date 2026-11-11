@@ -1,25 +1,25 @@
 {
   "schema": "pearlhash-development-baseline-1",
   "offline_baseline": {
-    "version": "0.0.64",
-    "release_commit": "d13df690006c52d8bec1ddd95a128304b04cf6c9",
-    "core_commit": "3c961322cc2322a8f26e4b48b91d69a3dd7dc902",
-    "kernel": "four_tile_packed_scan",
-    "ptx": "releases/pearlhash-dev-v0.0.64-scan-sm120.ptx",
-    "ptx_sha256": "4c1e0cc409d14dd34b32192aa470f1576b55b73a8db56213aff7c04ef73ed0c4",
-    "release_manifest_sha256": "dcdaca6b68f0af2690d9fc605192cc0a43f353c184bf2324cbc85952d592c615",
-    "rig_correctness_and_proof_gate": "passed canonical mapping, transcript/queue/guard gates and two fresh official CPU verifier proofs",
+    "version": "0.0.68",
+    "release_commit": "8895525c959acd2bdf224eb1e7a82ba633be640b",
+    "core_commit": "8ce55d89ee34e76c77cac237ab126d16b528cc65",
+    "kernel": "hoisted_a_pointer_scan",
+    "ptx": "releases/pearlhash-dev-v0.0.68-scan-sm120.ptx",
+    "ptx_sha256": "89edcbb299c8e8bdd4b594ca0fe69034f13205e1212e3cdbc4738d508bcad25e",
+    "release_manifest_sha256": "1238b4ca2e8a985ab0ef21d71bb1ea12fe538b9f619c625c297b3eca93121457",
+    "rig_correctness_and_proof_gate": "passed; fresh official proofs and complete offline run, exit 0, WildRig restarted",
     "rounds": 24,
     "unique_timed_tiles_per_mode": 1572864,
-    "median_tiles_per_second": 1492948.7382710117,
-    "control_v060_tiles_per_second": 1089277.1814753176,
-    "four_share_tiles_per_second": 905391.7862038362,
-    "speedup_over_v060": 1.3705866272246348,
+    "median_tiles_per_second": 1552403.2260684855,
+    "control_v066_tiles_per_second": 1494068.4004536672,
+    "offset_tiles_per_second": 1455908.1382259033,
+    "speedup_over_v066": 1.0390442804339515,
     "registers_per_thread": 96,
     "static_shared_bytes": 24576,
     "local_bytes_per_thread": 0,
     "driver_calls_and_bytes": "unchanged versus controls",
-    "live_integrated": true
+    "live_integrated": false
   },
   "last_live_validated": {
     "version": "0.0.66",
@@ -48,7 +48,7 @@
   },
   "pool_acceptance_proven": false,
   "extranonce_worker_mapping_proven": false,
-  "development_policy": "Use v066 as last validated live baseline. Reject slower v067 epilogues. v068 tests once-resolved A addressing with original packed epilogue, offline only. Genuine custom pool acceptance remains unproven.",
+  "development_policy": "Use v068 advancing pointers as preferred offline GPU control, v066 as last validated live baseline. Reject v067 epilogues and v068 offsets. v069 tests eight-tile packing offline. Genuine custom pool acceptance remains unproven.",
   "validated_nonce_preparation": {
     "version": "0.0.61",
     "release_commit": "d80ab6c73780dc3a9542d065e12ff5e106335fae",
@@ -99,12 +99,33 @@
     "promoted": false,
     "reason": "Lower registers did not improve throughput; retain concurrent packed epilogue"
   },
+  "validated_packing_v064": {
+    "version": "0.0.64",
+    "release_commit": "d13df690006c52d8bec1ddd95a128304b04cf6c9",
+    "core_commit": "3c961322cc2322a8f26e4b48b91d69a3dd7dc902",
+    "kernel": "four_tile_packed_scan",
+    "ptx": "releases/pearlhash-dev-v0.0.64-scan-sm120.ptx",
+    "ptx_sha256": "4c1e0cc409d14dd34b32192aa470f1576b55b73a8db56213aff7c04ef73ed0c4",
+    "release_manifest_sha256": "dcdaca6b68f0af2690d9fc605192cc0a43f353c184bf2324cbc85952d592c615",
+    "rig_correctness_and_proof_gate": "passed canonical mapping, transcript/queue/guard gates and two fresh official CPU verifier proofs",
+    "rounds": 24,
+    "unique_timed_tiles_per_mode": 1572864,
+    "median_tiles_per_second": 1492948.7382710117,
+    "control_v060_tiles_per_second": 1089277.1814753176,
+    "four_share_tiles_per_second": 905391.7862038362,
+    "speedup_over_v060": 1.3705866272246348,
+    "registers_per_thread": 96,
+    "static_shared_bytes": 24576,
+    "local_bytes_per_thread": 0,
+    "driver_calls_and_bytes": "unchanged versus controls",
+    "live_integrated": true
+  },
   "pending_offline_package": {
-    "version": "0.0.68",
+    "version": "0.0.69",
     "modes": [
-      "packed-v066",
-      "a-offset-v068",
-      "a-pointer-v068"
+      "pointer-v068",
+      "eight-v069",
+      "eight-serial-v069"
     ],
     "rig_correctness": "pending",
     "rig_performance": "pending"
