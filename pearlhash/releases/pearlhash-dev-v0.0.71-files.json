@@ -1,0 +1,84 @@
+{
+  "version": "0.0.71",
+  "scope": "offline independent transcript-fold variants against v068; no v070 dependency",
+  "files": [
+    {
+      "path": "gpu/partition_fold.h",
+      "repository_path": "pearlhash/gpu/partition_fold.h",
+      "bytes": 1778,
+      "sha256": "79e728abf255846c5724103f60150d5e24cb50979bc42c5f6cb8947b595676b8"
+    },
+    {
+      "path": "gpu/partition_scan.cu",
+      "repository_path": "pearlhash/gpu/partition_scan.cu",
+      "bytes": 11725,
+      "sha256": "35abcfeda2609718d5f56bb23123d48512fdeced0c494007b2f86a73b0e8d755"
+    },
+    {
+      "path": "tools/partition_scan.py",
+      "repository_path": "pearlhash/tools/partition_scan.py",
+      "bytes": 1740,
+      "sha256": "402f5401f5ddc36bb055cb744abcb84c65a6c25e5df63ec3dc10d39f47d5355a"
+    },
+    {
+      "path": "tools/check_partition.py",
+      "repository_path": "pearlhash/tools/check_partition.py",
+      "bytes": 12134,
+      "sha256": "ef6491a4948b8789230ccd9dfde57ad5e41a124a311ee5f02c61bc6550555ea4"
+    },
+    {
+      "path": "tools/compare_partition.py",
+      "repository_path": "pearlhash/tools/compare_partition.py",
+      "bytes": 10216,
+      "sha256": "933e242e2d0b7323e31095ef3d09eed612ad2692ea0d7ee756175dcbfdf0ce8b"
+    },
+    {
+      "path": "tests/test_partition.py",
+      "repository_path": "pearlhash/tests/test_partition.py",
+      "bytes": 8691,
+      "sha256": "a02f2646928c4c7bb52460d2abc0b3e8918357316c8ec4a0bed34570f7cba39c"
+    },
+    {
+      "path": "tests/test_partition_math.py",
+      "repository_path": "pearlhash/tests/test_partition_math.py",
+      "bytes": 3228,
+      "sha256": "ac8c011aa311ff0c0d0515070693fa503f700328fa262180dfd4846394819c9b"
+    },
+    {
+      "path": "tests/test_partition_contract.py",
+      "repository_path": "pearlhash/tests/test_partition_contract.py",
+      "bytes": 4258,
+      "sha256": "7c1663d9420c69e6fbeb6cac13c0a4402ce518561df1516d933770fbdc8d1131"
+    },
+    {
+      "path": "tests/test_partition_benchmark.py",
+      "repository_path": "pearlhash/tests/test_partition_benchmark.py",
+      "bytes": 3315,
+      "sha256": "f7d7cb31f7f98056e528ef5ff685696c5c70395e5950f2afb351431eeaff2f5d"
+    },
+    {
+      "path": "tests/test_install_v071.py",
+      "repository_path": "pearlhash/tests/test_install_v071.py",
+      "bytes": 16473,
+      "sha256": "0be1e21f5eeba66914558b5561186dd42fdc150b60c006c17d441a53c52577a5"
+    },
+    {
+      "path": "docs/v071.md",
+      "repository_path": "pearlhash/docs/v071.md",
+      "bytes": 5075,
+      "sha256": "e5f19c0d2ab3f7a45bcc1b3fabc838bbbeb6a1f0f1c3dd598ebc4904034a0de4"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.71-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.71-build.json",
+      "bytes": 4132,
+      "sha256": "383e2ed89ed8712c95237f2079fc2e7157f5aae3f0a55b63b4eae30a76749ddf"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.71-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.71-scan-sm120.ptx",
+      "bytes": 1936515,
+      "sha256": "2728bff8db58d830b61db2f5952bf0793ad98f19ade8309a8dd76e56915812c9"
+    }
+  ]
+}

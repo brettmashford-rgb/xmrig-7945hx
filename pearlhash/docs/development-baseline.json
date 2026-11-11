@@ -48,7 +48,7 @@
   },
   "pool_acceptance_proven": false,
   "extranonce_worker_mapping_proven": false,
-  "development_policy": "Use v068 advancing pointers as preferred offline GPU control, v066 as last validated live baseline. Reject v067 epilogues and v068 offsets. v069 tests eight-tile packing offline. Genuine custom pool acceptance remains unproven.",
+  "development_policy": "Use v068 advancing pointers as preferred offline GPU control, v066 as last validated live baseline. Reject v067 epilogues, v068 offsets and both v069 eight-tile variants. v070 shares B reconstruction across independent quartet warps. Genuine custom pool acceptance remains unproven.",
   "validated_nonce_preparation": {
     "version": "0.0.61",
     "release_commit": "d80ab6c73780dc3a9542d065e12ff5e106335fae",
@@ -120,12 +120,36 @@
     "driver_calls_and_bytes": "unchanged versus controls",
     "live_integrated": true
   },
+  "offline_candidate_v069": {
+    "release_commit": "767f68725469aa5a23ed68b2ffb8e8f558f2b522",
+    "rig_completion": "exit 0; proof-gated comparison complete; WildRig restarted",
+    "rounds": 24,
+    "unique_timed_tiles_per_mode": 3145728,
+    "median_tiles_per_second": {
+      "pointer-v068": 1567481.1200894734,
+      "eight-v069": 1286675.9008794217,
+      "eight-serial-v069": 1473251.0347016505
+    },
+    "speedup_over_v068": {
+      "eight-v069": 0.8208557566587961,
+      "eight-serial-v069": 0.9398843889217344
+    },
+    "registers_per_thread": {
+      "pointer-v068": 96,
+      "eight-v069": 168,
+      "eight-serial-v069": 95
+    },
+    "static_shared_bytes": 24576,
+    "local_bytes_per_thread": 0,
+    "promoted": false,
+    "reason": "Both eight-tile variants slower; retain four-tile advancing pointers"
+  },
   "pending_offline_package": {
-    "version": "0.0.69",
+    "version": "0.0.70",
     "modes": [
       "pointer-v068",
-      "eight-v069",
-      "eight-serial-v069"
+      "cta8-v070",
+      "cta16-v070"
     ],
     "rig_correctness": "pending",
     "rig_performance": "pending"

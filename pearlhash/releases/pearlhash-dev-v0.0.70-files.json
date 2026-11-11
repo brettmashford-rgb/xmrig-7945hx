@@ -1,0 +1,96 @@
+{
+  "version": "0.0.70",
+  "scope": "offline cooperative B reconstruction versus v068; live baseline unchanged",
+  "files": [
+    {
+      "path": "gpu/cta_b_axes.h",
+      "repository_path": "pearlhash/gpu/cta_b_axes.h",
+      "bytes": 1067,
+      "sha256": "805ee39496472db269f22468ead5dc13e5af4fb3746d8cbba89677f706345bed"
+    },
+    {
+      "path": "gpu/cta_b_scan.cu",
+      "repository_path": "pearlhash/gpu/cta_b_scan.cu",
+      "bytes": 8256,
+      "sha256": "84e47cc9f8119f1a53e4ed3f6381374265b2e0623d821eb1cf6ea6414916e467"
+    },
+    {
+      "path": "tools/cta_b_scan.py",
+      "repository_path": "pearlhash/tools/cta_b_scan.py",
+      "bytes": 5665,
+      "sha256": "d71af48e14c71c62f41cce382b9cad0e456234776f2c047d938d66760eb764fd"
+    },
+    {
+      "path": "tools/check_cta_b.py",
+      "repository_path": "pearlhash/tools/check_cta_b.py",
+      "bytes": 15413,
+      "sha256": "80fc56aafa22d1c5e125733bf11fe9f0efa7d985f270633959a0e4f45148de74"
+    },
+    {
+      "path": "tools/compare_cta_b.py",
+      "repository_path": "pearlhash/tools/compare_cta_b.py",
+      "bytes": 10320,
+      "sha256": "8d4069891f6b88fff68456d2cd91bb7ee29324e9ce4721488d9973dadc8f24de"
+    },
+    {
+      "path": "tests/test_cta_b.py",
+      "repository_path": "pearlhash/tests/test_cta_b.py",
+      "bytes": 8656,
+      "sha256": "46d4826bdc3ecb1843b91d2e781af2213b96c0230854636df8c5c5fc3ebc2922"
+    },
+    {
+      "path": "tests/test_cta_b_layout.py",
+      "repository_path": "pearlhash/tests/test_cta_b_layout.py",
+      "bytes": 5510,
+      "sha256": "9c641aa49a3d2b391bfcfb74ea643941b31fea92cd2fe8f21b2dc5c873a08f7b"
+    },
+    {
+      "path": "tests/test_cta_b_contract.py",
+      "repository_path": "pearlhash/tests/test_cta_b_contract.py",
+      "bytes": 3108,
+      "sha256": "bf7895978d753d74240c23ad84b5043fa0154203b8a4d488547f3c1a55f5e166"
+    },
+    {
+      "path": "tests/test_cta_b_guards.py",
+      "repository_path": "pearlhash/tests/test_cta_b_guards.py",
+      "bytes": 3284,
+      "sha256": "8778da25d27b58ee45b76bd6b5c86df04c5fcac28f38221f468cea05de60f9d1"
+    },
+    {
+      "path": "tests/test_cta_b_benchmark.py",
+      "repository_path": "pearlhash/tests/test_cta_b_benchmark.py",
+      "bytes": 3307,
+      "sha256": "6a6405027259ede28c686a8e3fa6224e883379eb8d4dd2c58bfd6916c23600c6"
+    },
+    {
+      "path": "tests/test_install_v070.py",
+      "repository_path": "pearlhash/tests/test_install_v070.py",
+      "bytes": 16841,
+      "sha256": "587da3d0759a026ac4c65dc474a63d0a87b25cd5f34d51ed7217aada53362b50"
+    },
+    {
+      "path": "docs/v070.md",
+      "repository_path": "pearlhash/docs/v070.md",
+      "bytes": 5271,
+      "sha256": "b0bdd2490ce01d722c0e4e6e9ebbcde1f35cf50e92f52ef7a7f5910b5f352b4e"
+    },
+    {
+      "path": "docs/development-baseline.json",
+      "repository_path": "pearlhash/docs/development-baseline.json",
+      "bytes": 6273,
+      "sha256": "016328fcb6ce141215d371616fba94811d94ac599e95ecf1a45742d18c04bb59"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.70-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.70-build.json",
+      "bytes": 4002,
+      "sha256": "fc1b76ec561e6c224cd3d3ed7e8703ad7a8b153d344191e8855ae5a3dc823e9f"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.70-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.70-scan-sm120.ptx",
+      "bytes": 1942649,
+      "sha256": "44b80b391f30e3b964e9a4420cb63a358ff3086d18b7d3debb20f74a13cff4ad"
+    }
+  ]
+}
