@@ -10,7 +10,7 @@ sudo -v
 installer=$(mktemp /tmp/pearl-v072-install.XXXXXX.py)
 python3 - "$installer" <<'PY'
 import hashlib,pathlib,sys,urllib.request
-url='https://raw.githubusercontent.com/brettmashford-rgb/xmrig-7945hx/main/pearlhash/tools/install_v072.py'
+url='https://raw.githubusercontent.com/brettmashford-rgb/xmrig-7945hx/798219db33c1695b96b95a6230c23402e5c5c185/pearlhash/tools/install_v072.py'
 with urllib.request.urlopen(url,timeout=60) as response:
     raw=response.read(1048577)
 expected='9380b81155d949f892d936f36cd1470481f22886a7bfb8652ee8ad4b8ed26b76'
