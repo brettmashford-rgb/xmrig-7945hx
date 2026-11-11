@@ -140,11 +140,15 @@ def check_bijection(plan,mode):
     return plan.count
 
 
-def main():
+def argument_parser():
     parser=argparse.ArgumentParser(description=__doc__)
     for flag in ('module','commitment-module','oracle','output-dir'):parser.add_argument('--'+flag,type=Path,required=True)
-    parser.add_argument('--mode',choices=MODES[1:],required=True)
-    args=parser.parse_args();new_packed_geometry_search=partial(new_search,mode=args.mode);args.output_dir.mkdir(mode=0o700,parents=True,exist_ok=False)
+    parser.add_argument('--mode',choices=MODES,required=True)
+    return parser
+
+
+def main():
+    args=argument_parser().parse_args();new_packed_geometry_search=partial(new_search,mode=args.mode);args.output_dir.mkdir(mode=0o700,parents=True,exist_ok=False)
     report=dict(complete=False,error=None,pool_connection=False,submitted_shares=0,
         gpu_scanner=args.mode,modes_checked=1,production_nonces=0,transcript_windows=0,
         cpu_samples=0,target_cases=0,partial_queues_checked=0,guard_cases=0,cta_guard_cases=0,official_cpu_verifiers=0,

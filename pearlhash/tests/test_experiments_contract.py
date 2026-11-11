@@ -6,7 +6,7 @@ ROOT=Path(__file__).resolve().parents[1]
 
 class Contract(unittest.TestCase):
     def test_PTX_ABI_MMA_and_barrier_changes(self):
-        raw=(ROOT/'releases/pearlhash-dev-v0.0.73-scan-sm120.ptx').read_text()
+        raw=(ROOT/'releases/pearlhash-dev-v0.0.74-scan-sm120.ptx').read_text()
         for name in ('cta_b8_scan','small4_scan','small8_scan','pipeline_scan','panel_scan'):
             body=raw.split('.visible .entry '+name+'(',1)[1].split('.visible .entry ',1)[0]
             self.assertEqual(body.split(')')[0].count('.param '),24)

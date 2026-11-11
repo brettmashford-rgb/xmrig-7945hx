@@ -1,5 +1,7 @@
 // ISC. Independent v073 block, pipeline and bounded-B experiments.
+#define resident_guard_snapshot resident_guard_snapshot_legacy4096
 #include "cta_b_scan.cu"
+#undef resident_guard_snapshot
 #include "experiment_axes.h"
 #define PH_BQ_ARGS const signed char *ua,const signed char *ub, \
     const unsigned *pa,const unsigned *pb,const signed char *tail, \
@@ -401,3 +403,12 @@ __device__ __forceinline__ void panel_body(PH_BQ_ARGS) {
 extern "C" __global__ void panel_scan(PH_BQ_ARGS){panel_body(ua,ub,pa,pb,tail,row_axes,bounds,key,status,candidates,audit_words,audit,capacity,query_count,m,n,k,rank,fill,generation,column_axes,row_count,column_count,first);}
 
 #undef PH_BQ_ARGS
+
+// All experiments use this same collector; the v070 scan arithmetic is unchanged.
+extern "C" __global__ void resident_guard_snapshot(const unsigned long long *addresses,
+    const unsigned char *status,unsigned char *output,unsigned guards,
+    unsigned long long generation,unsigned first,unsigned count) {
+    if(!experiment_snapshot_valid(blockDim.x,guards,count))return;
+    unsigned i=blockIdx.x*128+threadIdx.x;
+    if(i<24+guards*16)output[i]=pearl_snapshot_byte(addresses,status,generation,first,count,i);
+}
