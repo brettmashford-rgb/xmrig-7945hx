@@ -1,25 +1,25 @@
 {
   "schema": "pearlhash-development-baseline-1",
   "offline_baseline": {
-    "version": "0.0.60",
-    "release_commit": "f41da53362463cc32e4f45452782ba88bf542ce6",
-    "core_commit": "82cf5f1385e719cc51891c39abbb1d658d60ddea",
-    "kernel": "shared_b_pair_scan",
-    "ptx": "releases/pearlhash-dev-v0.0.60-scan-sm120.ptx",
-    "ptx_sha256": "96e43e211558338558a61f9378d0831a93d98502d8e41010f71e8fb58c2ae679",
-    "release_manifest_sha256": "187d3f0f603b03572b61b1a8a6e99fc65d4f01064d8904697e0d270a47bd29af",
-    "rig_correctness_and_proof_gate": "passed full canonical mapping, transcript/queue/guard gates and two fresh official CPU verifier proofs",
+    "version": "0.0.64",
+    "release_commit": "d13df690006c52d8bec1ddd95a128304b04cf6c9",
+    "core_commit": "3c961322cc2322a8f26e4b48b91d69a3dd7dc902",
+    "kernel": "four_tile_packed_scan",
+    "ptx": "releases/pearlhash-dev-v0.0.64-scan-sm120.ptx",
+    "ptx_sha256": "4c1e0cc409d14dd34b32192aa470f1576b55b73a8db56213aff7c04ef73ed0c4",
+    "release_manifest_sha256": "dcdaca6b68f0af2690d9fc605192cc0a43f353c184bf2324cbc85952d592c615",
+    "rig_correctness_and_proof_gate": "passed canonical mapping, transcript/queue/guard gates and two fresh official CPU verifier proofs",
     "rounds": 24,
     "unique_timed_tiles_per_mode": 1572864,
-    "median_tiles_per_second": 1070404.5898163747,
-    "control_v059_tiles_per_second": 881361.3056194411,
-    "order_only_tiles_per_second": 993695.7197409202,
-    "speedup_over_v059": 1.2144901109132193,
-    "registers_per_thread": 56,
+    "median_tiles_per_second": 1492948.7382710117,
+    "control_v060_tiles_per_second": 1089277.1814753176,
+    "four_share_tiles_per_second": 905391.7862038362,
+    "speedup_over_v060": 1.3705866272246348,
+    "registers_per_thread": 96,
     "static_shared_bytes": 24576,
     "local_bytes_per_thread": 0,
     "driver_calls_and_bytes": "unchanged versus controls",
-    "live_integrated": true
+    "live_integrated": false
   },
   "last_live_validated": {
     "version": "0.0.62",
@@ -45,7 +45,7 @@
   },
   "pool_acceptance_proven": false,
   "extranonce_worker_mapping_proven": false,
-  "development_policy": "Use v062 as the validated live baseline. Keep v063 available for combined retesting. Evaluate pending changes offline before bounded live integration. Genuine custom pool acceptance remains unproven.",
+  "development_policy": "Use v062 as the last validated live baseline; combine rig-validated v064/v065 in gated bounded v066. Keep v063 for separate combined retesting. Genuine custom pool acceptance remains unproven.",
   "validated_nonce_preparation": {
     "version": "0.0.61",
     "release_commit": "d80ab6c73780dc3a9542d065e12ff5e106335fae",
@@ -65,8 +65,26 @@
     "promoted": false,
     "reason": "below conservative 3 percent elapsed reduction threshold; retain for combination retest"
   },
-  "pending_offline_tests": {
-    "v064": "user is testing; results pending",
-    "v065": "cached CPU plan and resident GPU maps; rig preflight/nonce-cycle timing pending"
+  "validated_geometry": {
+    "version": "0.0.65",
+    "release_commit": "67b04c292b71c0f6d109a35891a4c1a7ec7374b1",
+    "rig_correctness_and_proof_gate": "passed",
+    "preferred": "cached-maps-v065",
+    "map_payload_bytes": 2162688,
+    "saved_HtoD_bytes_per_reused_nonce": 4325440,
+    "allocations_saved_per_nonce": 2,
+    "upload_calls_saved_per_nonce": 4,
+    "overall_timing_gain": "not transcribed: uploaded screenshot crops the total comparison; full rig JSON is installer-gated",
+    "whole_miner_speedup_claimed": false
+  },
+  "pending_live_package": {
+    "version": "0.0.66",
+    "changes": [
+      "v064 packed-four scanner",
+      "v065 cached CPU plan/GPU maps",
+      "v062 verified nonce frontier and B ownership"
+    ],
+    "rig_combined_preflight": "pending",
+    "live_run": "pending"
   }
 }

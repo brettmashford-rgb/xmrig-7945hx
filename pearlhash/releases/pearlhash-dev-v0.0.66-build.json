@@ -1,0 +1,17 @@
+{
+  "version": "0.0.66",
+  "changes": "v064 packed-four plus v065 resident geometry plus v062 nonce/B caches; bounded live integration",
+  "new_ptx": false,
+  "gpu_module": "reuse installed releases/pearlhash-dev-v0.0.64-scan-sm120.ptx",
+  "gpu_module_sha256": "4c1e0cc409d14dd34b32192aa470f1576b55b73a8db56213aff7c04ef73ed0c4",
+  "new_native_archive": false,
+  "host_tests": 154,
+  "scan_backend": "packed-four-geometry-one-stream-v066",
+  "window_tiles": 4096,
+  "canonical_tiles_per_nonce": 8388608,
+  "live_seconds": 300,
+  "max_submitted_shares": 1,
+  "combined_rig_preflight": "pending",
+  "live_result": "pending",
+  "pool_acceptance_proven": false
+}

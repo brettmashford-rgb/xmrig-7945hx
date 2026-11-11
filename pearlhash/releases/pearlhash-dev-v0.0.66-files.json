@@ -1,0 +1,60 @@
+{
+  "version": "0.0.66",
+  "scope": "gated bounded live integration: packed-four, resident geometry and verified nonce/B caches",
+  "files": [
+    {
+      "path": "tools/packed_geometry.py",
+      "repository_path": "pearlhash/tools/packed_geometry.py",
+      "bytes": 1189,
+      "sha256": "920da9f95f71e617f92cf7e62d1df62258e46ed1dc1923a28ba3d3c188e0c3da"
+    },
+    {
+      "path": "tools/check_packed_geometry.py",
+      "repository_path": "pearlhash/tools/check_packed_geometry.py",
+      "bytes": 11977,
+      "sha256": "70964114e60b743ed82e2c66d300d9ee5b85b49ff87d64b82bb0a079fb130229"
+    },
+    {
+      "path": "tools/mine_bounded.py",
+      "repository_path": "pearlhash/tools/mine_bounded.py",
+      "bytes": 18074,
+      "sha256": "3f484a9a00b9565a6b0e5fbea151029c68d77f449d51b0125a1e2c168c2db692"
+    },
+    {
+      "path": "tests/test_packed_geometry.py",
+      "repository_path": "pearlhash/tests/test_packed_geometry.py",
+      "bytes": 10257,
+      "sha256": "f2a92291ad9db6047d65bb0fdaccd190e4840314ea8c75a865bd0c74f117571c"
+    },
+    {
+      "path": "tests/test_bounded_miner.py",
+      "repository_path": "pearlhash/tests/test_bounded_miner.py",
+      "bytes": 16825,
+      "sha256": "6ae2445b07d8dd8a80972f3466c7fc39124906c8638f4793b5c82bb57bf5e18e"
+    },
+    {
+      "path": "tests/test_install_v066.py",
+      "repository_path": "pearlhash/tests/test_install_v066.py",
+      "bytes": 13362,
+      "sha256": "54a33858a5509c2f5dfbf32e254793436f92b0cf5f91a66966fd47e5f7b6483a"
+    },
+    {
+      "path": "docs/v066.md",
+      "repository_path": "pearlhash/docs/v066.md",
+      "bytes": 3923,
+      "sha256": "8369bb2b127a4de736d1c1ae4f75f9b1be22bc820f24966d30b190c758fd514a"
+    },
+    {
+      "path": "docs/development-baseline.json",
+      "repository_path": "pearlhash/docs/development-baseline.json",
+      "bytes": 3624,
+      "sha256": "71c1a5d521da38935a97e9622975a5ac7d2ca65ec915a8773f9e684b295e0f11"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.66-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.66-build.json",
+      "bytes": 658,
+      "sha256": "ceebab8bda978578f7daf9a3d5d88429b3c9a03bc69b2264bc5409f07672950c"
+    }
+  ]
+}
