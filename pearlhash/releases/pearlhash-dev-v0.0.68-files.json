@@ -1,0 +1,84 @@
+{
+  "version": "0.0.68",
+  "scope": "offline hoisted A addressing comparison; v066 live unchanged",
+  "files": [
+    {
+      "path": "gpu/hoisted_a.h",
+      "repository_path": "pearlhash/gpu/hoisted_a.h",
+      "bytes": 848,
+      "sha256": "9bde9b355c037b9cf1c46528b5f1c0446a797ccea1cd58db4758f3d473643f0f"
+    },
+    {
+      "path": "gpu/hoisted_a_scan.cu",
+      "repository_path": "pearlhash/gpu/hoisted_a_scan.cu",
+      "bytes": 11603,
+      "sha256": "bb2807fe32af5b3da20a7d473d2dbb792e46f3bc5c644bfec31e917f3dbc85b2"
+    },
+    {
+      "path": "tools/hoisted_a_scan.py",
+      "repository_path": "pearlhash/tools/hoisted_a_scan.py",
+      "bytes": 1679,
+      "sha256": "f2daa1d975a715fd55290c458c45e707bd2f2b398109223f1e4ce9a2a73b0f4d"
+    },
+    {
+      "path": "tools/check_hoisted_a.py",
+      "repository_path": "pearlhash/tools/check_hoisted_a.py",
+      "bytes": 12136,
+      "sha256": "df1833fc1d9085901a3d29ddd849d44b708029ca661fd889eedf1147bbaa5ed7"
+    },
+    {
+      "path": "tools/compare_hoisted_a.py",
+      "repository_path": "pearlhash/tools/compare_hoisted_a.py",
+      "bytes": 10232,
+      "sha256": "c339f7893265c6f599bdaf53e1f433d1264c6b608235d7a3c3a2878c53ece852"
+    },
+    {
+      "path": "tests/test_hoisted_a.py",
+      "repository_path": "pearlhash/tests/test_hoisted_a.py",
+      "bytes": 8693,
+      "sha256": "371d4faebc484dc6338acc5a8d6fdcd30357d8f89c08d07c9d25a04e7d515028"
+    },
+    {
+      "path": "tests/test_hoisted_a_loads.py",
+      "repository_path": "pearlhash/tests/test_hoisted_a_loads.py",
+      "bytes": 2825,
+      "sha256": "db6742588d7dd91fa64fcd0947324ac47d4bd16cfc79c3dccf10a07cadc3185c"
+    },
+    {
+      "path": "tests/test_hoisted_a_contract.py",
+      "repository_path": "pearlhash/tests/test_hoisted_a_contract.py",
+      "bytes": 4903,
+      "sha256": "0ac21abfa876cfff75cb599fc1da44e4254f67d3cd024d10a2113f962c19d86d"
+    },
+    {
+      "path": "tests/test_install_v068.py",
+      "repository_path": "pearlhash/tests/test_install_v068.py",
+      "bytes": 15068,
+      "sha256": "c0f82375c1d682195b5e53eda59412650790e7bc501071f41a0e0fd9ef27e92a"
+    },
+    {
+      "path": "docs/v068.md",
+      "repository_path": "pearlhash/docs/v068.md",
+      "bytes": 4216,
+      "sha256": "8aca4fe9e4e142eab7e16f21922569b7f0ae59c7bc154a830ab7bb3b40251bd7"
+    },
+    {
+      "path": "docs/development-baseline.json",
+      "repository_path": "pearlhash/docs/development-baseline.json",
+      "bytes": 4323,
+      "sha256": "27e63f46d671e48f293bcdd67965a9b247a950029cf0dfffdcfc5b24f2800b7f"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.68-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.68-build.json",
+      "bytes": 3674,
+      "sha256": "e5fa020e413f846d5110ea5e481575bae192c0fbe557899041d400a8df622560"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.68-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.68-scan-sm120.ptx",
+      "bytes": 1618889,
+      "sha256": "89edcbb299c8e8bdd4b594ca0fe69034f13205e1212e3cdbc4738d508bcad25e"
+    }
+  ]
+}

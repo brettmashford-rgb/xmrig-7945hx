@@ -48,7 +48,7 @@
   },
   "pool_acceptance_proven": false,
   "extranonce_worker_mapping_proven": false,
-  "development_policy": "Use v066 as last validated live baseline. v067 is an offline three-way epilogue/native-XOR experiment pending rig results. Genuine custom pool acceptance remains unproven.",
+  "development_policy": "Use v066 as last validated live baseline. Reject slower v067 epilogues. v068 tests once-resolved A addressing with original packed epilogue, offline only. Genuine custom pool acceptance remains unproven.",
   "validated_nonce_preparation": {
     "version": "0.0.61",
     "release_commit": "d80ab6c73780dc3a9542d065e12ff5e106335fae",
@@ -80,12 +80,31 @@
     "overall_timing_gain": "not transcribed: uploaded screenshot crops the total comparison; full rig JSON is installer-gated",
     "whole_miner_speedup_claimed": false
   },
+  "offline_candidate_v067": {
+    "release_commit": "7a63a9f0e924a2ac725c7a41b4d943739ba616fb",
+    "rig_completion": "passed; exit 0, WildRig restarted",
+    "preferred": "packed-v066",
+    "median_tiles_per_second": {
+      "packed-v066": 1504786.5566180674,
+      "serial-v067": 1375528.6208515735,
+      "serial-redux-v067": 1360657.0667329147
+    },
+    "registers_per_thread": {
+      "packed-v066": 96,
+      "serial-v067": 64,
+      "serial-redux-v067": 64
+    },
+    "static_shared_bytes": 24576,
+    "local_bytes_per_thread": 0,
+    "promoted": false,
+    "reason": "Lower registers did not improve throughput; retain concurrent packed epilogue"
+  },
   "pending_offline_package": {
-    "version": "0.0.67",
+    "version": "0.0.68",
     "modes": [
       "packed-v066",
-      "serial-v067",
-      "serial-redux-v067"
+      "a-offset-v068",
+      "a-pointer-v068"
     ],
     "rig_correctness": "pending",
     "rig_performance": "pending"
