@@ -1,0 +1,78 @@
+{
+  "version": "0.0.72",
+  "scope": "offline v070 eight-step plus v071 partitioned fold versus both winning controls",
+  "files": [
+    {
+      "path": "gpu/combined_scan.cu",
+      "repository_path": "pearlhash/gpu/combined_scan.cu",
+      "bytes": 13822,
+      "sha256": "af8f3f64195195bf168bf14b15439e0640e09ac24b05390c108dbf746d862d99"
+    },
+    {
+      "path": "tools/combined_scan.py",
+      "repository_path": "pearlhash/tools/combined_scan.py",
+      "bytes": 1636,
+      "sha256": "c89b2151895c1edd7bf55e811736cf40fe7730913f03621b31f2ecc0da3a40b3"
+    },
+    {
+      "path": "tools/check_combined.py",
+      "repository_path": "pearlhash/tools/check_combined.py",
+      "bytes": 16217,
+      "sha256": "b4a54fe6b1e4f9bbe3d246ba5b868a9b582482b0f37c4e269657a98cf67c037e"
+    },
+    {
+      "path": "tools/compare_combined.py",
+      "repository_path": "pearlhash/tools/compare_combined.py",
+      "bytes": 10566,
+      "sha256": "40777bff2a29d18eeb623d3de2ee95aa24e76ab2fecba76a77b7783794810051"
+    },
+    {
+      "path": "tests/test_combined.py",
+      "repository_path": "pearlhash/tests/test_combined.py",
+      "bytes": 8627,
+      "sha256": "d13f47593b891382363eaee44081e37a7ef0d1e5a111f0d881b3eb71ce8483db"
+    },
+    {
+      "path": "tests/test_combined_contract.py",
+      "repository_path": "pearlhash/tests/test_combined_contract.py",
+      "bytes": 5621,
+      "sha256": "ee0b956b16fb06a9c41c0262c06ebbbd2e84da039c9d5f66ec9c15e1e8a11d7a"
+    },
+    {
+      "path": "tests/test_combined_guards.py",
+      "repository_path": "pearlhash/tests/test_combined_guards.py",
+      "bytes": 3287,
+      "sha256": "3690fbbd61d2b5e26fbc63e2fbafc06cacb6a357e1516c81dacc2712562391c4"
+    },
+    {
+      "path": "tests/test_combined_benchmark.py",
+      "repository_path": "pearlhash/tests/test_combined_benchmark.py",
+      "bytes": 3315,
+      "sha256": "9a7edae7da80fbce648340da9b92c2f413fab3196cfaa18575c7842fb1475a77"
+    },
+    {
+      "path": "tests/test_install_v072.py",
+      "repository_path": "pearlhash/tests/test_install_v072.py",
+      "bytes": 18718,
+      "sha256": "27e873c3cc4a99c97d09ba6cdd6f204b60d4cc07d7f161443d350c30b9a4cfa9"
+    },
+    {
+      "path": "docs/v072.md",
+      "repository_path": "pearlhash/docs/v072.md",
+      "bytes": 5457,
+      "sha256": "35a37d81735772a8802ccde642dc673974b23e77c9479020a9c4445881e40b48"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.72-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.72-build.json",
+      "bytes": 4449,
+      "sha256": "7195b453e4161952ecf921d89d6c138516950e561d5caf600e58233791ce9fd7"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.72-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.72-scan-sm120.ptx",
+      "bytes": 2260193,
+      "sha256": "0354ee89aa6df02394b21df457a1335b99a6d00886146a707cd169fae7f15b42"
+    }
+  ]
+}
