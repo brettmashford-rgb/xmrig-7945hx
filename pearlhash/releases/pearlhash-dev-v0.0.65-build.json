@@ -1,0 +1,22 @@
+{
+  "version": "0.0.65",
+  "changes": "exclusive job-owned immutable plan/maps; unchanged v062 GPU math and per-nonce state",
+  "new_ptx": false,
+  "gpu_module": "reuse installed releases/pearlhash-dev-v0.0.60-scan-sm120.ptx",
+  "gpu_module_sha256": "96e43e211558338558a61f9378d0831a93d98502d8e41010f71e8fb58c2ae679",
+  "new_native_archive": false,
+  "host_tests": 127,
+  "modes": [
+    "fresh-v062",
+    "cached-plan-v065",
+    "cached-maps-v065"
+  ],
+  "rounds": 24,
+  "tiles_per_nonce_per_mode": 65536,
+  "map_payload_bytes": 2162688,
+  "saved_HtoD_bytes_per_reused_nonce": 4325440,
+  "rig_preflight": "pending",
+  "rig_benchmark": "pending",
+  "pool_connection": false,
+  "whole_miner_speedup_claimed": false
+}

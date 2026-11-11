@@ -17,10 +17,17 @@ class ResidentDispatch(StreamDispatch):
         super().__init__(device,tables,KERNELS[0])
         try:
             attach(self,cache)
+            geometry=getattr(tables,'resident_geometry',None)
             self.axes=[]
-            for entries in (plan.rows,plan.cols):
-                raw=b''.join(axis.packed for axis in entries);buffer=self.guarded(len(raw))
-                self.upload(buffer[1],raw);self.axes.append(buffer)
+            if geometry is None:
+                for entries in (plan.rows,plan.cols):
+                    raw=b''.join(axis.packed for axis in entries);buffer=self.guarded(len(raw))
+                    self.upload(buffer[1],raw);self.axes.append(buffer)
+            else:
+                # Keep borrowed endpoints in the same 28-guard window snapshot,
+                # but only the job owner may free these allocations.
+                self.axes=geometry.borrow_axes(device,plan)
+                self.buffers.extend(self.axes)
             self.upload(self.targets[1],bound.to_bytes(32,'little')*4096)
             device.api('cuModuleGetFunction',[C.POINTER(C.c_void_p),C.c_void_p,C.c_char_p],
                        C.byref(self.builder),device.module,b'resident_query_descriptors')

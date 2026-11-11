@@ -1,0 +1,66 @@
+{
+  "version": "0.0.65",
+  "scope": "offline cached plan/maps versus validated v062 fresh-nonce lifecycle",
+  "files": [
+    {
+      "path": "tools/job_geometry.py",
+      "repository_path": "pearlhash/tools/job_geometry.py",
+      "bytes": 5475,
+      "sha256": "961cbe2f966e1a0bca68a380f0125d265c34ac1bd739ee16777f50a5eec8680c"
+    },
+    {
+      "path": "tools/resident_scan.py",
+      "repository_path": "pearlhash/tools/resident_scan.py",
+      "bytes": 8132,
+      "sha256": "4e2c2f273b3c95e357878e151fc37ac09e99ba325299e6455910d992892a58ad"
+    },
+    {
+      "path": "tools/check_job_geometry.py",
+      "repository_path": "pearlhash/tools/check_job_geometry.py",
+      "bytes": 11933,
+      "sha256": "0cde84bbaf0f9f4b07e8513a55a835d0b57f0cfbf1db2c336969a15036662ebf"
+    },
+    {
+      "path": "tools/compare_job_geometry.py",
+      "repository_path": "pearlhash/tools/compare_job_geometry.py",
+      "bytes": 8332,
+      "sha256": "555445a08b6c25a9463c6fa406d6f33e64e64fc22295e2e9c1f449f788faec30"
+    },
+    {
+      "path": "tests/test_job_geometry.py",
+      "repository_path": "pearlhash/tests/test_job_geometry.py",
+      "bytes": 9479,
+      "sha256": "ecf73777cbc0f26172c0967c81a21a06b62f34dbe8d8244c7f95c5fd42f86bf8"
+    },
+    {
+      "path": "tests/test_compare_job_geometry.py",
+      "repository_path": "pearlhash/tests/test_compare_job_geometry.py",
+      "bytes": 4611,
+      "sha256": "647f7c147617b76f85cb88ff77e111f38eebe4fa209331704c188f84f200aebf"
+    },
+    {
+      "path": "tests/test_install_v065.py",
+      "repository_path": "pearlhash/tests/test_install_v065.py",
+      "bytes": 10684,
+      "sha256": "7d89945b7f58aab04e9b1f05dca99029b44995e40bb50f3556c56b19f4ad4799"
+    },
+    {
+      "path": "docs/v065.md",
+      "repository_path": "pearlhash/docs/v065.md",
+      "bytes": 4336,
+      "sha256": "203045624757be15ac64aaa3d91c21559f0d9f79139b5374cdb74fd19a9b24dd"
+    },
+    {
+      "path": "docs/development-baseline.json",
+      "repository_path": "pearlhash/docs/development-baseline.json",
+      "bytes": 2995,
+      "sha256": "7b03c65fd661bf0ba0863bc426bd7b48308b8a310893160d3222c784d715461d"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.65-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.65-build.json",
+      "bytes": 715,
+      "sha256": "c29cd59ea5f6227e5395c7400405ad1ef8d6f33e05e1be66b58a98dcfa528ad6"
+    }
+  ]
+}

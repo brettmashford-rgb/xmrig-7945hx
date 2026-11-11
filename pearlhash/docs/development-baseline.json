@@ -19,21 +19,33 @@
     "static_shared_bytes": 24576,
     "local_bytes_per_thread": 0,
     "driver_calls_and_bytes": "unchanged versus controls",
-    "live_integrated": false
+    "live_integrated": true
   },
   "last_live_validated": {
-    "version": "0.0.54",
-    "release_commit": "52f7675d4501001d146bbf69b52859cdd06326e0",
-    "scan_backend": "quad5-one-stream-v054",
-    "tiles": 220626944,
-    "full_nonces": 25,
+    "version": "0.0.62",
+    "release_commit": "6e79004fedcb3331a9ccf2d27eadd0a08f6f9b8a",
+    "scan_backend": "shared-B-job-cache-one-stream-v062",
+    "tiles": 311144448,
+    "nonces_started": 38,
+    "full_nonces": 34,
     "submitted_shares": 0,
     "accepted_shares": 0,
-    "worker_joined": true
+    "worker_joined": true,
+    "stage_seconds": {
+      "base": 1.438,
+      "nonce": 2.355,
+      "cache": 12.857,
+      "search": 281.071,
+      "proof": 0.0
+    },
+    "B_table_builds": 4,
+    "B_table_leases": 38,
+    "exit_code": 0,
+    "WildRig_restarted": true
   },
   "pool_acceptance_proven": false,
   "extranonce_worker_mapping_proven": false,
-  "development_policy": "Bank verified offline gains. The v062 launcher gates its five-minute live run on fresh rig correctness/proof/lifecycle checks. Genuine custom pool acceptance remains unproven.",
+  "development_policy": "Use v062 as the validated live baseline. Keep v063 available for combined retesting. Evaluate pending changes offline before bounded live integration. Genuine custom pool acceptance remains unproven.",
   "validated_nonce_preparation": {
     "version": "0.0.61",
     "release_commit": "d80ab6c73780dc3a9542d065e12ff5e106335fae",
@@ -45,14 +57,16 @@
     "speedup_including_cache_build": 19.584461003822412,
     "scope": "nonce preparation only; unchanged GPU tiles per second"
   },
-  "pending_live_package": {
-    "version": "0.0.62",
-    "changes": [
-      "v060 shared-B scanner integration",
-      "v061 verified nonce frontier integration",
-      "job-owned B noise/permutation table reuse"
-    ],
-    "rig_preflight": "pending",
-    "live_run": "pending"
+  "offline_candidate_v063": {
+    "rig_correctness_and_verifier_gate": "passed",
+    "median_tiles_per_second": 1120226.207551431,
+    "control_tiles_per_second": 1091854.7277986873,
+    "speedup": 1.025984665386444,
+    "promoted": false,
+    "reason": "below conservative 3 percent elapsed reduction threshold; retain for combination retest"
+  },
+  "pending_offline_tests": {
+    "v064": "user is testing; results pending",
+    "v065": "cached CPU plan and resident GPU maps; rig preflight/nonce-cycle timing pending"
   }
 }
