@@ -1,0 +1,96 @@
+{
+  "version": "0.0.73",
+  "scope": "four independent offline optimization experiments versus v070",
+  "files": [
+    {
+      "path": "gpu/experiment_axes.h",
+      "repository_path": "pearlhash/gpu/experiment_axes.h",
+      "bytes": 1313,
+      "sha256": "e6bafcd3adf567f7734ce3b6c8ac5f5db287c1f67de307e1a046cea009dac359"
+    },
+    {
+      "path": "gpu/experiments_scan.cu",
+      "repository_path": "pearlhash/gpu/experiments_scan.cu",
+      "bytes": 23257,
+      "sha256": "4b5f53dc97b5398200a8aedd8da436e8a4fab4392c04dc690cdd0f0fa702df9f"
+    },
+    {
+      "path": "tools/experiments_scan.py",
+      "repository_path": "pearlhash/tools/experiments_scan.py",
+      "bytes": 15395,
+      "sha256": "2d67f590ef2ba407f41be5fa1d5c4196e881599b20128e8f49e83fbf1be6eef1"
+    },
+    {
+      "path": "tools/check_experiments.py",
+      "repository_path": "pearlhash/tools/check_experiments.py",
+      "bytes": 16402,
+      "sha256": "d13cb3786d9642336f3af1874579ebe0ff6d2c3b310b975f75f61710d8c73689"
+    },
+    {
+      "path": "tools/compare_experiments.py",
+      "repository_path": "pearlhash/tools/compare_experiments.py",
+      "bytes": 10124,
+      "sha256": "e03ab804bfeda625b0796e4f4215435010f16b41e95d162705461904ccd48f3b"
+    },
+    {
+      "path": "tests/test_experiments_lifecycle.py",
+      "repository_path": "pearlhash/tests/test_experiments_lifecycle.py",
+      "bytes": 8804,
+      "sha256": "b0084f46dfe1c0e29fbb2d7ad9d4cb7a39a8e706b420991fc2fc83803ac2408f"
+    },
+    {
+      "path": "tests/test_experiments_state.py",
+      "repository_path": "pearlhash/tests/test_experiments_state.py",
+      "bytes": 4700,
+      "sha256": "122f94381f317354901bb3f52f461bd7e35d3b9a3ea54ab9be79aff1cb51374d"
+    },
+    {
+      "path": "tests/test_experiments_layout.py",
+      "repository_path": "pearlhash/tests/test_experiments_layout.py",
+      "bytes": 3009,
+      "sha256": "5887ab01f614a6785d2ac30f9825a06fdf081950ef581f4b705170fa13da6d9f"
+    },
+    {
+      "path": "tests/test_experiments_wide.py",
+      "repository_path": "pearlhash/tests/test_experiments_wide.py",
+      "bytes": 2148,
+      "sha256": "52cbfaf7fe82df7fb55f606f79fbff917b01b6cb91c48e33a336d43c8848f02f"
+    },
+    {
+      "path": "tests/test_experiments_benchmark.py",
+      "repository_path": "pearlhash/tests/test_experiments_benchmark.py",
+      "bytes": 4899,
+      "sha256": "2102787e32f86f7722bec13fe425bfa39e70bbabf79f7e9ca4f164909e12799e"
+    },
+    {
+      "path": "tests/test_experiments_contract.py",
+      "repository_path": "pearlhash/tests/test_experiments_contract.py",
+      "bytes": 2991,
+      "sha256": "ffcc0372a53f47515716627e63770250ef97100b36c3bc071571cfbc4e1a207f"
+    },
+    {
+      "path": "tests/test_install_v073.py",
+      "repository_path": "pearlhash/tests/test_install_v073.py",
+      "bytes": 15179,
+      "sha256": "e3abda25711ad0e9831fdf32167559d79d14b9656c7b5d37927bb7cc1479c7d9"
+    },
+    {
+      "path": "docs/v073.md",
+      "repository_path": "pearlhash/docs/v073.md",
+      "bytes": 3588,
+      "sha256": "cc2c8bf611df50e2e22d30b13ed1480322630c6564e0b719410024185d3f6071"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.73-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.73-build.json",
+      "bytes": 4539,
+      "sha256": "4e8f12159cb032a04e64b59cb7015a520b19064e3f6b02b7bbc89fa2796e0020"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.73-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.73-scan-sm120.ptx",
+      "bytes": 2591339,
+      "sha256": "ac576a8c342fc6c7901326c075334e0c7ea941e83a706c1290f72b48dc31200c"
+    }
+  ]
+}
