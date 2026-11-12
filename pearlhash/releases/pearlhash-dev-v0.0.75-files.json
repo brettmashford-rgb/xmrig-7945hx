@@ -1,0 +1,90 @@
+{
+  "version": "0.0.75",
+  "scope": "combine validated Small4 and 16K winners; scheduling and automatic GPU energy trials",
+  "files": [
+    {
+      "path": "gpu/combo_scan.cu",
+      "repository_path": "pearlhash/gpu/combo_scan.cu",
+      "bytes": 8062,
+      "sha256": "c6b67aa5074c3ae656223e014405bc881258827ea2dbe2cc7436f68cf44e01de"
+    },
+    {
+      "path": "tools/combo_scan.py",
+      "repository_path": "pearlhash/tools/combo_scan.py",
+      "bytes": 15235,
+      "sha256": "6a33066d09c1a5cd6f844f361d899c8f676ff9995b4eb330fdf1dc8b31506934"
+    },
+    {
+      "path": "tools/check_combo.py",
+      "repository_path": "pearlhash/tools/check_combo.py",
+      "bytes": 16422,
+      "sha256": "6a2e7500682d817cef507715a7917416064722713bfb23cb1ae5bbe50e71f227"
+    },
+    {
+      "path": "tools/compare_combo.py",
+      "repository_path": "pearlhash/tools/compare_combo.py",
+      "bytes": 10648,
+      "sha256": "3ef059a92dcff94a43192121e6599f8485e26bbc79727afe2511180a0cd8b316"
+    },
+    {
+      "path": "tools/gpu_power.py",
+      "repository_path": "pearlhash/tools/gpu_power.py",
+      "bytes": 6447,
+      "sha256": "786c23d8bcd271a024a344e5da5c665a6ac1b28064f824372dacce074804760b"
+    },
+    {
+      "path": "tests/test_combo_contract.py",
+      "repository_path": "pearlhash/tests/test_combo_contract.py",
+      "bytes": 1695,
+      "sha256": "108dcd8d04c4b7d613f64317bc2baa812bb6567bc822a971e99e722beb23f579"
+    },
+    {
+      "path": "tests/test_combo_lifecycle.py",
+      "repository_path": "pearlhash/tests/test_combo_lifecycle.py",
+      "bytes": 8742,
+      "sha256": "351c819911695d0d14a29c8e92b0bf3867767db3f3b4745c3b0131e71b1095a0"
+    },
+    {
+      "path": "tests/test_combo_wide.py",
+      "repository_path": "pearlhash/tests/test_combo_wide.py",
+      "bytes": 2254,
+      "sha256": "320256ee0c1969f3555ad2fa4e9576c867000a64ae748d2d1953021b38bfc778"
+    },
+    {
+      "path": "tests/test_combo_benchmark.py",
+      "repository_path": "pearlhash/tests/test_combo_benchmark.py",
+      "bytes": 6252,
+      "sha256": "57e4969a164250a5981c58a8b29dbebbb88368dddccfdf07fb6c6bbece6301e0"
+    },
+    {
+      "path": "tests/test_gpu_power.py",
+      "repository_path": "pearlhash/tests/test_gpu_power.py",
+      "bytes": 5852,
+      "sha256": "daf7722af2a57e2f5cc38222713498619549e8d4f377f569bf6c1dac71007099"
+    },
+    {
+      "path": "tests/test_install_v075.py",
+      "repository_path": "pearlhash/tests/test_install_v075.py",
+      "bytes": 16099,
+      "sha256": "dad370df7f404b38aaf8dd21493ea0dbdc57f78794b32195cd975656c34aee3b"
+    },
+    {
+      "path": "docs/v075.md",
+      "repository_path": "pearlhash/docs/v075.md",
+      "bytes": 6178,
+      "sha256": "0ccde6d675cdc1d8cb0f27d6a4d05119e51a48b4d3ea541326b34ecec7bb6e9f"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.75-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.75-build.json",
+      "bytes": 4558,
+      "sha256": "465eb001c8f93adf62f84448b1621940da07285f3f23be814c9b52bfb28c9a61"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.75-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.75-scan-sm120.ptx",
+      "bytes": 2760494,
+      "sha256": "732c54cff358217f3f959386e6c5a3d7c243094220c44fd083cccce16d5f8766"
+    }
+  ]
+}
