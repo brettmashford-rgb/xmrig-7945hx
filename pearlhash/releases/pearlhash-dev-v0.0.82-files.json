@@ -1,0 +1,72 @@
+{
+  "version": "0.0.82",
+  "scope": "two independent nonces, matched private/shared B reconstruction, fresh proofs and board-energy; offline only",
+  "files": [
+    {
+      "path": "gpu/twin_b_scan.cu",
+      "repository_path": "pearlhash/gpu/twin_b_scan.cu",
+      "bytes": 11375,
+      "sha256": "94392633b458e6e359a2897feb45f1989de9e541e3cbf62f8517937a9bd9c73f"
+    },
+    {
+      "path": "tools/twin_b_scan.py",
+      "repository_path": "pearlhash/tools/twin_b_scan.py",
+      "bytes": 8852,
+      "sha256": "a9645f2254d5b4067ef83f1355fbe63e59e4454c6e9fefbce16d0806e94f4147"
+    },
+    {
+      "path": "tools/check_twin_b.py",
+      "repository_path": "pearlhash/tools/check_twin_b.py",
+      "bytes": 13622,
+      "sha256": "058faaca640f6023c76c592ccf907d8c03630d28e18c5e549f84a90f187db8fe"
+    },
+    {
+      "path": "tools/compare_twin_b.py",
+      "repository_path": "pearlhash/tools/compare_twin_b.py",
+      "bytes": 9995,
+      "sha256": "a99f07cd68ee1080ede219952677201dca8653e2d433bda315172dffad819b9e"
+    },
+    {
+      "path": "tests/test_twin_b.py",
+      "repository_path": "pearlhash/tests/test_twin_b.py",
+      "bytes": 11948,
+      "sha256": "80ca1f699161e80dd65f3d1bd654b09a1ad0848e503a5ebe159d5ca66960b6cd"
+    },
+    {
+      "path": "tests/test_twin_b_benchmark.py",
+      "repository_path": "pearlhash/tests/test_twin_b_benchmark.py",
+      "bytes": 7954,
+      "sha256": "7cf90bbb8e3bd56d3d8388747c798175fa891e7ed9c793437255952019de4c16"
+    },
+    {
+      "path": "tests/test_install_v082.py",
+      "repository_path": "pearlhash/tests/test_install_v082.py",
+      "bytes": 24197,
+      "sha256": "7f03c4500ce08558b56b9972306196912c08e4d402fcfb53588c71835833fa61"
+    },
+    {
+      "path": "docs/v082.md",
+      "repository_path": "pearlhash/docs/v082.md",
+      "bytes": 7003,
+      "sha256": "746cbd642a2ca68d36a94e85fd96c120624f0d4e16fbf825722914b27017a192"
+    },
+    {
+      "path": "docs/architecture-targets.md",
+      "repository_path": "pearlhash/docs/architecture-targets.md",
+      "bytes": 4820,
+      "sha256": "b4d73cf3799904c7557ec9842f4e122e7faa735c137008e3121bc764fdb58e01"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.82-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.82-build.json",
+      "bytes": 7718,
+      "sha256": "93ec5dcf68f0447231d08abee1c346e527497e68d828a492e6862bb2261cbe66"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.82-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.82-scan-sm120.ptx",
+      "bytes": 3249880,
+      "sha256": "c2cd346d77724ef5fb2e10465b922b5bf3a1e4847701fe8103ea5c0210619a68"
+    }
+  ]
+}
