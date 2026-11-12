@@ -3,7 +3,7 @@ import ctypes as C
 import struct
 from tools.projected_scan import guarded,check_buffer
 from tools.virtual_scan import VirtualTables
-from reference.projection import project,signed8
+from tools.projection_reference import project,signed8
 
 
 def check_edges(device):

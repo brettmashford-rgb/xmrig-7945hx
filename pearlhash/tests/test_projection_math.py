@@ -1,7 +1,7 @@
 """Independent exact algebra, every checkpoint, signed corrections and PTX contracts. ISC."""
 from pathlib import Path
 import random,re,struct,subprocess,tempfile,unittest
-from reference.projection import project,dot_from_projection,signed8
+from tools.projection_reference import project,dot_from_projection,signed8
 from reference.dense import noise_rows,_random_hash,jackpot
 ROOT=Path(__file__).resolve().parents[1]
 

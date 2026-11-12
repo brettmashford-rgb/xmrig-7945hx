@@ -1,0 +1,126 @@
+{
+  "version": "0.0.84.1",
+  "scope": "exact checkpoint-local B-basis projection; all high corrections; scan/full-nonce/energy/job amortization; offline only",
+  "files": [
+    {
+      "path": "gpu/projection_math.h",
+      "repository_path": "pearlhash/gpu/projection_math.h",
+      "bytes": 543,
+      "sha256": "d17be5860d340ab8bc486e7c46ca0aa916b1e008c65392b064203c57ca1d2316"
+    },
+    {
+      "path": "gpu/projected_scan.cu",
+      "repository_path": "pearlhash/gpu/projected_scan.cu",
+      "bytes": 15025,
+      "sha256": "424334bcef8865fc8e1cbc970de6d2c5a83413048756de6fd0d8035fd2bb7e53"
+    },
+    {
+      "path": "tools/projection_reference.py",
+      "repository_path": "pearlhash/tools/projection_reference.py",
+      "bytes": 1287,
+      "sha256": "451552b4b14f2f549cf3bbcb2ae55472d618a1fa350376dca6015d67fab8b624"
+    },
+    {
+      "path": "tools/projected_scan.py",
+      "repository_path": "pearlhash/tools/projected_scan.py",
+      "bytes": 7818,
+      "sha256": "1ba3eb151bfe38a054a078f825527f29c5156ce0ec0dbfa1fe3721dbd632a1c1"
+    },
+    {
+      "path": "tools/check_projected.py",
+      "repository_path": "pearlhash/tools/check_projected.py",
+      "bytes": 19588,
+      "sha256": "8f6c75fdcfebbd090b01cf04bddc3399a541db091897012fceb39e9ca73970eb"
+    },
+    {
+      "path": "tools/projection_edges.py",
+      "repository_path": "pearlhash/tools/projection_edges.py",
+      "bytes": 3044,
+      "sha256": "30093061286c05e360809bc0ba04fe497a92026aaf9727e0cc568dcf7c0c811a"
+    },
+    {
+      "path": "tools/compare_projected.py",
+      "repository_path": "pearlhash/tools/compare_projected.py",
+      "bytes": 12346,
+      "sha256": "ef5c254b1f485830e10a1037a8eaa72acc7f53c7854b8b4172e44e64520a19dc"
+    },
+    {
+      "path": "tools/build_projected_ptx.py",
+      "repository_path": "pearlhash/tools/build_projected_ptx.py",
+      "bytes": 1903,
+      "sha256": "7e7d80806ccbe5c32a41476b29570c2d4553cf37fd515dfdc3b16d4cf6833e71"
+    },
+    {
+      "path": "tools/probe_projected_math.py",
+      "repository_path": "pearlhash/tools/probe_projected_math.py",
+      "bytes": 3189,
+      "sha256": "d7d255eb7a9a924b6078998a0b661c6222d22d25df04944664e9cad19b1ede52"
+    },
+    {
+      "path": "tests/test_projection_math.py",
+      "repository_path": "pearlhash/tests/test_projection_math.py",
+      "bytes": 6588,
+      "sha256": "c9638344045e627896566ed63c4459fd27f6f286eb601a3f8ae3445867b2deb2"
+    },
+    {
+      "path": "tests/test_projected_device.py",
+      "repository_path": "pearlhash/tests/test_projected_device.py",
+      "bytes": 575,
+      "sha256": "cf8ac82a0d5b9ef84fd1828e6c944db05edbb4a39918ec460789ed8de717c0b3"
+    },
+    {
+      "path": "tests/test_projected_lifecycle.py",
+      "repository_path": "pearlhash/tests/test_projected_lifecycle.py",
+      "bytes": 9891,
+      "sha256": "9682a2f81b721f21221da6011a035b7ea6e276bb586bb03b3720b8d91fcf1a20"
+    },
+    {
+      "path": "tests/test_projected_wide.py",
+      "repository_path": "pearlhash/tests/test_projected_wide.py",
+      "bytes": 2276,
+      "sha256": "1d4dd005cada49da4ecc5e405dea26bfef34dda67404c9c647a59d4a347572b3"
+    },
+    {
+      "path": "tests/test_projected_benchmark.py",
+      "repository_path": "pearlhash/tests/test_projected_benchmark.py",
+      "bytes": 6375,
+      "sha256": "a21e9e30e5fe75601455e8a1ff9541309c53c1221b3941eb6f24872cb06b3ac5"
+    },
+    {
+      "path": "tests/test_install_v084_fix.py",
+      "repository_path": "pearlhash/tests/test_install_v084_fix.py",
+      "bytes": 28614,
+      "sha256": "28e0d1e2c96a83b73380144dd36a1f7b60f5b32c14e9b85bab75647fd36c9778"
+    },
+    {
+      "path": "docs/v084.md",
+      "repository_path": "pearlhash/docs/v084.md",
+      "bytes": 8390,
+      "sha256": "2e15cafb1a4a44132b86cb2ca90b800f464c9218b59b685fa44710152708823f"
+    },
+    {
+      "path": "docs/architecture-targets.md",
+      "repository_path": "pearlhash/docs/architecture-targets.md",
+      "bytes": 5011,
+      "sha256": "662447ed94c2334bb4a0e816f9db38600d7de4d537babffa0bd9322fe2f56bb0"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.84.1-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.84.1-build.json",
+      "bytes": 3318,
+      "sha256": "54de8cfb6736711c5245e3dd0f865da7aea3a6b9d10cf2c95ae7d5fa38f9e8ff"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.84-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.84-scan-sm120.ptx",
+      "bytes": 3146829,
+      "sha256": "f5408fa8580ea39f9ef114acd7f73f6d0900c0caab103b91a3d538c253cf3ca6"
+    },
+    {
+      "path": "tests/test_projected_installed_imports.py",
+      "repository_path": "pearlhash/tests/test_projected_installed_imports.py",
+      "bytes": 2343,
+      "sha256": "1bab17d4db720c2bf46fa939e7529c3bfcce165aecffbc7eab3683c3d1b79c0d"
+    }
+  ]
+}
