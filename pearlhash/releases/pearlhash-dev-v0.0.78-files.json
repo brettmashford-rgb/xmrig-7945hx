@@ -1,0 +1,84 @@
+{
+  "version": "0.0.78",
+  "scope": "two independent tests: 64-tile blocks and 16K/32K/64K dispatches, automatic power and previous register recap",
+  "files": [
+    {
+      "path": "gpu/throughput_axes.h",
+      "repository_path": "pearlhash/gpu/throughput_axes.h",
+      "bytes": 1238,
+      "sha256": "e30b9b6809aacc14ae260dc16bdbf3251600b009c3701cdcd34e97d6fa21c85f"
+    },
+    {
+      "path": "gpu/throughput_scan.cu",
+      "repository_path": "pearlhash/gpu/throughput_scan.cu",
+      "bytes": 8569,
+      "sha256": "b49e472f24472a37a647830432cca90ba3bdb70a234d5892e19268964e3a6211"
+    },
+    {
+      "path": "tools/throughput_scan.py",
+      "repository_path": "pearlhash/tools/throughput_scan.py",
+      "bytes": 14912,
+      "sha256": "5ba33fe9ad6154b0561f737f1105495be7bbf24443a21155214e59dc48122bb7"
+    },
+    {
+      "path": "tools/check_throughput.py",
+      "repository_path": "pearlhash/tools/check_throughput.py",
+      "bytes": 16514,
+      "sha256": "81d5977c0135a3f9c0b55ef6deab44830bcb471e03402bfaaa0d0af567971cf5"
+    },
+    {
+      "path": "tools/compare_throughput.py",
+      "repository_path": "pearlhash/tools/compare_throughput.py",
+      "bytes": 11641,
+      "sha256": "f501be3887708d3a40918982210eca96d7fa508617a1cacf53378a908b58baf0"
+    },
+    {
+      "path": "tests/test_throughput_contract.py",
+      "repository_path": "pearlhash/tests/test_throughput_contract.py",
+      "bytes": 4600,
+      "sha256": "f83913a765726e50735963d114ee42350fad7a9125282b0cbbbb3180f49f9998"
+    },
+    {
+      "path": "tests/test_throughput_lifecycle.py",
+      "repository_path": "pearlhash/tests/test_throughput_lifecycle.py",
+      "bytes": 8778,
+      "sha256": "07296572b80089596c98076bceeeb878d5d23d7084e7bed0efada8a53bcc580d"
+    },
+    {
+      "path": "tests/test_throughput_wide.py",
+      "repository_path": "pearlhash/tests/test_throughput_wide.py",
+      "bytes": 2782,
+      "sha256": "cc87e152eebc377a7ce205963283062b9b873bcb7003a1b053d368b2e0b44695"
+    },
+    {
+      "path": "tests/test_throughput_benchmark.py",
+      "repository_path": "pearlhash/tests/test_throughput_benchmark.py",
+      "bytes": 6872,
+      "sha256": "9bf52321369d665a0d4984ccd912a67aff647d84c0af36da6195501a54a8514a"
+    },
+    {
+      "path": "tests/test_install_v078.py",
+      "repository_path": "pearlhash/tests/test_install_v078.py",
+      "bytes": 20164,
+      "sha256": "1a7c1176cebc95d0474683e6405654503067307266823e5dc3d57a625fb8bc64"
+    },
+    {
+      "path": "docs/v078.md",
+      "repository_path": "pearlhash/docs/v078.md",
+      "bytes": 7250,
+      "sha256": "64e17c1d8f819a0ad855c79efb812f9846793f06c3803a15f172c63cc55fd6a9"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.78-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.78-build.json",
+      "bytes": 7373,
+      "sha256": "46af72ac13570edff52b48f709de7587821a4dc788a605494d12730955d7df4b"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.78-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.78-scan-sm120.ptx",
+      "bytes": 2104981,
+      "sha256": "76306665462fc8a58c3006a8d10324ec94bf53cc30ce898034e4e3d0501530a0"
+    }
+  ]
+}
