@@ -1,0 +1,90 @@
+{
+  "version": "0.0.79",
+  "scope": "paired-column direct control and shared A operands against retained 16K baseline",
+  "files": [
+    {
+      "path": "gpu/a_share_axes.h",
+      "repository_path": "pearlhash/gpu/a_share_axes.h",
+      "bytes": 1640,
+      "sha256": "cee7615a9e2074eb4f4a386403f24b4182cb3a882a5bc7093d25579f2e12a358"
+    },
+    {
+      "path": "gpu/a_share_scan.cu",
+      "repository_path": "pearlhash/gpu/a_share_scan.cu",
+      "bytes": 10649,
+      "sha256": "86799bb86549fe67aac99b679334165b007d4ac2124764be054741ad2cb7400e"
+    },
+    {
+      "path": "tools/a_share_scan.py",
+      "repository_path": "pearlhash/tools/a_share_scan.py",
+      "bytes": 15313,
+      "sha256": "a7229e18a37ef887a0e0366ac4480fc30d9ab5bd83e7747e5cb14cbbabd1b3cd"
+    },
+    {
+      "path": "tools/check_a_share.py",
+      "repository_path": "pearlhash/tools/check_a_share.py",
+      "bytes": 19347,
+      "sha256": "bce0e3dd612d11f645fa32ff8b08d94ca3bed79985bed64be725eb81562c88a7"
+    },
+    {
+      "path": "tools/compare_a_share.py",
+      "repository_path": "pearlhash/tools/compare_a_share.py",
+      "bytes": 10657,
+      "sha256": "d264b55c342c1438ec28d7432c43d6707cc981e545b28c3afc99a30e1100761d"
+    },
+    {
+      "path": "tests/test_a_share_contract.py",
+      "repository_path": "pearlhash/tests/test_a_share_contract.py",
+      "bytes": 7637,
+      "sha256": "3748f909d716c629dc6696ebd6bec067a000a3f58f3a31fc5bdb28174025495a"
+    },
+    {
+      "path": "tests/test_a_share_lifecycle.py",
+      "repository_path": "pearlhash/tests/test_a_share_lifecycle.py",
+      "bytes": 8734,
+      "sha256": "9e502f50dc1589bbdf7f243f103c0472f3555a0b09438f57a9e873fb49c04781"
+    },
+    {
+      "path": "tests/test_a_share_wide.py",
+      "repository_path": "pearlhash/tests/test_a_share_wide.py",
+      "bytes": 2258,
+      "sha256": "44a3175dfa48960094a5db682b6c425ef74cba2bfb42e73ebb522b61ec543866"
+    },
+    {
+      "path": "tests/test_a_share_benchmark.py",
+      "repository_path": "pearlhash/tests/test_a_share_benchmark.py",
+      "bytes": 6246,
+      "sha256": "cb672b83e73ab3c14dea229e6e6561838bf68400a8b547a7a0739de03c227fc2"
+    },
+    {
+      "path": "tests/test_a_share_odd.py",
+      "repository_path": "pearlhash/tests/test_a_share_odd.py",
+      "bytes": 2364,
+      "sha256": "8fdc83f9ba7412bcbbee8d16f82d2ad9bd98b20b130f0453e9dead5cf066f814"
+    },
+    {
+      "path": "tests/test_install_v079.py",
+      "repository_path": "pearlhash/tests/test_install_v079.py",
+      "bytes": 21144,
+      "sha256": "b4409e2a1ef53811b330401781cde17c2129f30bdf5755503361044a301aa1c7"
+    },
+    {
+      "path": "docs/v079.md",
+      "repository_path": "pearlhash/docs/v079.md",
+      "bytes": 7114,
+      "sha256": "648884853a6018c15151ad9088e23b6ef002d9d25507274778615a498a757e19"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.79-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.79-build.json",
+      "bytes": 7248,
+      "sha256": "c618ffb6d4fb970abc9881e39c7fbb335690b71afe891a854af3c46d63e04491"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.79-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.79-scan-sm120.ptx",
+      "bytes": 2922157,
+      "sha256": "ac768060a461ed5d0611450be4e272ccacb0f5243ffd82bf19f3cf31dcab749a"
+    }
+  ]
+}
