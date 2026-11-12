@@ -1,0 +1,60 @@
+{
+  "version": "0.0.84",
+  "compiler": "NVRTC 12.9.86",
+  "options": [
+    "--gpu-architecture=compute_120",
+    "--std=c++17",
+    "-Igpu"
+  ],
+  "source": "gpu/projected_scan.cu",
+  "ptx_sha256": "f5408fa8580ea39f9ef114acd7f73f6d0900c0caab103b91a3d538c253cf3ca6",
+  "ptx_bytes": 3146829,
+  "reproduced_byte_identically": true,
+  "host_tests": 60,
+  "host_tests_passed": true,
+  "control_and_collector_byte_identical_to_v080": true,
+  "modes": [
+    "pair-direct",
+    "projected-sparse"
+  ],
+  "candidate_abi_arguments": 28,
+  "threads_per_block": 256,
+  "per_window_limit": 16384,
+  "candidate_guard_endpoints": 38,
+  "candidate_snapshot_bytes": 664,
+  "checkpoints": 256,
+  "mma_per_k32_step": 6,
+  "unique_timed_tiles_per_mode": 6291456,
+  "whole_nonce_measured_tiles_per_mode": 50331648,
+  "correction_slots_per_row_checkpoint": 128,
+  "projection_bytes_per_physical_A_row": 99840,
+  "B_residual_bytes_per_physical_B_row": 512,
+  "illustrative_CPU_probe": {
+    "coefficients": 2097152,
+    "exception_fraction": 0.003535747528076172,
+    "max_records": 5,
+    "not_a_density_guarantee": true
+  },
+  "required_gpu_and_official_verifier_checks": "pending rig",
+  "speed_resources_energy_and_job_amortization": "pending rig",
+  "pool_connection": false,
+  "source_sha256": {
+    "gpu/projection_math.h": "d17be5860d340ab8bc486e7c46ca0aa916b1e008c65392b064203c57ca1d2316",
+    "gpu/projected_scan.cu": "424334bcef8865fc8e1cbc970de6d2c5a83413048756de6fd0d8035fd2bb7e53",
+    "reference/projection.py": "451552b4b14f2f549cf3bbcb2ae55472d618a1fa350376dca6015d67fab8b624",
+    "tools/projected_scan.py": "1ba3eb151bfe38a054a078f825527f29c5156ce0ec0dbfa1fe3721dbd632a1c1",
+    "tools/check_projected.py": "8f6c75fdcfebbd090b01cf04bddc3399a541db091897012fceb39e9ca73970eb",
+    "tools/projection_edges.py": "8efca1764e501737f9e49ce41fc13bd4246ed30af4096e84a7c87e8794ccfd96",
+    "tools/compare_projected.py": "ef5c254b1f485830e10a1037a8eaa72acc7f53c7854b8b4172e44e64520a19dc",
+    "tools/build_projected_ptx.py": "7e7d80806ccbe5c32a41476b29570c2d4553cf37fd515dfdc3b16d4cf6833e71",
+    "tools/probe_projected_math.py": "d7d255eb7a9a924b6078998a0b661c6222d22d25df04944664e9cad19b1ede52",
+    "tests/test_projection_math.py": "e776331ad597926d1ec110f875fcdd77b4ef45957280173e11bb5e7b9a4c7bce",
+    "tests/test_projected_device.py": "cf8ac82a0d5b9ef84fd1828e6c944db05edbb4a39918ec460789ed8de717c0b3",
+    "tests/test_projected_lifecycle.py": "9682a2f81b721f21221da6011a035b7ea6e276bb586bb03b3720b8d91fcf1a20",
+    "tests/test_projected_wide.py": "1d4dd005cada49da4ecc5e405dea26bfef34dda67404c9c647a59d4a347572b3",
+    "tests/test_projected_benchmark.py": "a21e9e30e5fe75601455e8a1ff9541309c53c1221b3941eb6f24872cb06b3ac5",
+    "tests/test_install_v084.py": "1068af3302b3b2a444efd383cd6a9afd50db2483140d530a568a46e4092bb924",
+    "docs/v084.md": "1740170e1a8172ec8e11a9d9631f5859400e625385c9cd814bab6956a14972ae",
+    "docs/architecture-targets.md": "662447ed94c2334bb4a0e816f9db38600d7de4d537babffa0bd9322fe2f56bb0"
+  }
+}
