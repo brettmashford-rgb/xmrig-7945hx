@@ -1,0 +1,96 @@
+{
+  "version": "0.0.77",
+  "scope": "CTA8 compiler residency comparison plus bounded live mining of selected mode",
+  "files": [
+    {
+      "path": "gpu/register_scan.cu",
+      "repository_path": "pearlhash/gpu/register_scan.cu",
+      "bytes": 8314,
+      "sha256": "bf5a51936943f02891568e5417ffc12c6afe7bdadf685b55561524548e1b0a17"
+    },
+    {
+      "path": "tools/register_scan.py",
+      "repository_path": "pearlhash/tools/register_scan.py",
+      "bytes": 15202,
+      "sha256": "28f0364141d0a165d467cdc09c31336cab0eeb13b3a1d2e067981b243d0254f7"
+    },
+    {
+      "path": "tools/check_register.py",
+      "repository_path": "pearlhash/tools/check_register.py",
+      "bytes": 16414,
+      "sha256": "ab72b5354b2cf249a7fa70bdc089dabb7788f3423e52aacf89c7625f60496377"
+    },
+    {
+      "path": "tools/compare_register.py",
+      "repository_path": "pearlhash/tools/compare_register.py",
+      "bytes": 10657,
+      "sha256": "4bc991702070c26cbeea6361b44cdb4a700984d9a9fc215af7eaee16b39dab72"
+    },
+    {
+      "path": "tools/mine_register.py",
+      "repository_path": "pearlhash/tools/mine_register.py",
+      "bytes": 18977,
+      "sha256": "aadeaf51710aba9aff2da5c7440d14ddcb09e14d9061fb32ccc21089a13ee55c"
+    },
+    {
+      "path": "tests/test_register_contract.py",
+      "repository_path": "pearlhash/tests/test_register_contract.py",
+      "bytes": 3239,
+      "sha256": "3dc81ba50ff618b6e0626c1d2defd5a8941d45e8acacd0e8b9c9a18afd81bf75"
+    },
+    {
+      "path": "tests/test_register_lifecycle.py",
+      "repository_path": "pearlhash/tests/test_register_lifecycle.py",
+      "bytes": 8747,
+      "sha256": "44918bf9275e195113de3b6d4923803f8ee844605f4b61288a1b27ba1ad37275"
+    },
+    {
+      "path": "tests/test_register_wide.py",
+      "repository_path": "pearlhash/tests/test_register_wide.py",
+      "bytes": 2260,
+      "sha256": "f43ee3adf801f6848a855a05bf57a54ea2528d6ec080145abc86cea7fe864f6d"
+    },
+    {
+      "path": "tests/test_register_benchmark.py",
+      "repository_path": "pearlhash/tests/test_register_benchmark.py",
+      "bytes": 6244,
+      "sha256": "35c45bba1f4725e6bb195a4e7e88c6ddefdadd066bb5335cec0f113214bd7b2d"
+    },
+    {
+      "path": "tests/test_register_miner.py",
+      "repository_path": "pearlhash/tests/test_register_miner.py",
+      "bytes": 19076,
+      "sha256": "679a543c52736c7f46490fc284d110b4c40034c64f4964d7508a7eaefbde4c65"
+    },
+    {
+      "path": "tests/test_register_live_gate.py",
+      "repository_path": "pearlhash/tests/test_register_live_gate.py",
+      "bytes": 3555,
+      "sha256": "4e7e46d2897cd44880f24e03ea70aa5ed1c97dbb974f7e2126702e07e9b3ca7b"
+    },
+    {
+      "path": "tests/test_install_v077.py",
+      "repository_path": "pearlhash/tests/test_install_v077.py",
+      "bytes": 18350,
+      "sha256": "3d34c85de92034431c2947893f99483ccecb37b83fcf7e54501211ac3887eedd"
+    },
+    {
+      "path": "docs/v077.md",
+      "repository_path": "pearlhash/docs/v077.md",
+      "bytes": 5653,
+      "sha256": "3b838c32e86aba60cc1842170bdfb9fad3de5df0b19ebb2ff2e7597e3ede49e4"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.77-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.77-build.json",
+      "bytes": 7000,
+      "sha256": "2dbc17f91c5eef39c10ef2bd6cccf5e69d5d3c6070a0d2668bcb18bd77bbb104"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.77-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.77-scan-sm120.ptx",
+      "bytes": 2916569,
+      "sha256": "b81c9ee6c576642c315048591b5ac390212533cba421137712a3088c678de361"
+    }
+  ]
+}
