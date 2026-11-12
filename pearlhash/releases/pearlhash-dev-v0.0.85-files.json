@@ -1,0 +1,30 @@
+{
+  "version": "0.0.85",
+  "scope": "unchanged pair-direct, independent unprofiled baseline plus separate Nsight Compute hardware counters; offline diagnostic only",
+  "files": [
+    {
+      "path": "tools/profile_pair.py",
+      "repository_path": "pearlhash/tools/profile_pair.py",
+      "bytes": 5047,
+      "sha256": "06efd3499d94c831321b33b28da9bd5a52c82e6ca0fa78c6bfebf588f8a95676"
+    },
+    {
+      "path": "tools/ncu_profile.py",
+      "repository_path": "pearlhash/tools/ncu_profile.py",
+      "bytes": 9818,
+      "sha256": "3b41a4eb224c8b1ccbb15877bc8dc3761319ffae8cc002c39a83e2348640bad9"
+    },
+    {
+      "path": "tests/test_v085_profile.py",
+      "repository_path": "pearlhash/tests/test_v085_profile.py",
+      "bytes": 3639,
+      "sha256": "c0337a7c2339cfc0f5e098b6d135755c831367143d232cdf71d12483bead869c"
+    },
+    {
+      "path": "PROFILE-V085.md",
+      "repository_path": "pearlhash/PROFILE-V085.md",
+      "bytes": 3192,
+      "sha256": "d35c2f2107a67512a5b7c5b02d6fee0e2fc47857c96805ade20e34ccf72a1c34"
+    }
+  ]
+}
