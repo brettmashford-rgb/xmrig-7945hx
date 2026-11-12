@@ -1,0 +1,96 @@
+{
+  "version": "0.0.81",
+  "scope": "fixed-work rectangular compute-layout screen, independent proofs and automatic board energy; offline only",
+  "files": [
+    {
+      "path": "gpu/layout_width_axes.h",
+      "repository_path": "pearlhash/gpu/layout_width_axes.h",
+      "bytes": 1547,
+      "sha256": "779a7fd9fa779adb30031bd25157396162592aea25267a239df8c0684c8b9f9b"
+    },
+    {
+      "path": "gpu/layout_width_scan.cu",
+      "repository_path": "pearlhash/gpu/layout_width_scan.cu",
+      "bytes": 11043,
+      "sha256": "4ddc7c2d4ebe38646feda0bcb4cde3b21f9a53a096b3f8ccfc73cc9c8129b6eb"
+    },
+    {
+      "path": "tools/layout_width_scan.py",
+      "repository_path": "pearlhash/tools/layout_width_scan.py",
+      "bytes": 15123,
+      "sha256": "e76b1d849cc53f997f6cbe4acf1cd2840eb2ad9416b9e8e8848a1eb12826e1fa"
+    },
+    {
+      "path": "tools/check_layout_width.py",
+      "repository_path": "pearlhash/tools/check_layout_width.py",
+      "bytes": 19463,
+      "sha256": "621fdbb505529ad083e452db760af32bb77c67e4e0a004930ca1b2c06c8b941f"
+    },
+    {
+      "path": "tools/compare_layout_width.py",
+      "repository_path": "pearlhash/tools/compare_layout_width.py",
+      "bytes": 10708,
+      "sha256": "2aab3f7629092cd1c11d57c6dc54dffe4a08e056760686479dea88764c4fe307"
+    },
+    {
+      "path": "docs/v081.md",
+      "repository_path": "pearlhash/docs/v081.md",
+      "bytes": 4800,
+      "sha256": "5048ceed621d5e6318052134dd1eb5257ad42f34c7a80311ee60748dfadda7c7"
+    },
+    {
+      "path": "docs/architecture-targets.md",
+      "repository_path": "pearlhash/docs/architecture-targets.md",
+      "bytes": 4623,
+      "sha256": "b896fe36643d06312a2c5a2cb0889ca570a23c69018cf85afe15d89635c15280"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.81-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.81-build.json",
+      "bytes": 7696,
+      "sha256": "33823061c83996b94e50fa65cea8b30cbe9c6da4d06f3ba9c6eca28ee72e1c1e"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.81-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.81-scan-sm120.ptx",
+      "bytes": 3270840,
+      "sha256": "23b34692b6361caab5b5b9f0ec09902039a4094e416c516e578da4d48cc61e9d"
+    },
+    {
+      "path": "tests/test_layout_width_contract.py",
+      "repository_path": "pearlhash/tests/test_layout_width_contract.py",
+      "bytes": 5018,
+      "sha256": "705e02c3ae8f1cf35600075d27313941f8ea8ac629949d2a97aa63bae39acd72"
+    },
+    {
+      "path": "tests/test_layout_width_lifecycle.py",
+      "repository_path": "pearlhash/tests/test_layout_width_lifecycle.py",
+      "bytes": 8750,
+      "sha256": "11ba07b8bfd55b964377072a7602e5d3329ec735f81cfdb8da7cddacc5a6cf2c"
+    },
+    {
+      "path": "tests/test_layout_width_wide.py",
+      "repository_path": "pearlhash/tests/test_layout_width_wide.py",
+      "bytes": 2268,
+      "sha256": "e0d19c3bafb54e1fdb8d73f232d3795ffc2dab12449ee24130ea995b85983c80"
+    },
+    {
+      "path": "tests/test_layout_width_odd.py",
+      "repository_path": "pearlhash/tests/test_layout_width_odd.py",
+      "bytes": 2400,
+      "sha256": "d7dda4fbf4a5caedd3213616b221ff4f72702304e42f7b7dc02df1658179378d"
+    },
+    {
+      "path": "tests/test_layout_width_benchmark.py",
+      "repository_path": "pearlhash/tests/test_layout_width_benchmark.py",
+      "bytes": 6238,
+      "sha256": "5c2a191cbc1c97607f6c617137885916567b9a737c282a0999004695136fd69f"
+    },
+    {
+      "path": "tests/test_install_v081.py",
+      "repository_path": "pearlhash/tests/test_install_v081.py",
+      "bytes": 23131,
+      "sha256": "8d94ae8dcfb4aa7549173b4bf8da6afc880742be28e02c9ab2ec044b323644b5"
+    }
+  ]
+}
