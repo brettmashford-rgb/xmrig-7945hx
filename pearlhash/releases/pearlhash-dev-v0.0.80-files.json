@@ -1,0 +1,108 @@
+{
+  "version": "0.0.80",
+  "scope": "paired-column winner: 2/4/8-step B stages, energy and selected-mode bounded live test",
+  "files": [
+    {
+      "path": "gpu/pair_depth_axes.h",
+      "repository_path": "pearlhash/gpu/pair_depth_axes.h",
+      "bytes": 357,
+      "sha256": "d5241ee857fb495d78d2e9303cf77eb5bf0a8e0ce3e62f513543315c59178daa"
+    },
+    {
+      "path": "gpu/pair_depth_scan.cu",
+      "repository_path": "pearlhash/gpu/pair_depth_scan.cu",
+      "bytes": 10851,
+      "sha256": "027382b6ae20f815aac7ea1ab2c5f6265514b840b19845411d28cebf24e0e969"
+    },
+    {
+      "path": "tools/pair_depth_scan.py",
+      "repository_path": "pearlhash/tools/pair_depth_scan.py",
+      "bytes": 14936,
+      "sha256": "6245628936a14ce7d3e9defc482217892e00a8eeb898d4601ff6769f61fd8130"
+    },
+    {
+      "path": "tools/check_pair_depth.py",
+      "repository_path": "pearlhash/tools/check_pair_depth.py",
+      "bytes": 19348,
+      "sha256": "5040ef589222e78875dc281c4e130bbd12daf0fd350f7f67ec27e584c2e2a739"
+    },
+    {
+      "path": "tools/compare_pair_depth.py",
+      "repository_path": "pearlhash/tools/compare_pair_depth.py",
+      "bytes": 10683,
+      "sha256": "24c3af0cdb6931482805b32a8feebd6396a49191026a7ec72809eb7514fa5eb9"
+    },
+    {
+      "path": "tools/mine_pair_depth.py",
+      "repository_path": "pearlhash/tools/mine_pair_depth.py",
+      "bytes": 18911,
+      "sha256": "8e134b78547f02966841b415443edde42215a3d84d8b866a4c04b1fdcf995f54"
+    },
+    {
+      "path": "tests/test_pair_depth_contract.py",
+      "repository_path": "pearlhash/tests/test_pair_depth_contract.py",
+      "bytes": 6280,
+      "sha256": "838c787799cd8a95c5c916e0bab0cdb23b25adb4b268135f8b104a5d65e0cd56"
+    },
+    {
+      "path": "tests/test_pair_depth_benchmark.py",
+      "repository_path": "pearlhash/tests/test_pair_depth_benchmark.py",
+      "bytes": 6238,
+      "sha256": "22cc5d81fcf1f33f5a624e8d059fd85e2f5264b33d68248c207a71cc42944389"
+    },
+    {
+      "path": "tests/test_pair_depth_lifecycle.py",
+      "repository_path": "pearlhash/tests/test_pair_depth_lifecycle.py",
+      "bytes": 8743,
+      "sha256": "0edd3534a6d0547d053647a3a10b2492394f6827113c3f084d032a4b1b04510d"
+    },
+    {
+      "path": "tests/test_pair_depth_wide.py",
+      "repository_path": "pearlhash/tests/test_pair_depth_wide.py",
+      "bytes": 2264,
+      "sha256": "0888684f64091b5697dbe6a8a699a0e8eed33b4794a45535ee40ab3b433a909f"
+    },
+    {
+      "path": "tests/test_pair_depth_odd.py",
+      "repository_path": "pearlhash/tests/test_pair_depth_odd.py",
+      "bytes": 2369,
+      "sha256": "6348fa1969f8c22e02ccc1a114bc4e5025660b17a7c613282c032cc31f541909"
+    },
+    {
+      "path": "tests/test_pair_depth_miner.py",
+      "repository_path": "pearlhash/tests/test_pair_depth_miner.py",
+      "bytes": 18992,
+      "sha256": "d5ed22f1d1007cee93830a428dcebcc4848470edcb7ce5c8dc4b549873f7014c"
+    },
+    {
+      "path": "tests/test_pair_depth_live_gate.py",
+      "repository_path": "pearlhash/tests/test_pair_depth_live_gate.py",
+      "bytes": 3554,
+      "sha256": "c5a784623c82faedb39ab00cd5b5699a1a8398e41a65204f148e46c2123b98a2"
+    },
+    {
+      "path": "tests/test_install_v080.py",
+      "repository_path": "pearlhash/tests/test_install_v080.py",
+      "bytes": 22456,
+      "sha256": "032af71de2486dddb7a18727207107bd754416d39d99e884fa81ddbbf8f1d915"
+    },
+    {
+      "path": "docs/v080.md",
+      "repository_path": "pearlhash/docs/v080.md",
+      "bytes": 7900,
+      "sha256": "2778508279eb0e9d5f0179e48caf5020af72b8694b8ee9d8f2b1799dbb3a6d5e"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.80-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.80-build.json",
+      "bytes": 7534,
+      "sha256": "0796799473263e7a17cf622d54ce3dfc4291fa88769bb27afa3bff0ba025a58f"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.80-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.80-scan-sm120.ptx",
+      "bytes": 3250464,
+      "sha256": "99f53e9f0ae22496b8bf8348b24448060d50cc5d4440ee41a4d2ac04923bf0bf"
+    }
+  ]
+}
