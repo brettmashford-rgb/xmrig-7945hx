@@ -1,0 +1,62 @@
+{
+  "version": "0.0.83",
+  "scope": "bounded one-window native dispatch; not a full native miner worker",
+  "host_tests": 44,
+  "host_tests_passed": true,
+  "gpu_kernel_unchanged": true,
+  "required_ptx_version": "0.0.80",
+  "required_ptx_path": "releases/pearlhash-dev-v0.0.80-scan-sm120.ptx",
+  "required_ptx_sha256": "99f53e9f0ae22496b8bf8348b24448060d50cc5d4440ee41a4d2ac04923bf0bf",
+  "kernel_entry": "a_pair_direct_scan",
+  "kernel_abi_arguments": 24,
+  "threads_per_block": 256,
+  "dispatch_limit": 16384,
+  "guard_count": 28,
+  "snapshot_bytes": 504,
+  "native_c_standard": "C11",
+  "native_compile_options": [
+    "-O3",
+    "-std=c11",
+    "-fPIC",
+    "-shared",
+    "-Wall",
+    "-Wextra",
+    "-Werror"
+  ],
+  "native_C_abi_sizes": {
+    "api": 48,
+    "call": 232,
+    "kernel_node_v1": 56,
+    "memset_node_v1": 40
+  },
+  "modes": [
+    "pair-direct",
+    "native-direct",
+    "native-graph"
+  ],
+  "graph_nodes": [
+    "reset",
+    "scanner",
+    "collector"
+  ],
+  "graph_parameter_updates_per_window": 2,
+  "timed_rounds": 12,
+  "unique_timed_tiles_per_mode": 6291456,
+  "energy_measured_tiles_per_mode": 50331648,
+  "rig_correctness_official_proofs_and_compatibility": "pending",
+  "speed_resources_and_energy": "pending",
+  "pool_connection": false,
+  "source_sha256": {
+    "host/dispatch_bridge.c": "b49d9945b76d7ccbd0e2e1dbe70d07dd7260a229d778b085d8c10e2aec3a2237",
+    "tools/dispatch_scan.py": "3ae7160efb0bd50659b581b5c8f78f2e77b1a0e997e677f87e8c5f6d597d877c",
+    "tools/dispatch_profile.py": "7975097a06657d4142d7a1b296e8fbee47ef49399e22528593598e5ca5231099",
+    "tools/check_dispatch.py": "815cdb513262c565a0e12a14b7e903bb1054bf5d65f5d58d5c452644f1dfe317",
+    "tools/compare_dispatch.py": "9027015d42b15327a23bd62b15351dc6ae2f8738698b82bbf203f6b2c47dfb4d",
+    "tests/test_dispatch_native.py": "3b1fcf79da3d2ca84936ddcbad14fd48d55f2d45bb392c73689288066859bc57",
+    "tests/test_dispatch_profile.py": "c2d3e392cf29d4e325647a3fc11acad62ee8e5912bfd76193e1c7a25a53c3479",
+    "tests/test_dispatch_benchmark.py": "2b892d43af02f78d913ef110a27902090f997c78fb3bd7cdd107c2e446f178fd",
+    "tests/test_install_v083.py": "d887197e592377039131afe419c1326ab787b943d7677ee9ad3b4d6a585b358f",
+    "docs/v083.md": "1129c49a0823d2d40f5b1c8fbbfc5fb0d2451f1f7509b3e86fe49cac9357e686",
+    "docs/architecture-targets.md": "ddb9d7967b0901eefa34bbda01e654be48dde7a6be0d9868b739f7789f611aad"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "version": "0.0.83",
+  "scope": "unchanged pair-direct GPU kernel; native direct and CUDA Graph dispatch, host/GPU profile, proof gates and power; offline only",
+  "required_ptx_sha256": "99f53e9f0ae22496b8bf8348b24448060d50cc5d4440ee41a4d2ac04923bf0bf",
+  "required_ptx_installed_version": "0.0.80",
+  "required_host_compiler": "gcc supporting C11",
+  "files": [
+    {
+      "path": "host/dispatch_bridge.c",
+      "repository_path": "pearlhash/host/dispatch_bridge.c",
+      "bytes": 2831,
+      "sha256": "b49d9945b76d7ccbd0e2e1dbe70d07dd7260a229d778b085d8c10e2aec3a2237"
+    },
+    {
+      "path": "tools/dispatch_scan.py",
+      "repository_path": "pearlhash/tools/dispatch_scan.py",
+      "bytes": 9213,
+      "sha256": "3ae7160efb0bd50659b581b5c8f78f2e77b1a0e997e677f87e8c5f6d597d877c"
+    },
+    {
+      "path": "tools/dispatch_profile.py",
+      "repository_path": "pearlhash/tools/dispatch_profile.py",
+      "bytes": 2721,
+      "sha256": "7975097a06657d4142d7a1b296e8fbee47ef49399e22528593598e5ca5231099"
+    },
+    {
+      "path": "tools/check_dispatch.py",
+      "repository_path": "pearlhash/tools/check_dispatch.py",
+      "bytes": 19357,
+      "sha256": "815cdb513262c565a0e12a14b7e903bb1054bf5d65f5d58d5c452644f1dfe317"
+    },
+    {
+      "path": "tools/compare_dispatch.py",
+      "repository_path": "pearlhash/tools/compare_dispatch.py",
+      "bytes": 12356,
+      "sha256": "9027015d42b15327a23bd62b15351dc6ae2f8738698b82bbf203f6b2c47dfb4d"
+    },
+    {
+      "path": "tests/test_dispatch_native.py",
+      "repository_path": "pearlhash/tests/test_dispatch_native.py",
+      "bytes": 15542,
+      "sha256": "3b1fcf79da3d2ca84936ddcbad14fd48d55f2d45bb392c73689288066859bc57"
+    },
+    {
+      "path": "tests/test_dispatch_profile.py",
+      "repository_path": "pearlhash/tests/test_dispatch_profile.py",
+      "bytes": 2627,
+      "sha256": "c2d3e392cf29d4e325647a3fc11acad62ee8e5912bfd76193e1c7a25a53c3479"
+    },
+    {
+      "path": "tests/test_dispatch_benchmark.py",
+      "repository_path": "pearlhash/tests/test_dispatch_benchmark.py",
+      "bytes": 6382,
+      "sha256": "2b892d43af02f78d913ef110a27902090f997c78fb3bd7cdd107c2e446f178fd"
+    },
+    {
+      "path": "tests/test_install_v083.py",
+      "repository_path": "pearlhash/tests/test_install_v083.py",
+      "bytes": 26812,
+      "sha256": "d887197e592377039131afe419c1326ab787b943d7677ee9ad3b4d6a585b358f"
+    },
+    {
+      "path": "docs/v083.md",
+      "repository_path": "pearlhash/docs/v083.md",
+      "bytes": 7233,
+      "sha256": "1129c49a0823d2d40f5b1c8fbbfc5fb0d2451f1f7509b3e86fe49cac9357e686"
+    },
+    {
+      "path": "docs/architecture-targets.md",
+      "repository_path": "pearlhash/docs/architecture-targets.md",
+      "bytes": 4961,
+      "sha256": "ddb9d7967b0901eefa34bbda01e654be48dde7a6be0d9868b739f7789f611aad"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.83-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.83-build.json",
+      "bytes": 2406,
+      "sha256": "389a2e25d3a556a1c0fff7915d7358306be2fec565e79867a61898fb5708c816"
+    }
+  ]
+}
