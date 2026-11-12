@@ -1,0 +1,78 @@
+{
+  "version": "0.0.76",
+  "scope": "winning wide16k CTA8 consumer scheduling; unchanged equal-work speed and automatic GPU energy comparison",
+  "files": [
+    {
+      "path": "gpu/schedule_scan.cu",
+      "repository_path": "pearlhash/gpu/schedule_scan.cu",
+      "bytes": 8293,
+      "sha256": "d1f3f79aaeeddb8f002645faef5ed298380bef521320c8d046f1735690aa6eb6"
+    },
+    {
+      "path": "tools/schedule_scan.py",
+      "repository_path": "pearlhash/tools/schedule_scan.py",
+      "bytes": 15191,
+      "sha256": "2fc7d3ec9924ee15451d98162e8476c5eb2dba183fbca39e7a498fac9f782bcf"
+    },
+    {
+      "path": "tools/check_schedule.py",
+      "repository_path": "pearlhash/tools/check_schedule.py",
+      "bytes": 16415,
+      "sha256": "62a1d484f6987c8d1aba6253edb2988ab35246bb1b99198d6d74745b9245fd44"
+    },
+    {
+      "path": "tools/compare_schedule.py",
+      "repository_path": "pearlhash/tools/compare_schedule.py",
+      "bytes": 10659,
+      "sha256": "672c554fc19695b13c2cec80bd670f20f509f54c461452e98807f33bafc9caa8"
+    },
+    {
+      "path": "tests/test_schedule_contract.py",
+      "repository_path": "pearlhash/tests/test_schedule_contract.py",
+      "bytes": 2758,
+      "sha256": "2581e72cf0d42a7b8477b357214834b59014cdcf750f5abf374ff3aca53d3b8e"
+    },
+    {
+      "path": "tests/test_schedule_lifecycle.py",
+      "repository_path": "pearlhash/tests/test_schedule_lifecycle.py",
+      "bytes": 8747,
+      "sha256": "54dc486ee6ccd46f35b461b61a1034949543a395e55b95325aa07477e37fd2f0"
+    },
+    {
+      "path": "tests/test_schedule_wide.py",
+      "repository_path": "pearlhash/tests/test_schedule_wide.py",
+      "bytes": 2260,
+      "sha256": "3902591322e5c6bb7ea6b58dc1ae6641fdc4a95432eaab320b35897f24cf1565"
+    },
+    {
+      "path": "tests/test_schedule_benchmark.py",
+      "repository_path": "pearlhash/tests/test_schedule_benchmark.py",
+      "bytes": 6244,
+      "sha256": "31676eebac4ad1655da52fdf076bb50f6c8efaa8f1f9931ed441ecbf8eb0677e"
+    },
+    {
+      "path": "tests/test_install_v076.py",
+      "repository_path": "pearlhash/tests/test_install_v076.py",
+      "bytes": 17152,
+      "sha256": "0af7d364c335c11af321ae387371da4b588ad047ceb2ca986d5ac20bcf693cc5"
+    },
+    {
+      "path": "docs/v076.md",
+      "repository_path": "pearlhash/docs/v076.md",
+      "bytes": 4202,
+      "sha256": "862fe02ad347d78ae16ef25d3cdbae4aba29e0821c484fd0b6394dda91a02888"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.76-build.json",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.76-build.json",
+      "bytes": 6760,
+      "sha256": "0561d1aaf2d0fe8b25e09f484e7b0ea412a9b3f002a188049d5cc94f872b0634"
+    },
+    {
+      "path": "releases/pearlhash-dev-v0.0.76-scan-sm120.ptx",
+      "repository_path": "pearlhash/releases/pearlhash-dev-v0.0.76-scan-sm120.ptx",
+      "bytes": 2937831,
+      "sha256": "283726793d0ae7b324f6a1138927c42fa55a149a1102ce94523d553167cee161"
+    }
+  ]
+}
