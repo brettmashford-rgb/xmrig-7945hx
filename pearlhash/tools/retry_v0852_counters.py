@@ -7,13 +7,13 @@ from pathlib import Path
 import sys
 import urllib.request
 
-SOURCE='c4e3d1a1753f972020883250e3b3de68c209f448'
-MANIFEST_SHA='df6e898c5bf98d8bc609f0236d02caf5f775fb38f29c43572b0cbc0eac50cb0b'
+SOURCE='4699ad6d3ef404f36353befe5803358f0300369b'
+MANIFEST_SHA='285929ad2e0ac933d82acac826c43010654e06139781ee90a8db85bbe50adabc'
 HOME=Path.home()
 RESULTS=HOME/'pearlhash-dev-v0.0.85'
 STAGE=HOME/'pearlhash-dev-v0.0.85.2'
 RAW='https://raw.githubusercontent.com/brettmashford-rgb/xmrig-7945hx/'+SOURCE+'/'
-HELPER_SHA='0f871b2c07fad9e1535f2410bb955d2bc597a3489b3b12fd3b1abb155555ce06'
+HELPER_SHA='ece14a105c7a755738e380351db48d6e09960082cc209a47313c316e71c693e5'
 PTX=HOME/'pearlhash-dev-v0.0.80/releases/pearlhash-dev-v0.0.80-scan-sm120.ptx'
 COMMITMENT=HOME/'pearlhash-dev-v0.0.39/releases/pearlhash-dev-v0.0.39-merkle-sm120.ptx'
 PTX_SHA='99f53e9f0ae22496b8bf8348b24448060d50cc5d4440ee41a4d2ac04923bf0bf'
