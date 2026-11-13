@@ -10,8 +10,6 @@ import shutil
 import signal
 import statistics
 import subprocess
-import tarfile
-from pathlib import PurePosixPath
 import sys
 import time
 import urllib.request
@@ -46,16 +44,12 @@ def bounded(command,*,env=None,timeout=300):
 
 
 def prepare(folder):
-    base=folder/'profiler'
-    binary=base/'opt/nvidia/nsight-compute/2025.4.1/ncu'
-    if binary.is_file():return binary,'private NVIDIA 2025.4.1 cached; pinned SHA256 '+SHA256
     existing=shutil.which('ncu')
     if existing:return Path(existing).resolve(),'existing PATH'
     if not shutil.which('dpkg-deb'):raise RuntimeError('dpkg-deb unavailable for private profiler extraction')
-    if shutil.disk_usage(folder).free<600*1024*1024:
-        raise RuntimeError('need 600 MiB free for the 322 MB download and 100 MB CLI extraction')
+    if shutil.disk_usage(folder).free<2048*1024*1024:raise RuntimeError('need 2 GiB free for private profiler download/extraction')
     archive=folder/'nsight-compute.deb';digest=hashlib.sha256();total=0;started=time.monotonic();last=started
-    print('Downloading NVIDIA profiler package: 322 MB; extracting command-line files only (~100 MB).',flush=True)
+    print('Downloading private NVIDIA profiler: 322 MB; drivers/toolkit unchanged.',flush=True)
     try:
         with urllib.request.urlopen(URL,timeout=30) as source,archive.open('xb') as output:
             while True:
@@ -67,42 +61,13 @@ def prepare(folder):
                 if time.monotonic()-last>5:
                     print('Profiler download:',str(total//1000000)+' / 322 MB',flush=True);last=time.monotonic()
         if total!=SIZE or digest.hexdigest()!=SHA256:raise RuntimeError('NVIDIA profiler checksum mismatch')
-        base.mkdir(mode=0o700,exist_ok=True)
-        process=subprocess.Popen(['dpkg-deb','--fsys-tarfile',str(archive)],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        prefix='opt/nvidia/nsight-compute/2025.4.1/'
-        allowed=(prefix+'target/linux-desktop-glibc_2_11_3-x64/',prefix+'sections/')
-        selected=set();expanded=0
-        try:
-            with tarfile.open(fileobj=process.stdout,mode='r|*') as package:
-                for member in package:
-                    name=member.name.removeprefix('./')
-                    if name!=prefix+'ncu' and not name.startswith(allowed):continue
-                    rel=PurePosixPath(name)
-                    if rel.is_absolute() or any(part in ('','..') for part in rel.parts):
-                        raise RuntimeError('unsafe path in NVIDIA profiler archive')
-                    target=base.joinpath(*rel.parts)
-                    if member.isdir():target.mkdir(mode=0o700,parents=True,exist_ok=True)
-                    elif member.isfile():
-                        expanded+=member.size
-                        if expanded>160*1024*1024:raise RuntimeError('selected CLI extraction exceeded 160 MiB')
-                        target.parent.mkdir(mode=0o700,parents=True,exist_ok=True)
-                        source_file=package.extractfile(member)
-                        if source_file is None:raise RuntimeError('NVIDIA CLI file content missing')
-                        with source_file,target.open('xb') as output:
-                            shutil.copyfileobj(source_file,output,1024*1024)
-                        target.chmod(0o700 if member.mode&0o111 else 0o600)
-                        selected.add(name)
-                    else:raise RuntimeError('unexpected link or special file in selected profiler paths')
-            errors=process.stderr.read();code=process.wait(timeout=30)
-            if code:raise RuntimeError('NVIDIA profiler archive extraction failed: '+errors.decode('utf-8','replace')[-1000:])
-        except BaseException:
-            process.kill();process.wait();raise
-        needed={prefix+'ncu',prefix+'target/linux-desktop-glibc_2_11_3-x64/ncu'}
-        if not needed.issubset(selected):raise RuntimeError('required NVIDIA Nsight CLI files missing')
+        code,output=bounded(['dpkg-deb','-x',str(archive),str(folder/'profiler')],timeout=120)
+        if code:raise RuntimeError('private profiler extraction failed: '+output[-1000:])
     finally:
         archive.unlink(missing_ok=True)
+    binary=folder/'profiler/opt/nvidia/nsight-compute/2025.4.1/ncu'
     if not binary.is_file():raise RuntimeError('extracted profiler entry point missing')
-    return binary,'private NVIDIA 2025.4.1 CLI only; package SHA256 '+SHA256
+    return binary,'private NVIDIA 2025.4.1; pinned SHA256 '+SHA256
 
 
 def parse_csv(raw,expected=3):
@@ -133,16 +98,13 @@ def parse_csv(raw,expected=3):
         if len(rows)!=expected or len({r['unit'] for r in rows})!=1:continue
         result[name]=dict(mean=statistics.mean(r['value'] for r in rows),unit=rows[0]['unit'],samples=rows)
     required=('gpu__time_duration.sum','sm__throughput.avg.pct_of_peak_sustained_elapsed',
-              'dram__throughput.avg.pct_of_peak_sustained_elapsed',
-              'sm__pipe_tensor_cycles_active.avg.pct_of_peak_sustained_active')
+              'dram__throughput.avg.pct_of_peak_sustained_elapsed')
     if any(name not in result for name in required):raise ValueError('required duration/SM/DRAM counters missing or incomplete')
     return result
 
 
 def compact(metrics):
-    names=('sm__pipe_tensor_cycles_active.avg.pct_of_peak_sustained_active',
-           'sm__inst_executed_pipe_tensor_op_imma.avg.pct_of_peak_sustained_elapsed',
-           'sm__throughput.avg.pct_of_peak_sustained_elapsed','dram__throughput.avg.pct_of_peak_sustained_elapsed',
+    names=('sm__throughput.avg.pct_of_peak_sustained_elapsed','dram__throughput.avg.pct_of_peak_sustained_elapsed',
            'smsp__warps_eligible.avg.per_cycle_active','smsp__issue_active.avg.pct_of_peak_sustained_active',
            'sm__warps_active.avg.pct_of_peak_sustained_active','smsp__warps_active.avg.pct_of_peak_sustained_active')
     rows={k:dict(value=metrics[k]['mean'],unit=metrics[k]['unit']) for k in names if k in metrics}

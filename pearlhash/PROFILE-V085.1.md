@@ -1,9 +1,0 @@
-# V85.1: retry the tensor-core counter capture
-
-V85 already completed the unprofiled pair-direct baseline, but the full Nsight Compute package extraction requested 2 GiB free and prevented the hardware profile. This retry preserves and reuses the V85 baseline; it does not repeat its eight timing rounds, host/event diagnostic, energy samples, or correctness preflight.
-
-If `ncu` is absent, download the same NVIDIA Debian 13 Nsight Compute 2025.4.1 archive (322,492,696 bytes; SHA256 `6aacf98f3c55226cf445975d348c297c1c7f785467397c9654cb26307a734d96`) and extract only the x86-64 command-line executable/runtime and metric section files. The selected extraction is capped at 160 MiB (the package contents list is approximately 96 MiB). No GUI, samples, or non-x86 targets are extracted. It requires 600 MiB free during download and extraction. No packages, CUDA toolkit, drivers or global counter permissions are changed.
-
-The profile reports a required Nsight Compute tensor-pipe active-cycle percentage, alongside integer tensor instruction throughput, total SM throughput, DRAM throughput, scheduler, warp-stall, instruction, memory and occupancy counters. These are counters from three exact `a_pair_direct_scan` launches after eight warm-up launches, near the midpoint of a synthetic full-size nonce. Kernel replay timings are not used as mining speed. The printed tensor active percentage is the direct hardware measurement relevant to the utilization question; board-wide GPU activity remains a different metric.
-
-The original V85 result and baseline are retained. New counter details go to `~/pearlhash-dev-v0.0.85/hardware-counters-retry.json`; the V85.1 retry summary goes to `~/pearlhash-dev-v0.0.85.1/counter-retry-result.json`. The retry remains offline and submits no shares. WildRig is restored through the existing bounded launcher.
