@@ -52,7 +52,7 @@ def prepare(folder):
     if not shutil.which('dpkg-deb'):raise RuntimeError('dpkg-deb unavailable for private profiler extraction')
     roots=[Path('/dev/shm'),Path('/run')]
     root=next((item for item in roots if item.is_dir() and shutil.disk_usage(item).free>=SIZE+180*1024*1024),None)
-    if root is None:raise RuntimeError('need about 470 MiB free in /dev/shm or /run for temporary profiler files')
+    if root is None:raise RuntimeError('need about 490 MiB free in /dev/shm or /run for temporary profiler files')
     if shutil.disk_usage(folder).free<40*1024*1024:raise RuntimeError('need 40 MiB persistent space for the small profiler report')
     temporary=Path(tempfile.mkdtemp(prefix='pearlhash-ncu-',dir=root));base=temporary/'profiler'
     binary=base/'opt/nvidia/nsight-compute/2025.4.1/ncu'

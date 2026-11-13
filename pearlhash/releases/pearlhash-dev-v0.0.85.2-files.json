@@ -6,13 +6,13 @@
       "path": "tools/ncu_profile.py",
       "repository_path": "pearlhash/tools/ncu_profile.py",
       "bytes": 13027,
-      "sha256": "0f871b2c07fad9e1535f2410bb955d2bc597a3489b3b12fd3b1abb155555ce06"
+      "sha256": "ece14a105c7a755738e380351db48d6e09960082cc209a47313c316e71c693e5"
     },
     {
       "path": "PROFILE-V085.2.md",
       "repository_path": "pearlhash/PROFILE-V085.2.md",
       "bytes": 1711,
-      "sha256": "f1cfaa1f5ec3a07dc566d6650a26d9616320b76a638d31cb18705c32b0b8f685"
+      "sha256": "3aa8e6821f6c60f5e769bd09f63b5e971382defd10e2b647ab7377bb06cdb2c3"
     }
   ]
 }
