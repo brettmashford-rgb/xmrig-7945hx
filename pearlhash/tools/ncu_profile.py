@@ -173,33 +173,36 @@ def collect(folder,binary,env,module,commitment):
         code,version=bounded([str(binary),'--version'],env=env,timeout=30)
         report['version']=version.strip()
         if code:raise RuntimeError('profiler executable failed: '+version[-1000:])
+        temporary_root=next((parent for parent in binary.parents if parent.name.startswith('pearlhash-ncu-')),None)
+        report_root=temporary_root if temporary_root is not None else folder
+        report_root.mkdir(mode=0o700,parents=True,exist_ok=True)
+        report_prefix=report_root/'pair-direct'
         command=[str(binary),'--config-file','off','--clock-control','none','--cache-control','none',
                  '--replay-mode','kernel','--kernel-name-base','function','--kernel-name','a_pair_direct_scan',
-                 '--launch-skip','8','--launch-count','3','--force-overwrite','--export',str(folder/'pair-direct')]
+                 '--launch-skip','8','--launch-count','3','--force-overwrite','--export',str(report_prefix)]
         for section in SECTIONS:command+=['--section',section]
         command += [sys.executable,'-S',str(folder/'tools/profile_pair.py'),'--counter-target',
                     '--module',str(module),'--commitment-module',str(commitment),'--report',str(folder/'counter-target.json')]
-        run_env=env.copy();run_env['LC_ALL']='C';run_env['HOME']=str(folder/'profiler-home')
-        if temporary:=next((str(parent) for parent in binary.parents if parent.name.startswith('pearlhash-ncu-')),None):run_env['TMPDIR']=temporary
+        run_env=env.copy();run_env['LC_ALL']='C';run_env['HOME']=str(report_root/'profiler-home')
+        if temporary_root is not None:run_env['TMPDIR']=str(temporary_root)
         Path(run_env['HOME']).mkdir(exist_ok=True)
         print('Profiling three scanner launches after eight warm-up windows...',flush=True)
         code,output=bounded(command,env=run_env,timeout=600)
-        (folder/'ncu-user.log').write_text(output)
+        report['profiler_output_tail']=output[-6000:]
         if 'ERR_NVGPUCTRPERM' in output:
             print('GPU counters require elevated access; retrying this diagnostic with sudo.',flush=True)
             names=('HOME','TMPDIR','PYTHONPATH','PEARL_HASH_LIBRARY','PYTHONUNBUFFERED','LC_ALL')
             prefix=['sudo','-n','env']+[name+'='+run_env[name] for name in names if name in run_env]
             code,output=bounded(prefix+command,env=run_env,timeout=600)
-            (folder/'ncu-elevated.log').write_text(output);report['privilege']='sudo diagnostic only'
+            report['profiler_output_tail']=output[-6000:];report['privilege']='sudo diagnostic only'
         if code:raise RuntimeError('profiler failed (exit '+str(code)+'): '+output[-1400:])
         target=json.loads((folder/'counter-target.json').read_text())
         if target.get('complete') is not True or target.get('error') is not None or target.get('range')!=[4194304,4374528]:
             raise RuntimeError('profile target did not complete its exact work/guard checks')
         # Import through the same privilege when a root-created report is not user-readable.
-        export=[str(binary),'--import',str(folder/'pair-direct.ncu-rep'),'--page','raw','--csv','--print-units','base','--print-fp']
+        export=[str(binary),'--import',str(report_prefix)+'.ncu-rep','--page','raw','--csv','--print-units','base','--print-fp']
         if report['privilege']!='user':export=prefix+export
         code,csv_output=bounded(export,env=run_env,timeout=120)
-        (folder/'counters.csv').write_text(csv_output)
         if code:raise RuntimeError('profiler report export failed: '+csv_output[-1000:])
         metrics=parse_csv(csv_output);report.update(available=True,metrics=metrics,compact=compact(metrics))
     except (OSError,ValueError,RuntimeError) as error:report['error']=str(error)

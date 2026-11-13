@@ -1,0 +1,18 @@
+{
+  "version": "0.0.85.3",
+  "scope": "direct tensor-pipe hardware counters with Nsight download, extraction and report held in RAM; reuse V85 baseline",
+  "files": [
+    {
+      "path": "tools/ncu_profile.py",
+      "repository_path": "pearlhash/tools/ncu_profile.py",
+      "bytes": 13202,
+      "sha256": "a1fc0e51554fe7e79df8a95cfc90dfc4552eb84268eef40259747e2379b2551a"
+    },
+    {
+      "path": "PROFILE-V085.3.md",
+      "repository_path": "pearlhash/PROFILE-V085.3.md",
+      "bytes": 1238,
+      "sha256": "071c2bd49c7e64020fc1dab9aee195417975e0f3d91353e4b1b815bd7b894042"
+    }
+  ]
+}
