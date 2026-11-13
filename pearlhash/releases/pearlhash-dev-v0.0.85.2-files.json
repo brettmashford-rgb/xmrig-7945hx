@@ -1,0 +1,18 @@
+{
+  "version": "0.0.85.2",
+  "scope": "direct tensor-pipe active-cycle and scheduler hardware counters; profiler download/extraction kept in RAM; reuse V85 baseline",
+  "files": [
+    {
+      "path": "tools/ncu_profile.py",
+      "repository_path": "pearlhash/tools/ncu_profile.py",
+      "bytes": 13027,
+      "sha256": "0f871b2c07fad9e1535f2410bb955d2bc597a3489b3b12fd3b1abb155555ce06"
+    },
+    {
+      "path": "PROFILE-V085.2.md",
+      "repository_path": "pearlhash/PROFILE-V085.2.md",
+      "bytes": 1711,
+      "sha256": "f1cfaa1f5ec3a07dc566d6650a26d9616320b76a638d31cb18705c32b0b8f685"
+    }
+  ]
+}
