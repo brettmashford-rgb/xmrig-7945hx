@@ -10,9 +10,9 @@ sudo -v
 installer=$(mktemp /tmp/pearl-v0851-install.XXXXXX.py)
 python3 - "$installer" <<'PY'
 import hashlib,pathlib,sys,urllib.request
-url='https://raw.githubusercontent.com/brettmashford-rgb/xmrig-7945hx/835adf0af754f428ea835a303404e0f7a927b473/pearlhash/tools/retry_v085_counters.py'
+url='https://raw.githubusercontent.com/brettmashford-rgb/xmrig-7945hx/57f1abe00e831e94f8e3a88994b01a83d255690b/pearlhash/tools/retry_v085_counters.py'
 with urllib.request.urlopen(url,timeout=60) as response:raw=response.read(1048577)
-expected='209e1152494d3557f839a31124e776c5a49ed71d9a482e8caa42a9d922473996'
+expected='f5a3cdd03139fea7a89f41682d2214ed2a9eaace343015f2253fa757b53882d3'
 if hashlib.sha256(raw).hexdigest()!=expected:raise SystemExit('STOP: V85.1 retry checksum mismatch')
 p=pathlib.Path(sys.argv[1]);p.write_bytes(raw);p.chmod(0o644)
 print('V85.1 pinned retry checksum verified.',flush=True)
