@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-SOURCE_COMMIT=dfb5d4a5757a16e6f16c2088cae2e616e7b0dc66
+SOURCE_COMMIT=eb539a73fd480394ce6d2ab796bbb06a5983aec2
 BASE="https://raw.githubusercontent.com/brettmashford-rgb/xmrig-7945hx/${SOURCE_COMMIT}/pearlhash"
-FOLDER=/home/user/pearlhash-dev-v0.0.86-opencl
-LOG=/home/user/pearlhash-v086-opencl.log
+FOLDER=/home/user/pearlhash-dev-v0.0.86.1-opencl
+LOG=/home/user/pearlhash-v086.1-opencl.log
 
 if [ -e "$FOLDER" ]; then
     printf 'OpenCL probe folder already exists; preserving it. Result log: %s\n' "$LOG"
@@ -17,7 +17,7 @@ mkdir -p "$FOLDER/gpu" "$FOLDER/tools"
 curl -fL --retry 3 "$BASE/gpu/opencl_tensor_core_probe.cl" -o "$FOLDER/gpu/opencl_tensor_core_probe.cl"
 curl -fL --retry 3 "$BASE/tools/opencl_tensor_core_probe.py" -o "$FOLDER/tools/opencl_tensor_core_probe.py"
 echo '991be2dffc968f4fee2ed8464e4f90f3dee4351cd69a01cfa046e1b1985971e4  '"$FOLDER/gpu/opencl_tensor_core_probe.cl" | sha256sum -c -
-echo 'ae2479d3fe0ef386437d81b89bffc717432a12ed452f8a5150cc15a3555f310a  '"$FOLDER/tools/opencl_tensor_core_probe.py" | sha256sum -c -
+echo '8a47c054523940ec917db231fea3cd8ecefd270e18ff460b7ac0d589e7abb618  '"$FOLDER/tools/opencl_tensor_core_probe.py" | sha256sum -c -
 
 fallback="pearl-v086-opencl-fallback-$(date +%s)-$$"
 sudo systemd-run --unit="$fallback" --on-active=20m /usr/bin/systemctl start pearl.service
