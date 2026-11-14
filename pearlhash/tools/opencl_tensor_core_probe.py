@@ -91,7 +91,7 @@ def main():
         raise RuntimeError('OpenCL inline-PTX kernel build failed: '+log.value.decode(errors='replace'))
     kernel=create_kernel(program,b'pearl_opencl_mma_probe',C.byref(err));check(err.value,'kernel creation')
     # Exact CPU oracle at K=128 catches PTX operand layout/sign errors before benchmark.
-    test_a,test_b=make_data(128,1,8675309);result=(cl_int*128)()
+    test_a,test_b=make_data(128,1,8675309);result=(cl_int*(4*128))()
     def run(a_bytes,b_bytes,k,batches,warps,out):
         ah=C.create_string_buffer(a_bytes);bh=C.create_string_buffer(b_bytes)
         ab=create_buffer(ctx,MEM_READ_ONLY|MEM_COPY_HOST_PTR,len(a_bytes),ah,C.byref(err));check(err.value,'A buffer')
@@ -105,7 +105,7 @@ def main():
         for mem in (ab,bb,ob):release[0](mem)
     run(test_a,test_b,128,1,4,result)
     expected=cpu_reference(test_a,test_b,128)
-    if list(result)!=expected:raise RuntimeError('K=128 OpenCL MMA differs from exact signed-int8 CPU reference')
+    if list(result)[:128]!=expected:raise RuntimeError('K=128 OpenCL MMA differs from exact signed-int8 CPU reference')
     print('OpenCL tensor-core correctness: PASS (K=128, 16x8, exact CPU match)',flush=True)
     a_bytes,b_bytes=make_data(args.k,args.batches,8675310)
     ah=C.create_string_buffer(a_bytes);bh=C.create_string_buffer(b_bytes)
