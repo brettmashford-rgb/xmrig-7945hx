@@ -8,6 +8,7 @@ import time
 from pathlib import Path
 
 cl_int=C.c_int32; cl_uint=C.c_uint32; cl_ulong=C.c_uint64
+cl_size=C.c_size_t
 cl_platform=C.c_void_p; cl_device=C.c_void_p; cl_context=C.c_void_p
 cl_queue=C.c_void_p; cl_program=C.c_void_p; cl_kernel=C.c_void_p; cl_mem=C.c_void_p; cl_event=C.c_void_p
 GPU=1<<2; MEM_READ_ONLY=1<<2; MEM_WRITE_ONLY=1<<1; MEM_COPY_HOST_PTR=1<<5
@@ -18,7 +19,7 @@ def api(lib,name,restype,args):
     f=getattr(lib,name);f.restype=restype;f.argtypes=args;return f
 
 def info_string(fn,obj,param):
-    n=cl_size= C.c_size_t()
+    n=C.c_size_t()
     fn(obj,param,0,None,C.byref(n));buf=C.create_string_buffer(n.value)
     fn(obj,param,n.value,buf,None);return buf.value.decode(errors='replace')
 
